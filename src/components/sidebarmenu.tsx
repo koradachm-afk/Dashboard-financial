@@ -39,7 +39,7 @@ import * as React from "react";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 
-import user from "@/db/user.json";
+import user from "@/db/user/user.json";
 import { usePathname } from "next/navigation";
 
 export default function SidebarVariantsPreview({children,}: {children: React.ReactNode;}) {

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "name": "Superadmin",
+    "email": "superadmin@company.com",
+    "role_id": "superadmin",
+    "theme": "dark",
+    "status": "active"
+  },
+  {
+    "id": "2",
+    "name": "Admin",
+    "email": "admin@company.com",
+    "role_id": "admin",
+    "theme": "light",
+    "status": "active"
+  }
+]
