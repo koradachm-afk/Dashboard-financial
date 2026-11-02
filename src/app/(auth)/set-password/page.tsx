@@ -1,6 +1,6 @@
 'use client';
 
-export default function SetPassword() {
+export default function Page() {
   return (
     <>
 

@@ -1,6 +1,6 @@
 'use client';
 
-export default function EntryKiosk() {
+export default function Page() {
   return (
     <>
 

@@ -1,6 +1,6 @@
 'use client';
 
-export default function ActivityLog() {
+export default function Page() {
   return (
     <>
 

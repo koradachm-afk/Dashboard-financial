@@ -1,6 +1,6 @@
 'use client';
 
-export default function ParkingLayout() {
+export default function Page() {
   return (
     <>
 

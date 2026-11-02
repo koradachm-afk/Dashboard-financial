@@ -1,6 +1,6 @@
 'use client';
 
-export default function AuditLogs() {
+export default function Page() {
   return (
     <>
 

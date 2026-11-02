@@ -1,6 +1,6 @@
 'use client';
 
-export default function FinancialOverview() {
+export default function Page() {
   return (
     <>
 

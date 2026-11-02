@@ -1,6 +1,6 @@
 'use client';
 
-export default function Error403() {
+export default function Page() {
   return (
     <>
 

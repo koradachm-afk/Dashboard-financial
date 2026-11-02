@@ -1,6 +1,6 @@
 'use client';
 
-export default function Pay() {
+export default function Page() {
   return (
     <>
 

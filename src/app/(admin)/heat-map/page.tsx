@@ -1,6 +1,6 @@
 'use client';
 
-export default function HeatMap() {
+export default function Page() {
   return (
     <>
 

@@ -1,6 +1,6 @@
 'use client';
 
-export default function Users() {
+export default function Page() {
   return (
     <div>
     
