@@ -1,6 +1,6 @@
 # AUTO PARKING — Frontend
 
-ระบบจัดการที่จอดรถ (ชื่อบน UI ตอนนี้ใช้ **ParkPlan** · ชื่อแบรนด์ยังรอตัดสินใจ)
+ระบบจัดการที่จอดรถ ชื่อแบรนด์ **AUTO PARKING** (ไฟล์ Figma ยังชื่อ ParkPlan แต่ทุกหน้าจอเปลี่ยนเป็น AUTO PARKING แล้ว)
 ใช้กล้องอ่านป้ายทะเบียนแทนบัตรจอด มี 3 ฝั่ง:
 
 | ฝั่ง | ผู้ใช้ | อุปกรณ์ |
@@ -20,7 +20,8 @@
 - Parking Heat Map มี **Export Excel**
 - Audit Logs มีการกระทำ **ออกจากระบบ / ส่งออก** และลิ้นชักรายละเอียดครบทุกเคส
 - เพิ่ม `cn()` ใน `src/utils/` ทุก component ต้องใช้ (ดู DESIGN-STYLE.md ข้อ 1.1)
-- ตัดสินแล้ว: สถานะรถมี 2 ค่า · Role มี Superadmin / Admin (ข้อ 10)
+- ตัดสินแล้ว: สถานะรถมี 2 ค่า · Role มี Superadmin / Admin · ชื่อแบรนด์ AUTO PARKING · เวลาออกหลังจ่าย 15 นาที · เกินเวลาคิดค่าจอดใหม่นับจากเวลาจ่ายครั้งล่าสุด (ข้อ 10)
+- Figma เพิ่มหน้า 404 (07.10), Settings มุมมอง Admin ที่มีสิทธิ์ไม่ครบแท็บ (10.25, 10.26) และสวิตช์คิดค่าจอดใหม่ใน 10.3
 
 ---
 
@@ -153,14 +154,14 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 | `/account` | บัญชีของฉัน | [09.2](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=57-12581) | อ๊อด |
 | `/users` | User & Permissions | [07](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=37-6912) | อ๊อด |
 | `/403` | ไม่มีสิทธิ์ | [07.9](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=39-8866) | อ๊อด |
-| — (URL ที่ไม่มีอยู่) | ไม่พบหน้า 404 (`not-found.tsx`) | ยังไม่มีใน Figma ใช้โครงเดียวกับ 07.9 | อ๊อด |
+| — (URL ที่ไม่มีอยู่) | ไม่พบหน้า 404 (`not-found.tsx`) | [07.10](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-49736) | อ๊อด |
 | `/audit-logs` | Audit Logs | [08](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=50-9390) · [08.19 หน้า 2](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=364-49773) | อ๊อด |
 | `/dashboard` | Dashboard | [12](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=156-28177) · [12.35 หน้า 2](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=353-47787) | ตาล |
 | `/financial-overview` | Financial Overview | [13](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=145-24919) | ตาล |
 | `/parking-layout` | Parking Layout | [01](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=16-3034) · [02](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=16-6185) | ริว |
 | `/activity-log` | Activity Log | [14](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=103-16043) | ฟ่า |
 | `/heat-map` | Parking Heat Map | [15](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=140-22253) · [15.9 Export](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=350-46134) | ฟ่า |
-| `/settings/*` | System Settings (สิทธิ์รายแท็บ) | [10](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13184) | ต้น |
+| `/settings/*` | System Settings (สิทธิ์รายแท็บ) | [10](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13184) · [10.25–10.26 มุมมอง Admin](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-49801) | ต้น |
 | `/pay/*` | Customer Web | [17](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43072) | ต้น |
 | `/kiosk/entry` | Kiosk ทางเข้า | [18](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-44453) | ต้น |
 | `/kiosk/exit` | Kiosk ทางออก | [16](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43291) | ต้น |
@@ -227,7 +228,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 
 ### 6.4 User & Permissions — อ๊อด (เฉพาะ Superadmin)
 
-เฟรม: [07 รายการ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=37-6912) · [07.1](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=39-7201)–[07.3](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=39-8323) กรอง · [07.4 แก้ไข (Drawer)](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=40-7811) · [07.5 ยืนยันเปลี่ยน Role](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=40-8335) · [07.6 เพิ่มผู้ใช้](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=41-8544) · [07.7 ยืนยันลบ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=41-8895) · [07.8 Toast](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=41-9418) · [07.9 หน้า 403](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=39-8866)
+เฟรม: [07 รายการ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=37-6912) · [07.1](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=39-7201)–[07.3](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=39-8323) กรอง · [07.4 แก้ไข (Drawer)](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=40-7811) · [07.5 ยืนยันเปลี่ยน Role](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=40-8335) · [07.6 เพิ่มผู้ใช้](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=41-8544) · [07.7 ยืนยันลบ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=41-8895) · [07.8 Toast](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=41-9418) · [07.9 หน้า 403](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=39-8866) · [07.10 หน้า 404](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-49736)
 
 - ☐ ตารางผู้ใช้: ค้นหา username / email · กรองตาม "สิทธิ์การเห็นหน้า" (มีตัวเลือก System Settings) · ป้ายสิทธิ์รายหน้า (Page Access Chip) · แบ่งหน้า
 - ☐ เพิ่มผู้ใช้:
@@ -357,7 +358,10 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 
 เฟรม: [10 ข้อมูลสาขา](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13184) · [10.1 ประเภทช่องจอด](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13582) · [10.2 แก้ไขประเภท](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-14098) · [10.3 ค่าจอด](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=66-14208) · [10.4–10.6 โลโก้](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=172-29898) · [10.7–10.22 จัดการประเภท](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=172-30204) · [10.23–10.24 บันทึก / error](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=172-34799)
 
-- ☐ **สิทธิ์รายแท็บ:** แท็บที่ไม่มีสิทธิ์ให้ซ่อน · แท็บที่ "ดูได้" ให้ input disabled และซ่อนปุ่มบันทึก (Figma ยังไม่มีเฟรมนี้ ทำตาม DESIGN-STYLE.md ข้อ 16)
+- ☐ **สิทธิ์รายแท็บ** ([10.25](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-49801) ดูได้ · [10.26](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-50004) แก้ไขได้ ตัวอย่างผู้ใช้ ops.mint):
+  - แท็บที่ไม่มีสิทธิ์ให้ซ่อน เปิดหน้ามาให้อยู่แท็บแรกที่มีสิทธิ์
+  - แท็บที่ "ดูได้": input เป็นพื้น subtle ตัวอักษรจาง · สวิตช์จาง 50% · ซ่อนปุ่มยกเลิก / บันทึก แล้วแสดงป้าย "สิทธิ์ดูอย่างเดียว · แก้ไขค่าจอดต้องมีสิทธิ์แก้ไขได้" แทน
+  - Sidebar แสดงเฉพาะหน้าที่มีสิทธิ์
 - ☐ คำอธิบายใต้ชื่อหน้า: "Admin เห็นเฉพาะแท็บที่ได้รับสิทธิ์ · การเปลี่ยนแปลงทั้งหมดถูกบันทึกลง Audit Logs"
 - ☐ แท็บข้อมูลสาขา: ชื่อสาขา + โลโก้ (PNG / SVG สี่เหลี่ยมจัตุรัส ≥ 256 px ≤ 1 MB) + ตัวอย่างการแสดงผล
 - ☐ แท็บประเภทช่องจอด:
@@ -367,7 +371,8 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 - ☐ แท็บค่าจอด:
   - ราคาต่อชั่วโมง (> 0, ทศนิยมได้ 2 ตำแหน่ง)
   - เวลาออกหลังชำระ (นาที, > 0)
-  - **สวิตช์คิดค่าจอดใหม่เมื่อออกเกินเวลา** (เพิ่มใหม่ ยังไม่มีใน Figma 10.3)
+  - **สวิตช์คิดค่าจอดใหม่เมื่อออกเกินเวลา** (10.3, 10.23, 10.24) เปิด = คิดค่าจอดใหม่นับจากเวลาที่ชำระครั้งล่าสุดถึงเวลาออกจริง ตามราคาต่อชั่วโมง แล้วสร้าง QR ให้จ่ายส่วนที่เกิน · ปิด = เกินเวลาแล้วออกได้โดยไม่คิดเงินเพิ่ม
+  - กล่องตัวอย่าง: 14:00 จ่าย → ≤ 14:15 ออกได้ → 14:16 เกินเวลา ต้องชำระเพิ่ม คิดใหม่นับจาก 14:00
   - ตัวอย่างการคำนวณ
   - error เมื่อกรอกค่าผิด
 - ☐ ทุกการบันทึกลง Audit Logs
@@ -386,7 +391,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
   - ปุ่มบันทึกรูป QR
   - หมดอายุหรือไม่สำเร็จ → ปุ่มสร้าง QR ใหม่
 - ☐ สำเร็จ: เลขที่ธุรกรรม + เวลาที่ต้องออก
-- ☐ จ่ายแล้วแต่ออกไม่ทันเวลา → แสดงยอดที่ต้องจ่ายเพิ่ม (คิดค่าจอดใหม่ตามค่าที่ตั้งใน Settings) + สร้าง QR ใหม่
+- ☐ จ่ายแล้วแต่ออกไม่ทันเวลา (15 นาที) → แสดงยอดที่ต้องจ่ายเพิ่ม คิดใหม่นับจากเวลาที่ชำระครั้งล่าสุด + สร้าง QR ใหม่ · ข้อความในหน้าสำเร็จ (17.7): "หากเกิน 15 นาที ต้องชำระค่าจอดเพิ่ม โดยคิดใหม่นับจากเวลาที่ชำระครั้งนี้"
 - ☐ `sessionId` ใน URL ต้องเป็นรหัสสุ่ม **ห้ามใช้ทะเบียน**
 - ☐ ธีมสว่างเท่านั้น · กว้างสูงสุด 480px
 
@@ -419,7 +424,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 - เรียกหน้า รถเข้า–ออก ว่า **Activity Log** ทุกที่ (ชื่อเดิม Traffic Activity เลิกใช้แล้ว)
 - ตัวเลข, เงิน, เวลา ใส่ `tabular-nums` · รูปแบบ: `฿10,080` · `1 ชม. 58 น.` · `ส. 17 ต.ค. 2026` · `21:56`
 - สถานะรถมีแค่ **จอดอยู่** และ **ออกแล้ว**
-- ชื่อแบรนด์อ่านจาก config ห้าม hard-code
+- ชื่อแบรนด์ **AUTO PARKING** อ่านจาก config ห้าม hard-code
 
 สำหรับ AI coding agent: อ่าน [AGENTS.md](./AGENTS.md) และ DESIGN-STYLE.md ก่อนเขียนโค้ด
 
@@ -431,7 +436,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 
 | ไฟล์ | ข้อมูล | ใช้ที่ |
 |---|---|---|
-| `user.json` | ผู้ใช้, Role, สิทธิ์ราย page (System Settings แยก 3 แท็บ), ธีมที่เลือก | Login, Users, Account, Sidebar |
+| `user.json` | ผู้ใช้ (อีเมล `@autoparking.co`), Role, สิทธิ์ราย page (System Settings แยก 3 แท็บ), ธีมที่เลือก | Login, Users, Account, Sidebar |
 | `floors.json` *(เพิ่ม)* | อาคาร, ชั้น, ช่องจอด, วัตถุบนผัง | Parking Layout, Heat Map |
 | `slot-types.json` *(เพิ่ม)* | ประเภทช่องจอด | Settings, Parking Layout |
 | `sessions.json` *(เพิ่ม)* | รถเข้า–ออก | Activity Log, Dashboard, Customer, Kiosk |
@@ -471,15 +476,13 @@ PM (อ๊อด) เป็นผู้ตัดสิน ระหว่าง�
 | ธีม | สว่าง / มืด เท่านั้น |
 | System Settings | Admin เข้าได้ตามสิทธิ์รายแท็บ |
 | ไฟล์ส่งออก | Excel (.xlsx) ตามที่ออกแบบใน Figma |
+| ชื่อแบรนด์ | **AUTO PARKING** (โดเมนตัวอย่างใน mock: `autoparking.co`) |
+| เวลาออกหลังจ่าย (Grace period) | **15 นาที** ตรงกันทั้ง Settings (10.3), Kiosk (16.2–16.4) และ Customer (17.7) |
+| เกินเวลาออก | ประตูไม่เปิดจนกว่าจะจ่ายส่วนที่เกิน · **คิดค่าจอดใหม่นับจากเวลาที่จ่ายครั้งล่าสุด** (เปิด / ปิดได้ใน Settings) |
 
 **ยังรอตัดสินใจ**
 
-| เรื่อง | กระทบ |
-|---|---|
-| เวลาออกหลังจ่าย (Grace period) ใน Figma 10.3 กับ 17.7 ไม่ตรงกัน | Settings, Customer, Kiosk |
-| วิธีคิดค่าจอดใหม่เมื่อออกเกินเวลา: นับจากเวลาจ่ายครั้งล่าสุด หรือคิดใหม่ทั้งหมดแล้วหักที่จ่ายไป | Settings, Customer, Kiosk |
-| ชื่อแบรนด์ ParkPlan หรือ AUTO PARKING (พี่ปาร์ค) | ทุกหน้า (แก้ที่ config ที่เดียว) |
-| หน้าที่ Figma ยังไม่มีแบบ: 404, Settings ตอนมีสิทธิ์ไม่ครบแท็บ, สวิตช์คิดค่าจอดใหม่ | อ๊อด, ต้น |
+ตอนนี้ไม่มีเรื่องค้าง ถ้ามีเรื่องใหม่ให้เพิ่มในตารางนี้
 
 ---
 
