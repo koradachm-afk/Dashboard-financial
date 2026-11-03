@@ -6,14 +6,20 @@
 | ฝั่ง | ผู้ใช้ | อุปกรณ์ |
 |---|---|---|
 | **Admin Web** | เจ้าหน้าที่ / ผู้ดูแลระบบ | Desktop (ออกแบบที่ 1440px) |
-| **Customer Web** | ลูกค้าที่มาจอด (สแกน QR → ค้นทะเบียน → จ่าย PromptPay) | มือถือ (ออกแบบที่ 390px) |
+| **Customer Web** | ลูกค้าที่มาจอด (สแกน QR → ค้นทะเบียน → เลือกรถจากรูปถ้าเจอหลายคัน → จ่ายด้วย QR PromptPay หรือ Mobile Banking) | มือถือ (ออกแบบที่ 390px) |
 | **Kiosk** | จอที่ทางเข้า / ทางออก | จอ 1920×1080 |
 
 > **ขอบเขตตอนนี้: หน้าบ้านอย่างเดียว** ยังไม่มี backend ข้อมูลทั้งหมดเป็น mock (JSON ใน `src/db/`)
 >
-> อัปเดตล่าสุด **2 พ.ย. 2026** · กำหนดส่ง **15 พ.ย. 2026** · แผนงานอยู่ใน ClickUp (space **Auto_Parking**)
+> อัปเดตล่าสุด **3 พ.ย. 2026** · กำหนดส่ง **15 พ.ย. 2026** · แผนงานอยู่ใน ClickUp (space **Auto_Parking**)
 
-**อัปเดตรอบนี้**
+**อัปเดตรอบนี้ (3 พ.ย.) · Customer Web**
+- **ทะเบียนซ้ำ / คล้ายกัน:** ค้นแล้วเจอหลายคัน (เช่น กข 1234 กรุงเทพฯ, กข 1234 นนทบุรี, 1กข 1234) แสดงรายการพร้อม **รูปตอนเข้า** ให้ลูกค้าเลือกคันของตัวเอง (เฟรม 17.8)
+- **วิธีชำระ:** เพิ่มหน้าเลือก **QR PromptPay / Mobile Banking** และหน้ารอยืนยันในแอปธนาคาร (17.9–17.11)
+- Design System เพิ่ม component: Plate Match Card · Entry Snapshot · Payment Method Option · Bank Option · Radio
+- ตัดสินแล้ว: แสดงรูป จังหวัด และเวลาเข้าของทุกคันที่ตรง · โลโก้ธนาคารใช้ไอคอนกลางไปก่อน · Mobile Banking ใช้ mock (ข้อ 10)
+
+**รอบก่อน (2 พ.ย.)**
 - ธีมเหลือ **สว่าง / มืด** (ไม่มี "ตามระบบ")
 - System Settings ให้ Admin เข้าได้ **ตามสิทธิ์รายแท็บ** (ไม่ได้เป็นของ Superadmin อย่างเดียวแล้ว)
 - Dashboard: ตารางความเคลื่อนไหวล่าสุดแยก **เวลาเข้า / เวลาออก** มีกรณี "ยังไม่ออก" และแบ่งหน้าละ 10 แถว
@@ -109,7 +115,7 @@ auto_parking/
 │  │  │  └─ users/                # User & Permissions
 │  │  │
 │  │  ├─ (auth)/                  # login · forgot-password · set-password
-│  │  ├─ (customer)/              # pay/ → ค้นหา · [sessionId] · qr · success
+│  │  ├─ (customer)/              # pay/ → ค้นหา + เลือกรถ (?q=) · [sessionId]/ → รายละเอียด · method · qr · bank · success
 │  │  └─ kiosk/                   # entry/ · exit/
 │  │
 │  ├─ components/
@@ -162,7 +168,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 | `/activity-log` | Activity Log | [14](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=103-16043) | ฟ่า |
 | `/heat-map` | Parking Heat Map | [15](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=140-22253) · [15.9 Export](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=350-46134) | ฟ่า |
 | `/settings/*` | System Settings (สิทธิ์รายแท็บ) | [10](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13184) · [10.25–10.26 มุมมอง Admin](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-49801) | ต้น |
-| `/pay/*` | Customer Web | [17](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43072) | ต้น |
+| `/pay/*` | Customer Web | [17](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43072) · [17.8 เลือกรถ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=436-50059) · [17.9–17.11 วิธีชำระ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50236) | ต้น |
 | `/kiosk/entry` | Kiosk ทางเข้า | [18](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-44453) | ต้น |
 | `/kiosk/exit` | Kiosk ทางออก | [16](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43291) | ต้น |
 
@@ -382,8 +388,29 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 
 เฟรม: [17 ค้นหา](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43072) · [17.1 กรอกแล้ว](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43137) · [17.2 ไม่พบ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43201) · [17.3 รอชำระ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43270) · [17.4 ชำระแล้ว](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43348) · [17.5 สแกนจ่าย](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43424) · [17.6 ไม่สำเร็จ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43485) · [17.7 สำเร็จ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43542)
 
-- ☐ ขั้นตอน ค้นหา → ตรวจสอบ → ชำระ (Step component)
+เพิ่มใหม่ (3 พ.ย.): [17.8 เลือกรถของคุณ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=436-50059) · [17.9 เลือกวิธีชำระ (QR)](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50236) · [17.10 เลือกวิธีชำระ (Mobile Banking)](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50346) · [17.11 รอยืนยันในแอปธนาคาร](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50519)
+
+Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 → QR 17.5 หรือ Mobile Banking 17.10 → 17.11 → 17.7
+
+- ☐ ขั้นตอน ค้นหา → ตรวจสอบ → ชำระ (Step component) · 17.8 ยังอยู่ขั้น "ค้นหา" · 17.9–17.11 อยู่ขั้น "ชำระ"
 - ☐ ค้นทะเบียน (เว้นวรรคหรือไม่ก็ได้) · ไม่พบ → error ใต้ช่อง + กล่องคำแนะนำ
+- ☐ **ผลการค้นหา:** เจอ 1 คัน → ไป 17.3 ทันที · เจอตั้งแต่ 2 คัน → แสดงรายการ 17.8
+  - เคสที่ต้องรองรับ: ทะเบียนเดียวกันต่างจังหวัด (กข 1234 กรุงเทพฯ / นนทบุรี) และต่างหมวด (กข 1234 / 1กข 1234)
+  - ช่องค้นหาด้านบนยังแก้ได้ · คำค้นเก็บใน `?q=` แต่ห้ามใช้ทะเบียนเป็น `sessionId`
+- ☐ **การ์ดรถ (Plate Match Card):**
+  - รูปตอนเข้าจากกล้องทางเข้า + เวลาบนรูป · ทะเบียน · จังหวัด · "เข้า 17 ต.ค. · 18:42 · ประตู 1"
+  - แสดงรูป จังหวัด และเวลาเข้าของ **ทุกคันที่ตรง** (ตัดสินแล้ว)
+  - เรียงตามเวลาเข้า · เลือกได้ทีละคัน (Radio) · คันแรกถูกเลือกไว้ก่อน
+  - ปุ่มหลักเปลี่ยนตามคันที่เลือก: "ยืนยัน · กข 1234 กรุงเทพมหานคร" · ปุ่มรอง "ไม่พบรถของฉัน · ค้นหาใหม่" กลับ 17
+- ☐ **เลือกวิธีชำระ (17.9 / 17.10):** กด "ชำระเงิน" ใน 17.3 แล้วมาที่หน้านี้ · ค่าเริ่มต้น QR PromptPay
+  - QR PromptPay → ปุ่ม "ถัดไป · แสดง QR PromptPay" → 17.5
+  - Mobile Banking → เลือกธนาคาร 6 แห่ง (กสิกรไทย, ไทยพาณิชย์, กรุงเทพ, กรุงไทย, กรุงศรี, ทีทีบี) → ปุ่ม "เปิดแอป{ธนาคาร} · ชำระ ฿60" → 17.11
+  - โลโก้ธนาคารใช้ไอคอน `Landmark` ไปก่อน
+  - วิธีที่เลือกเก็บใน `?method=qr|bank&bank=<รหัส>` ย้อนกลับมาแล้วยังเลือกไว้เหมือนเดิม
+- ☐ **รอยืนยันในแอปธนาคาร (17.11):**
+  - นับถอยหลังแบบเดียวกับหน้า QR · ปุ่ม "เปิดแอป{ธนาคาร}อีกครั้ง" · ปุ่ม "เปลี่ยนวิธีชำระ" กลับ 17.10
+  - ช่วงหน้าบ้านล้วนไม่เปิดแอปจริง เรียก `openBankApp()` กลางที่คืนค่า mock · จำลองผลด้วย `?state=success|failed`
+  - สำเร็จใช้หน้า 17.7 เดียวกับ QR
 - ☐ รายละเอียด: ทะเบียน, ประเภทรถ, เวลาเข้า, เวลาจอด, ยอดพร้อมวิธีคิด · ชำระแล้ว → "ไม่มียอดค้างชำระ"
 - ☐ หน้า QR:
   - PromptPay QR
@@ -439,8 +466,9 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 | `user.json` | ผู้ใช้ (อีเมล `@autoparking.co`), Role, สิทธิ์ราย page (System Settings แยก 3 แท็บ), ธีมที่เลือก | Login, Users, Account, Sidebar |
 | `floors.json` *(เพิ่ม)* | อาคาร, ชั้น, ช่องจอด, วัตถุบนผัง | Parking Layout, Heat Map |
 | `slot-types.json` *(เพิ่ม)* | ประเภทช่องจอด | Settings, Parking Layout |
-| `sessions.json` *(เพิ่ม)* | รถเข้า–ออก | Activity Log, Dashboard, Customer, Kiosk |
-| `payments.json` *(เพิ่ม)* | รายการชำระ | Financial, Dashboard |
+| `sessions.json` *(เพิ่ม)* | รถเข้า–ออก + รูปตอนเข้า (`entryImage`) และประตูที่เข้า (`entryGate`) · มีเคสทะเบียนซ้ำ กข 1234 กรุงเทพฯ / นนทบุรี / 1กข 1234 | Activity Log, Dashboard, Customer, Kiosk |
+| `payments.json` *(เพิ่ม)* | รายการชำระ + วิธีชำระ (`method: "qr" \| "bank"`) และธนาคาร (`bank`) | Financial, Dashboard, Customer |
+| `banks.json` *(เพิ่ม)* | รายชื่อธนาคารสำหรับ Mobile Banking (รหัส + ชื่อไทย) 6 แห่งตาม 17.10 | Customer |
 | `audit-logs.json` *(เพิ่ม)* | ประวัติการใช้งาน | Audit Logs |
 | `settings.json` *(เพิ่ม)* | ข้อมูลสาขา, ราคาต่อชั่วโมง, เวลาออกหลังชำระ, เปิด/ปิดการคิดค่าจอดใหม่ | Settings, Customer, Kiosk |
 
@@ -448,6 +476,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 - ใช้ตัวเลขชุดเดียวกับใน Figma (เช่น ทะเบียน `ผบ 9370`, ช่อง `B-07`, รายรับ `฿10,080`) จะเทียบหน้าจอกับเฟรมได้ง่าย
 - หน้าห้าม import JSON ตรง ๆ ให้เรียกผ่านฟังก์ชันกลาง วันที่มี backend จะแก้แค่ฟังก์ชันนั้น ส่วนหน้าไม่ต้องแตะ
 - ห้ามใส่ข้อมูลจริงของคน (ชื่อ, อีเมล, ทะเบียนจริง) ลงใน mock
+- รูปตอนเข้าใช้ภาพตัวอย่างใน `public/mock/entry/` ห้ามใช้รูปรถจริงที่เห็นทะเบียน
 
 ---
 
@@ -479,10 +508,16 @@ PM (อ๊อด) เป็นผู้ตัดสิน ระหว่าง�
 | ชื่อแบรนด์ | **AUTO PARKING** (โดเมนตัวอย่างใน mock: `autoparking.co`) |
 | เวลาออกหลังจ่าย (Grace period) | **15 นาที** ตรงกันทั้ง Settings (10.3), Kiosk (16.2–16.4) และ Customer (17.7) |
 | เกินเวลาออก | ประตูไม่เปิดจนกว่าจะจ่ายส่วนที่เกิน · **คิดค่าจอดใหม่นับจากเวลาที่จ่ายครั้งล่าสุด** (เปิด / ปิดได้ใน Settings) |
+| ทะเบียนซ้ำ / คล้ายกัน (ลูกค้า) | แสดงรายการพร้อมรูปตอนเข้า, จังหวัด และเวลาเข้าของทุกคันที่ตรง ให้ลูกค้าเลือกเอง (17.8) ไม่ต้องซ่อนหรือเบลอ |
+| วิธีชำระ (ลูกค้า) | **QR PromptPay** และ **Mobile Banking** · Kiosk ทางออกยังเป็น QR PromptPay อย่างเดียว |
+| โลโก้ธนาคาร | Figma ใช้ไอคอนกลาง · โลโก้จริงต้องขอจากธนาคารหรือผู้ให้บริการชำระเงิน แล้วค่อยใส่ |
+| Mobile Banking | การเปิดแอปธนาคารจากเว็บต้องผ่านผู้ให้บริการชำระเงิน ทีมทำแค่ frontend จึง **ใช้ mock ไปก่อน** |
 
 **ยังรอตัดสินใจ**
 
-ตอนนี้ไม่มีเรื่องค้าง ถ้ามีเรื่องใหม่ให้เพิ่มในตารางนี้
+| เรื่อง | รอ |
+|---|---|
+| ผู้ให้บริการชำระเงิน (payment gateway) สำหรับ Mobile Banking และโลโก้ธนาคารจริง | ช่วงทำ backend |
 
 ---
 

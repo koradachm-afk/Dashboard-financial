@@ -7,9 +7,19 @@
 > เอกสารนี้แปลง Figma ออกมาเป็นกติกาสำหรับโค้ด (Next.js + Tailwind CSS v4)
 > ถ้าเอกสารนี้กับ Figma ไม่ตรงกัน **ให้ยึด Figma** แล้วแก้เอกสารนี้ตาม
 >
-> **เวอร์ชัน 2 · อัปเดต 2 พ.ย. 2026**
+> **เวอร์ชัน 2.1 · อัปเดต 3 พ.ย. 2026**
 
-### มีอะไรเปลี่ยนจากเวอร์ชันแรก
+### มีอะไรเปลี่ยน
+
+**v2.1 (3 พ.ย.) · Customer Web**
+
+| เรื่อง | เดิม | ตอนนี้ | ข้อ |
+|---|---|---|---|
+| ทะเบียนซ้ำ / คล้ายกัน | ไปหน้ารายละเอียดทันที | หน้า **17.8 เลือกรถของคุณ** + Plate Match Card และ Entry Snapshot (รูปตอนเข้า) | 8.5, 9.3 |
+| วิธีชำระ | PromptPay QR อย่างเดียว | เลือก **QR PromptPay / Mobile Banking** (17.9–17.10) + หน้ารอยืนยันในแอปธนาคาร (17.11) | 8.5, 9.3 |
+| Component ใหม่ | — | Radio · Payment Method Option · Bank Option · ไอคอน smartphone, landmark, zoom-in | 7, 8.1, 8.5 |
+
+**v2 (2 พ.ย.)**
 
 | เรื่อง | เดิม | ตอนนี้ | ข้อ |
 |---|---|---|---|
@@ -262,6 +272,8 @@ export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 | `8` | 32 | gap สองคอลัมน์ของ Kiosk, padding ล่างของ Main |
 | `10` · `12` · `14` · `16` | 40 · 48 · 56 · 64 | layout ใหญ่ (Kiosk top bar, Login brand panel) |
 | `9.5` · `11.5` | 38 · 46 | แถวตารางสิทธิ์รายหน้า (ความสูงแถว, ระยะเยื้องแถวย่อย) |
+| `9` · `11` · `22` | 36 · 44 · 88 | วงโลโก้ธนาคาร (Bank Option) · กล่องไอคอนของ Payment Method Option · วงไอคอนหน้า 17.11 |
+| `24` · `32` | 96 · 128 | ขนาด Entry Snapshot (`h-24 w-32`) |
 
 **ห้ามใช้ค่าอื่นหรือค่า arbitrary** (`p-[7px]`) ถ้าจำเป็นจริงให้คุยกับคนออกแบบก่อน
 
@@ -328,7 +340,9 @@ export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 | 22 | โลโก้ใน sidebar, ไอคอน toast, ไอคอนในการ์ด Kiosk |
 | 28 | Kiosk Top Bar |
 
-ไอคอนที่มีใน Design System: car, zap, accessibility, crown, layout-dashboard, map, wallet, activity, flame, shield-check, users, chevron-*, plus, minus, search, filter, eye / eye-off, pencil, save, undo, redo, copy, clipboard, trash, rotate-cw, grid, magnet, pointer, hand, align, rows, square-parking, log-in, log-out, door-open, arrow-*, stairs, x, upload, image, building, map-pin, layers, wrench, cpu, info, alert-triangle, maximize, bell, clock, lock, check, ban, list, history, mail, user / user-plus, calendar, download, settings, chevrons-up-down, sun, moon, monitor, bike, truck, timer, receipt, coins, trending-up, triangle-alert, video, loader, scan-line, qr-code
+ไอคอนที่มีใน Design System: car, zap, accessibility, crown, layout-dashboard, map, wallet, activity, flame, shield-check, users, chevron-*, plus, minus, search, filter, eye / eye-off, pencil, save, undo, redo, copy, clipboard, trash, rotate-cw, grid, magnet, pointer, hand, align, rows, square-parking, log-in, log-out, door-open, arrow-*, stairs, x, upload, image, building, map-pin, layers, wrench, cpu, info, alert-triangle, maximize, bell, clock, lock, check, ban, list, history, mail, user / user-plus, calendar, download, settings, chevrons-up-down, sun, moon, monitor, bike, truck, timer, receipt, coins, trending-up, triangle-alert, video, loader, scan-line, qr-code, smartphone, landmark, zoom-in
+
+ไอคอนหน้าลูกค้าที่เพิ่มรอบนี้: `QrCode` (ตัวเลือก QR PromptPay) · `Smartphone` (Mobile Banking, หน้ารอยืนยัน) · `Landmark` (แทนโลโก้ธนาคารไปก่อน) · `ZoomIn` (เตรียมไว้สำหรับขยายรูปตอนเข้า ยังไม่ได้ใช้)
 
 ---
 
@@ -382,6 +396,10 @@ Error: border-danger ring-1 ring-danger  + ข้อความ error ด้า
 
 #### Checkbox — `State: On | Off`
 `size-4 rounded-sm` · Off: `bg-surface border-[1.5px] border-line-strong` · On: `bg-primary text-on-primary` + ไอคอน check 12
+
+#### Radio — `State: On | Off`
+`size-5 rounded-full bg-surface` · Off: `border-2 border-line-strong` · On: `border-[6px] border-primary`
+ใช้ในการ์ดที่เลือกได้ทีละอัน (Plate Match Card, Payment Method Option) ทั้งการ์ดเป็นพื้นที่กด ใช้ `<input type="radio">` ซ่อนไว้ + `<label>` ครอบการ์ด เพื่อให้ใช้คีย์บอร์ดและ screen reader ได้
 
 #### Switch — `State: On | Off`
 `w-9 h-5 rounded-full p-0.5` · On: `bg-primary` · Off: `bg-slot-unknown` (ผูกตาม Figma) · ปุ่มกลมสีขาว 16
@@ -513,6 +531,10 @@ Fabric.js อ่าน CSS variable ไม่ได้เอง ต้องด�
 | **Step** `State: Done / Current / Upcoming` | วงกลม 22 + เลข `text-label font-bold` · Done / Current `bg-primary text-on-primary` · Upcoming `text-fg-3` · เส้นเชื่อมสูง 2 สี `primary` (ผ่านแล้ว) หรือ `line` |
 | **PromptPay QR** | 210×247 · `rounded-xl border border-line p-3 gap-2.5` · **พื้นขาวเสมอทั้งสองธีม** (เพื่อให้สแกนได้) · แถบหัว "THAI QR PAYMENT" ใช้สีแบรนด์ PromptPay ไม่ผูกกับ theme |
 | **Mobile Header** | 390×97 · `bg-surface` · ปุ่มย้อนกลับหรือโลโก้ + ชื่อ `text-control font-semibold` + บรรทัดรอง `text-caption text-fg-3` |
+| **Entry Snapshot** (รูปตอนเข้า) | 128×96 (4:3) · `rounded-pop overflow-hidden` · รูป `object-cover` · แถบไล่เฉดดำด้านล่าง (`bg-linear-to-b from-transparent to-black/70` สูง 28) · ซ้าย: ชื่อกล้อง `text-nano text-white/80` · ขวา: เวลาเข้า `text-caption font-semibold text-white tabular-nums` |
+| **Plate Match Card** `State: Default / Selected` | `flex items-center gap-3 rounded-2xl border border-line bg-surface p-3` · Selected: `border-2 border-primary bg-primary-soft` · ซ้าย Entry Snapshot · กลาง (`flex-1 gap-0.5`): ทะเบียน `text-h3 font-bold` · จังหวัด `text-body text-fg-2` · "เข้า 17 ต.ค. · 18:42 · ประตู 1" `text-label text-fg-3` · ขวา Radio |
+| **Payment Method Option** `State: Default / Selected` | `flex items-center gap-3 rounded-2xl border border-line bg-surface p-4` · Selected: `border-2 border-primary bg-primary-soft` · กล่องไอคอน `size-11 rounded-xl bg-subtle` + ไอคอน 24 `text-fg-2` (Selected: กล่อง `bg-surface` ไอคอน `text-primary`) · ชื่อ `text-title font-semibold` · คำอธิบาย `text-body text-fg-2` · ขวา Radio |
+| **Bank Option** `State: Default / Selected` | กว้าง 106 · `flex flex-col items-center gap-1.5 rounded-xl border border-line bg-surface px-2 pt-3 pb-2.5` · Selected: `border-2 border-primary bg-primary-soft` · วงโลโก้ `size-9 rounded-full bg-subtle` + `Landmark` 20 (แทนโลโก้จริงไปก่อน) · ชื่อธนาคาร `text-label font-medium text-center` · วางเป็น `grid grid-cols-3 gap-x-4 gap-y-2.5` |
 | **Kiosk Top Bar** | สูง 80 · `px-10 py-4.5 bg-surface border-b border-line` · แบรนด์ `text-h2 font-bold` · ไอคอน 28 · ขวาสุดเป็น Badge สถานะระบบ + นาฬิกา |
 | **Calendar Day** `Default/Today/Selected/In range/Disabled/Empty` | 38×34 `rounded-md text-body` · Today: `border border-primary text-primary font-semibold` · Selected: `bg-primary text-on-primary font-semibold` · In range: `bg-primary-soft text-primary font-medium` · Disabled: `text-fg-3` |
 | **Date Range Picker** | 320 กว้าง · `rounded-pop border border-line bg-surface p-3.5 gap-3 shadow-pop` · ใช้ตัวเดียวกันทั้ง Dashboard, Audit Logs, Activity Log |
@@ -547,6 +569,20 @@ Fabric.js อ่าน CSS variable ไม่ได้เอง ต้องด�
 - **การ์ดยอดเงิน:** `rounded-2xl bg-primary-soft border border-primary p-4.5`
 - **ปุ่ม:** Button lg เต็มความกว้าง (`w-full`) วางล่างสุดของเนื้อหา · ปุ่มรองใช้ Ghost lg
 - **Flow 3 ขั้น:** ค้นหา → ตรวจสอบ → ชำระ (Step component)
+  - 17.8 เลือกรถ ยังอยู่ขั้น "ค้นหา" · 17.9–17.11 เลือกวิธีชำระ / รอยืนยัน อยู่ขั้น "ชำระ"
+- **หน้าเลือกรถ (17.8):**
+  - ช่องค้นหา (Input lg) อยู่บนสุด แก้คำค้นได้
+  - ถัดมาเป็นหัวรายการ "ผลการค้นหา · 3 คัน" `text-body font-medium text-fg-2`
+  - รายการ Plate Match Card `flex flex-col gap-2.5`
+  - ปิดท้ายด้วยปุ่ม Primary "ยืนยัน · {ทะเบียน} {จังหวัด}" + Ghost "ไม่พบรถของฉัน · ค้นหาใหม่"
+  - หน้านี้ยาวกว่าจอ (เฟรมสูง 962) ให้เลื่อนทั้งหน้า ปุ่มไม่ต้องติดขอบล่าง
+- **หน้าเลือกวิธีชำระ (17.9 / 17.10):**
+  - หัวข้อ "เลือกวิธีชำระเงิน" + สรุปยอด `text-control text-fg-2`
+  - ป้าย "วิธีชำระเงิน" `text-body font-medium text-fg-2` ตามด้วย Payment Method Option 2 ตัว `gap-2.5`
+  - (Mobile Banking) ป้าย "เลือกแอปธนาคาร" + grid Bank Option
+  - หมายเหตุ `text-label text-fg-3`
+  - ปุ่ม Primary ชิดล่างของเนื้อหา (มี spacer `flex-1` คั่น) + Ghost "ยกเลิก"
+- **หน้ารอยืนยันในแอปธนาคาร (17.11):** โครงเดียวกับหน้า QR (17.5) แต่แทน QR ด้วยวงไอคอน `size-22 rounded-full bg-primary-soft` + `Smartphone` 40 `text-primary` · แถบสถานะเตือนพร้อมนับถอยหลังเหมือนเดิม · ปุ่ม Secondary "เปิดแอป{ธนาคาร}อีกครั้ง" + Ghost "เปลี่ยนวิธีชำระ"
 
 ### 9.4 Kiosk ทางเข้า / ทางออก
 
@@ -664,7 +700,7 @@ Fabric.js อ่าน CSS variable ไม่ได้เอง ต้องด�
 กติกา:
 - ธีมสลับผ่าน CSS variables ทั้งหมด **component ห้ามใช้ `dark:`**
 - ถ้าจำเป็นต้องมีค่าเฉพาะธีมมืด ให้เพิ่มเป็น token ใหม่ใน Figma ทั้งสองโหมด แล้วค่อยเพิ่มใน `globals.css`
-- สิ่งที่คงสีเดิมทั้งสองธีม: PromptPay QR (พื้นขาว), ป้ายทะเบียน (ใช้ surface + fg ตามธีม แต่ดูเป็นป้าย), วิดีโอ CCTV
+- สิ่งที่คงสีเดิมทั้งสองธีม: PromptPay QR (พื้นขาว), ป้ายทะเบียน (ใช้ surface + fg ตามธีม แต่ดูเป็นป้าย), วิดีโอ CCTV, รูปตอนเข้า (Entry Snapshot)
 - ตัวอย่างธีมมืดใน Figma: เฟรม `11 · ตัวอย่างธีมมืด — Parking Layout`
 - ตัวเลือกธีมใน Profile menu (เฟรม 09.1) มี 2 ตัวเลือก: สว่าง (`sun`) / มืด (`moon`)
 
@@ -981,3 +1017,7 @@ const thai = Noto_Sans_Thai({ subsets: ["thai"], weight: ["400", "500", "600", "
 | Animation / transition | `transition-colors duration-150` สำหรับ hover · modal / drawer เลื่อนเข้า 200ms |
 | ฟอร์ม: ตำแหน่ง label และข้อความ error | label `text-body font-medium` อยู่เหนือ input (gap 6) · error `text-label text-danger` อยู่ใต้ input |
 | สีปุ่ม Switch ตอนปิด | Figma ผูกกับ `status/unknown` ควรเปลี่ยนเป็น token ของตัวเอง (เช่น `control/off`) |
+| Mobile Banking ชำระไม่สำเร็จ / หมดเวลา | ใช้โครงหน้า 17.6 ปุ่มหลักเป็น "เปิดแอป{ธนาคาร}อีกครั้ง" และปุ่มรองเป็น "เปลี่ยนวิธีชำระ" |
+| โลโก้ธนาคารจริง | ใช้ `Landmark` ในวง `bg-subtle` ไปก่อน · โลโก้จริงรอจากธนาคารหรือผู้ให้บริการชำระเงิน |
+| แตะรูปตอนเข้าเพื่อขยาย | Figma ยังไม่มี ยังไม่ต้องทำ (มีไอคอน `zoom-in` เตรียมไว้) |
+| รูปตอนเข้าโหลดไม่ขึ้น | กล่อง `bg-subtle` ขนาดเท่ารูป + ไอคอน `image` 20 `text-fg-3` |
