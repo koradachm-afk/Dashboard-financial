@@ -16,8 +16,10 @@ const PASSWORD_REQUIRED = "กรุณากรอกรหัสผ่าน";
 const INVALID_MESSAGE = "Username/Email หรือรหัสผ่านไม่ถูกต้อง";
 const LOCKED_MESSAGE =
   "บัญชีถูกล็อกชั่วคราวเพราะใส่รหัสผ่านผิด 5 ครั้ง · ลองใหม่ใน 15 นาที หรือติดต่อ Superadmin ของสาขา";
+const ERROR_MESSAGE = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+const MESSAGE_ID = "login-form-message";
 
-type Notice = { kind: "invalid"; attemptsLeft: number } | { kind: "locked" } | null;
+type Notice = { kind: "invalid"; attemptsLeft: number } | { kind: "locked" } | { kind: "error" } | null;
 
 function writeFailure(info: AuditInfo, attempt: number) {
   audit({
@@ -53,7 +55,14 @@ export function LoginForm() {
     if (next.username || next.password) return;
     setNotice(null);
     start(async () => {
-      const r = await login({ identifier, password });
+      let r: Awaited<ReturnType<typeof login>>;
+      try {
+        r = await login({ identifier, password });
+      } catch {
+        // Network or server failure: nothing was checked, so no audit entry and no lock.
+        setNotice({ kind: "error" });
+        return;
+      }
       if (r.ok) {
         audit({
           ...r.audit,
@@ -130,7 +139,10 @@ export function LoginForm() {
           icon={Lock}
           className="h-11"
           error={!!errors.password || notice?.kind === "invalid"}
-          aria-describedby={errors.password ? "login-password-error" : undefined}
+          aria-describedby={
+            [errors.password && "login-password-error", notice && MESSAGE_ID].filter(Boolean).join(" ") ||
+            undefined
+          }
           onChange={clear("password")}
           trailing={
             <button
@@ -152,6 +164,7 @@ export function LoginForm() {
 
       {notice && (
         <div
+          id={MESSAGE_ID}
           role="alert"
           className="flex items-start gap-2 rounded-lg border border-danger bg-danger-soft px-3 py-2.5 text-body text-danger"
         >
@@ -163,7 +176,9 @@ export function LoginForm() {
           <p className="min-w-0 flex-1">
             {notice.kind === "invalid"
               ? `${INVALID_MESSAGE} · เหลืออีก ${notice.attemptsLeft} ครั้ง`
-              : LOCKED_MESSAGE}
+              : notice.kind === "error"
+                ? ERROR_MESSAGE
+                : LOCKED_MESSAGE}
           </p>
         </div>
       )}
