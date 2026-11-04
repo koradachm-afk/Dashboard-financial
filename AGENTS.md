@@ -55,7 +55,7 @@ src/
 │  ├─ layout.tsx · page.tsx · not-found.tsx · globals.css
 │  ├─ (admin)/   layout.tsx + 403 · account · activity-log · audit-logs · dashboard ·
 │  │             financial-overview · heat-map · parking-layout · settings · users
-│  ├─ (auth)/    login · forget-password · set-password
+│  ├─ (auth)/    login · forgot-password · set-password
 │  ├─ (customer)/pay/   ค้นหา + เลือกรถ (17–17.2, 17.8) · [sessionId]/ → รายละเอียด · method · qr · bank · success
 │  └─ kiosk/     entry · exit
 ├─ components/
