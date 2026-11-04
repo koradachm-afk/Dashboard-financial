@@ -42,6 +42,10 @@ import Link from "next/link";
 import user from "@/db/user/user.json";
 import { usePathname } from "next/navigation";
 
+const navItem =
+  "flex h-10 w-full items-center justify-between gap-3 rounded-lg px-3 text-control font-medium text-fg-2 transition-colors hover:bg-subtle";
+const navItemActive = "pointer-events-none bg-primary-soft font-semibold text-primary hover:bg-primary-soft";
+
 export default function SidebarVariantsPreview({children,}: {children: React.ReactNode;}) {
   const [variant] = useState<"sidebar" | "floating" | "inset">("sidebar");
 
@@ -49,39 +53,35 @@ export default function SidebarVariantsPreview({children,}: {children: React.Rea
   const pathname = usePathname();
   return (
     <div className="flex flex-col h-dvh w-full">
-      <div className="flex flex-1 w-full border-b border-base-200 overflow-hidden bg-background-200">
+      <div className="flex flex-1 w-full overflow-hidden border-b border-line bg-page">
         <SidebarProvider open={open} onOpenChange={setOpen} className="h-full">
           <Sidebar
             variant={variant}
-            className="h-full text-white p-2 bg-slate-900 select-none"
+            className="h-full select-none flex-col gap-6 border-r border-line bg-surface px-4 pb-4 pt-5"
           >
-            <SidebarHeader className="flex flex-row items-center gap-3 p-4 w-full">
-              <div className="flex h-12 w-12 items-center justify-center">
+            <SidebarHeader className="flex w-full flex-row items-center gap-3 p-0">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-on-primary">
                 <MusicList2 className="h-8 w-8" />
               </div>
 
               <div className="flex flex-col text-left">
-                <span className="text-base font-bold text-slate-500 leading-tight">
+                <span className="text-h3 font-bold leading-tight text-fg">
                   ParkPlan
                 </span>
-                <span className="text-sm text-slate-500">สาขาสยาม</span>
+                <span className="text-caption font-medium text-fg-2">สาขาสยาม</span>
               </div>
             </SidebarHeader>
 
-            <SidebarContent className="px-2">
+            <SidebarContent className="px-0">
               <SidebarGroup>
-                <SidebarGroupLabel>เมนูหลัก</SidebarGroupLabel>
+                <SidebarGroupLabel className="text-caption font-semibold text-fg-3">เมนูหลัก</SidebarGroupLabel>
 
                 <SidebarGroupContent>
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <Link
                         href="/dashboard"
-                        className={
-                          pathname === "/dashboard"
-                            ? "pointer-events-none flex items-center justify-between gap-3 w-full bg-teal-500 rounded-md p-2 text-sm font-medium text-white transition-colors"
-                            : "flex items-center justify-between gap-3 w-full rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-                        }
+                        className={cn(navItem, pathname === "/dashboard" && navItemActive)}
                       >
                         <div className="flex items-center gap-3">
                           <PieChart1 />
@@ -92,11 +92,7 @@ export default function SidebarVariantsPreview({children,}: {children: React.Rea
                     <SidebarMenuItem>
                       <Link
                         href="/parking-layout"
-                        className={
-                          pathname === "/parking-layout"
-                            ? "pointer-events-none flex items-center justify-between gap-3 w-full bg-teal-500 rounded-md p-2 text-sm font-medium text-white transition-colors"
-                            : "flex items-center justify-between gap-3 w-full rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-                        }
+                        className={cn(navItem, pathname === "/parking-layout" && navItemActive)}
                       >
                         <div className="flex items-center gap-3">
                           <Layers2 />
@@ -107,11 +103,7 @@ export default function SidebarVariantsPreview({children,}: {children: React.Rea
                     <SidebarMenuItem>
                       <Link
                         href="/financial-overview"
-                        className={
-                          pathname === "/financial-overview"
-                            ? "pointer-events-none flex items-center justify-between gap-3 w-full bg-teal-500 rounded-md p-2 text-sm font-medium text-white transition-colors"
-                            : "flex items-center justify-between gap-3 w-full rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-                        }
+                        className={cn(navItem, pathname === "/financial-overview" && navItemActive)}
                       >
                         <div className="flex items-center gap-3">
                           <BarChartSquare />
@@ -122,11 +114,7 @@ export default function SidebarVariantsPreview({children,}: {children: React.Rea
                     <SidebarMenuItem>
                       <Link
                         href="/activity-log"
-                        className={
-                          pathname === "/activity-log"
-                            ? "pointer-events-none flex items-center justify-between gap-3 w-full bg-teal-500 rounded-md p-2 text-sm font-medium text-white transition-colors"
-                            : "flex items-center justify-between gap-3 w-full rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-                        }
+                        className={cn(navItem, pathname === "/activity-log" && navItemActive)}
                       >
                         <div className="flex items-center gap-3">
                           <RefreshCircle1Clockwise />
@@ -137,11 +125,7 @@ export default function SidebarVariantsPreview({children,}: {children: React.Rea
                     <SidebarMenuItem>
                       <Link
                         href="/heat-map"
-                        className={
-                          pathname === "/heat-map"
-                            ? "pointer-events-none flex items-center justify-between gap-3 w-full bg-teal-500 rounded-md p-2 text-sm font-medium text-white transition-colors"
-                            : "flex items-center justify-between gap-3 w-full rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-                        }
+                        className={cn(navItem, pathname === "/heat-map" && navItemActive)}
                       >
                         <div className="flex items-center gap-3">
                           <Fire />
@@ -154,17 +138,13 @@ export default function SidebarVariantsPreview({children,}: {children: React.Rea
               </SidebarGroup>
 
               <SidebarGroup>
-                <SidebarGroupLabel>จัดการระบบ</SidebarGroupLabel>
+                <SidebarGroupLabel className="text-caption font-semibold text-fg-3">จัดการระบบ</SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <Link
                         href="/users"
-                        className={
-                          pathname === "/users"
-                            ? "pointer-events-none flex items-center justify-between gap-3 w-full bg-teal-500 rounded-md p-2 text-sm font-medium text-white transition-colors"
-                            : "flex items-center justify-between gap-3 w-full rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-                        }
+                        className={cn(navItem, pathname === "/users" && navItemActive)}
                       >
                         <div className="flex items-center gap-3">
                           <User2 />
@@ -176,11 +156,7 @@ export default function SidebarVariantsPreview({children,}: {children: React.Rea
                     <SidebarMenuItem>
                       <Link
                         href="/settings"
-                        className={
-                          pathname === "/settings"
-                            ? "pointer-events-none flex items-center justify-between gap-3 w-full bg-teal-500 rounded-md p-2 text-sm font-medium text-white transition-colors"
-                            : "flex items-center justify-between gap-3 w-full rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-                        }
+                        className={cn(navItem, pathname === "/settings" && navItemActive)}
                       >
                         <div className="flex items-center gap-3">
                           <Layout14 />
@@ -192,11 +168,7 @@ export default function SidebarVariantsPreview({children,}: {children: React.Rea
                     <SidebarMenuItem>
                       <Link
                         href="/audit-logs"
-                        className={
-                          pathname === "/audit-logs"
-                            ? "pointer-events-none flex items-center justify-between gap-3 w-full bg-teal-500 rounded-md p-2 text-sm font-medium text-white transition-colors"
-                            : "flex items-center justify-between gap-3 w-full rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-                        }
+                        className={cn(navItem, pathname === "/audit-logs" && navItemActive)}
                       >
                         <div className="flex items-center gap-3">
                           <Page />
@@ -212,7 +184,7 @@ export default function SidebarVariantsPreview({children,}: {children: React.Rea
           </Sidebar>
 
           <div className="flex flex-1 flex-col">
-            <div className="flex-1 overflow-auto p-4 md:p-6 bg-background-50">
+            <div className="flex-1 overflow-auto p-4 md:p-6 bg-page">
               <div className="h-full w-full">{children}</div>
             </div>
           </div>
@@ -228,21 +200,21 @@ function SidebarFooterSection({ open }: { open: boolean }) {
       <DropdownMenu>
         <DropdownMenuTrigger
           className={cn(
-            "w-full flex items-center rounded-md duration-200 bg-background-soft-50 focus-visible:bg-background-soft-50 aria-expanded:bg-background-soft-100",
+            "w-full flex items-center rounded-md duration-200 bg-subtle focus-visible:bg-subtle aria-expanded:bg-subtle",
             open ? "p-2 justify-between" : "size-8 p-0 justify-center",
           )}
         >
           <div className={cn("flex items-center", open && "gap-2")}>
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary-100 text-primary-600">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
               <User2 className="size-4" />
             </div>
 
             {open && (
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold text-text-100">
+              <div className="grid flex-1 text-left text-control leading-tight">
+                <span className="truncate font-semibold text-fg">
                   {user[0].name}
                 </span>
-                <span className="truncate text-xs text-text-100/70">
+                <span className="truncate text-label text-fg-2">
                   {user[0].email}
                 </span>
               </div>
@@ -250,7 +222,7 @@ function SidebarFooterSection({ open }: { open: boolean }) {
           </div>
 
           {open && (
-            <ChevronBothDirection className="ml-auto size-4 text-text-100/50" />
+            <ChevronBothDirection className="ml-auto size-4 text-fg-3" />
           )}
         </DropdownMenuTrigger>
 
@@ -260,12 +232,12 @@ function SidebarFooterSection({ open }: { open: boolean }) {
           offset={6}
         >
           <DropdownMenuHeader className="flex items-center gap-2 p-2">
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary-100 text-primary-600">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
               <User2 className="size-4" />
             </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{user[0].name}</span>
-              <span className="truncate text-xs text-text-100/70">
+            <div className="grid flex-1 text-left text-control leading-tight">
+              <span className="truncate font-semibold text-fg">{user[0].name}</span>
+              <span className="truncate text-label text-fg-2">
                 {user[0].email}
               </span>
             </div>
@@ -274,13 +246,13 @@ function SidebarFooterSection({ open }: { open: boolean }) {
           <DropdownMenuSeparator className="my-0.5" />
           <DropdownMenuItem
             href="/account"
-            className="data-[hovered]:bg-gray-700 data-[hovered]:text-white"
+            className="text-fg-2 data-[hovered]:bg-subtle data-[hovered]:text-fg"
           >
             My Profile
           </DropdownMenuItem>
           <DropdownMenuItem
             href="/login"
-            className="data-[hovered]:bg-gray-700 data-[hovered]:text-white"
+            className="text-fg-2 data-[hovered]:bg-subtle data-[hovered]:text-fg"
           >
             Log out
           </DropdownMenuItem>
