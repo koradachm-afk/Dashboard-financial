@@ -35,7 +35,7 @@ export function DropdownMenuContent({
     <Popover {...props}>
       <Menu
         className={cn(
-          "outline-hidden shadow-md rounded-xl overflow-clip min-w-40 bg-dropdown-background",
+          "outline-hidden rounded-pop border border-line bg-surface shadow-pop overflow-clip min-w-40",
           className
         )}
       >
@@ -55,7 +55,7 @@ export function DropdownMenuItem({
     <MenuItem
       {...props}
       className={cn(
-        "group text-text-50 text-sm focus:text-title-50 focus:bg-dropdown-hover-background flex w-full cursor-default items-center gap-3 rounded-md px-1.5 py-1 outline-hidden",
+        "group text-fg-2 text-body focus:text-fg focus:bg-subtle flex w-full cursor-default items-center gap-3 rounded-md px-1.5 py-1 outline-hidden",
         className
       )}
     />
@@ -76,7 +76,7 @@ export function DropdownMenuHeader({
   return (
     <Header
       {...props}
-      className={cn("px-3 py-2 text-sm text-text-100", className)}
+      className={cn("px-3 py-2 text-control text-fg-3", className)}
     />
   );
 }
@@ -87,7 +87,7 @@ export function DropdownMenuSeparator({
 }: ComponentProps<"hr">) {
   return (
     <Separator
-      className={cn("bg-(--border-color-base-100) h-px border-none", className)}
+      className={cn("bg-line h-px border-none", className)}
       {...props}
     />
   );

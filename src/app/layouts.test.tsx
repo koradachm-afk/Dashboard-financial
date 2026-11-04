@@ -13,6 +13,11 @@ vi.mock("@/components/sidebarmenu", () => ({
   ),
 }));
 
+vi.mock("next/font/google", () => ({
+  Inter: () => ({ variable: "font-inter-var" }),
+  Noto_Sans_Thai: () => ({ variable: "font-thai-var" }),
+}));
+
 const props = { params: Promise.resolve({}) };
 
 describe("root layout", () => {
@@ -21,6 +26,9 @@ describe("root layout", () => {
     expect(tree.type).toBe("html");
     expect(tree.props.lang).toBe("th");
     expect(tree.props.children.type).toBe("body");
+    expect(tree.props.className).toContain("font-inter-var");
+    expect(tree.props.className).toContain("font-thai-var");
+    expect(tree.props.suppressHydrationWarning).toBe(true);
   });
 });
 

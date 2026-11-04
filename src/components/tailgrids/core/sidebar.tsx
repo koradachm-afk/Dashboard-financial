@@ -117,7 +117,7 @@ const SidebarProvider = React.forwardRef<HTMLDivElement, SidebarProviderProps>(
             } as React.CSSProperties
           }
           className={cn(
-            "group/sidebar-wrapper w-full flex text-text-100",
+            "group/sidebar-wrapper w-full flex text-fg-2",
             className
           )}
           {...props}
@@ -159,7 +159,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
             data-sidebar="sidebar"
             data-mobile="true"
             showCloseButton={showSheetCloseButton}
-            className="w-(--sidebar-width-mobile) bg-background-100 text-text-100"
+            className="w-(--sidebar-width-mobile) bg-surface text-fg-2"
             style={
               {
                 "--sidebar-width": "var(--sidebar-width-mobile)"
@@ -179,7 +179,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
       <div
         ref={ref}
         className={cn(
-          "group peer hidden text-text-100 md:block",
+          "group peer hidden text-fg-2 md:block",
           state === "collapsed" && "max-w-(--sidebar-width-icon)"
         )}
         data-state={state}
@@ -189,10 +189,10 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
       >
         <div
           className={cn(
-            "h-svh w-(--sidebar-width) border-base-200 relative bg-background-100 transition-[width,margin] ease-linear overflow-hidden duration-200 group-data-[collapsible=offcanvas]:w-0 group-data-[collapsible=offcanvas]:group-data-[side=left]:-ml-px group-data-[collapsible=offcanvas]:group-data-[side=right]:-mr-px group-data-[side=right]:border-l group-data-[side=left]:border-r group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
+            "h-svh w-(--sidebar-width) border-line relative bg-surface transition-[width,margin] ease-linear overflow-hidden duration-200 group-data-[collapsible=offcanvas]:w-0 group-data-[collapsible=offcanvas]:group-data-[side=left]:-ml-px group-data-[collapsible=offcanvas]:group-data-[side=right]:-mr-px group-data-[side=right]:border-l group-data-[side=left]:border-r group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
             variant === "floating" || variant === "inset"
               ? "p-2 bg-transparent"
-              : "border-base-200",
+              : "border-line",
             className
           )}
         >
@@ -200,7 +200,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
             className={cn(
               "h-full w-full flex flex-col group-data-[collapsible=offcanvas]:w-(--sidebar-width)",
               variant === "floating" &&
-                "rounded-lg border border-base-200 bg-background-100 shadow-sm"
+                "rounded-lg border border-line bg-surface shadow-sm"
             )}
             {...props}
           >
@@ -224,7 +224,7 @@ const SidebarTrigger = React.forwardRef<
       ref={ref}
       data-sidebar="trigger"
       className={cn(
-        "px-2 py-1 border border-base-200 text-sm font-medium inline-flex items-center justify-center rounded-md transition-colors hover:bg-background-soft-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50",
+        "px-2 py-1 border border-line text-control font-medium inline-flex items-center justify-center rounded-md transition-colors hover:bg-subtle focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus disabled:pointer-events-none disabled:opacity-50",
         className
       )}
       onClick={event => {
@@ -313,7 +313,7 @@ const SidebarGroupLabel = React.forwardRef<
       ref={ref}
       data-sidebar="group-label"
       className={cn(
-        "mb-2 text-xs text-text-200 font-medium capitalize shrink-0 [&>svg]:size-4 [&>svg]:shrink-0 group-data-[collapsible=icon]:-mt-6 group-data-[collapsible=icon]:opacity-0",
+        "mb-2 text-label text-fg-3 font-medium capitalize shrink-0 [&>svg]:size-4 [&>svg]:shrink-0 group-data-[collapsible=icon]:-mt-6 group-data-[collapsible=icon]:opacity-0",
         className
       )}
       {...props}
@@ -329,7 +329,7 @@ const SidebarGroupContent = React.forwardRef<
   <div
     ref={ref}
     data-sidebar="group-content"
-    className={cn("w-full text-sm", className)}
+    className={cn("w-full text-control", className)}
     {...props}
   />
 ));
@@ -362,18 +362,18 @@ const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem";
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button p-2 text-left text-sm flex w-full items-center gap-2 overflow-hidden rounded-md outline-none ring-primary-500 hover:bg-background-soft-50 focus-visible:bg-background-soft-50 hover:text-title-100 focus-visible:ring-2 active:bg-background-soft-50 active:text-text-100 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-background-soft-200 data-[active=true]:font-medium data-[active=true]:text-title-50 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center [&>svg]:size-6 [&>svg]:shrink-0",
+  "peer/menu-button p-2 text-left text-control flex w-full items-center gap-2 overflow-hidden rounded-md outline-none ring-focus hover:bg-subtle focus-visible:bg-subtle hover:text-fg focus-visible:ring-2 active:bg-subtle active:text-fg-2 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-primary-soft data-[active=true]:font-semibold data-[active=true]:text-primary group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center [&>svg]:size-6 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "hover:bg-background-soft-50 hover:text-text-100",
+        default: "hover:bg-subtle hover:text-fg-2",
         outline:
-          "bg-transparent shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-background-soft-50 hover:text-text-100 hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]"
+          "bg-transparent border border-line hover:bg-subtle hover:text-fg-2"
       },
       size: {
-        default: "h-8 text-sm",
-        sm: "h-7 text-xs",
-        lg: "h-12 text-sm group-data-[collapsible=icon]:!p-0"
+        default: "h-8 text-control",
+        sm: "h-7 text-label",
+        lg: "h-12 text-control group-data-[collapsible=icon]:!p-0"
       }
     },
     defaultVariants: {
@@ -448,7 +448,7 @@ const SidebarMenuSub = React.forwardRef<
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "ml-3.5 px-2.5 py-0.5 border-l border-base-200 flex min-w-0 translate-x-px flex-col gap-1",
+      "ml-3.5 px-2.5 py-0.5 border-l border-line flex min-w-0 translate-x-px flex-col gap-1",
       "group-data-[collapsible=icon]:hidden",
       className
     )}
@@ -480,7 +480,7 @@ const SidebarMenuSubButton = React.forwardRef<
       data-sidebar="menu-sub-button"
       data-active={isActive}
       className={cn(
-        "h-7 min-w-0 px-2 text-text-100 flex items-center gap-2 -translate-x-px overflow-hidden rounded-md outline-none ring-primary-500 hover:bg-background-soft-50 hover:text-text-100 focus-visible:ring-2 active:bg-background-soft-50 active:text-text-100 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-text-100/70 data-[active=true]:bg-primary-50/10 data-[active=true]:text-primary-500",
+        "h-7 min-w-0 px-2 text-fg-2 flex items-center gap-2 -translate-x-px overflow-hidden rounded-md outline-none ring-focus hover:bg-subtle hover:text-fg-2 focus-visible:ring-2 active:bg-subtle active:text-fg-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-fg-2/70 data-[active=true]:bg-primary-soft data-[active=true]:text-primary",
         className
       )}
       {...props}

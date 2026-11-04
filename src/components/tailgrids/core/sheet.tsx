@@ -50,7 +50,7 @@ export function SheetOverlay({
     <ModalOverlay
       isDismissable={isDismissable}
       className={cn(
-        "fixed inset-0 z-50 bg-black/50 backdrop-blur-sm",
+        "fixed inset-0 z-50 bg-overlay",
         "transition-opacity duration-300",
         "data-entering:opacity-0",
         "data-exiting:opacity-0",
@@ -83,15 +83,15 @@ const sheetVariants = cva(
 );
 
 const sheetDialogVariants = cva(
-  "relative flex flex-col gap-4 bg-background-100 p-6 shadow-lg outline-none",
+  "relative flex flex-col gap-4 bg-surface p-6 shadow-drawer outline-none",
   {
     variants: {
       side: {
         right:
-          "h-full w-full min-w-xs sm:max-w-sm pr-4 border-l border-base-100",
-        left: "h-full w-full min-w-xs sm:max-w-sm border-r border-base-100",
-        top: "w-full border-b border-base-100",
-        bottom: "w-full border-t border-base-100"
+          "h-full w-full min-w-xs sm:max-w-sm pr-4 border-l border-line",
+        left: "h-full w-full min-w-xs sm:max-w-sm border-r border-line",
+        top: "w-full border-b border-line",
+        bottom: "w-full border-t border-line"
       }
     },
     defaultVariants: {
@@ -134,7 +134,7 @@ export function SheetContent({
                 onPress={close}
                 aria-label="Close"
                 className={cn(
-                  "absolute top-4 right-4 flex size-7 items-center justify-center rounded-md text-text-100 opacity-70 outline-none transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none [&>svg]:size-5",
+                  "absolute top-4 right-4 flex size-7 items-center justify-center rounded-md text-fg-2 opacity-70 outline-none transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-focus disabled:pointer-events-none [&>svg]:size-5",
                   side === "right" && "sm:right-0"
                 )}
               >
@@ -174,7 +174,7 @@ export function SheetTitle({ className, ...props }: SheetTitleProps) {
     <Heading
       slot="title"
       className={cn(
-        "text-lg font-semibold leading-none text-title-50",
+        "text-h3 font-semibold leading-none text-fg",
         className
       )}
       {...props}
@@ -193,7 +193,7 @@ export function SheetDescription({
   return (
     <p
       data-slot="sheet-description"
-      className={cn("text-sm text-text-100", className)}
+      className={cn("text-control text-fg-2", className)}
       {...props}
     />
   );
@@ -207,7 +207,7 @@ export function SheetBody({ className, ...props }: SheetBodyProps) {
   return (
     <div
       data-slot="sheet-body"
-      className={cn("flex-1 overflow-y-auto px-1 -mx-1 text-sm text-text-100", className)}
+      className={cn("flex-1 overflow-y-auto px-1 -mx-1 text-control text-fg-2", className)}
       {...props}
     />
   );
@@ -235,7 +235,7 @@ export function SheetFooter({
       {...props}
     >
       {showCloseButton && (
-        <SheetClose className="inline-flex h-10 items-center justify-center rounded-lg border border-base-100 bg-background-100 px-4 text-sm font-medium text-title-50 outline-none transition hover:bg-background-soft-50 focus-visible:ring-2 focus-visible:ring-primary-500">
+        <SheetClose className="inline-flex h-10 items-center justify-center rounded-lg border border-line bg-surface px-4 text-control font-medium text-fg outline-none transition hover:bg-subtle focus-visible:ring-2 focus-visible:ring-focus">
           Close
         </SheetClose>
       )}
