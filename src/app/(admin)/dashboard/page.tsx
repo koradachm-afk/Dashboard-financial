@@ -1,4 +1,4 @@
-import { requirePage } from "@/db/auth";
+import { requirePage } from "@/db/auth/auth";
 
 // The guard reads the session cookie, so the route blocks on that read and renders per request.
 // redirect() is delivered inside the stream (a client-side navigation on an HTTP 200);

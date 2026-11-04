@@ -7,8 +7,8 @@ import { useState, useTransition } from "react";
 
 import { Button } from "@/components/tailgrids/core/button";
 import { Input } from "@/components/tailgrids/core/input";
-import { audit } from "@/db/audit";
-import { type AuditInfo, login } from "@/db/auth-actions";
+import { audit } from "@/db/audit/audit";
+import { type AuditInfo, login } from "@/db/auth/auth-actions";
 
 const MAX_ATTEMPTS = 5;
 const USERNAME_REQUIRED = "กรุณากรอก Username หรือ Email";

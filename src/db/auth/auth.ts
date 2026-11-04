@@ -1,7 +1,7 @@
 // Server-only session helpers for page.tsx guards. Never import from client code.
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { accessFor, getUserById, type Access, type PageKey, type User } from "@/db/users";
+import { accessFor, getUserById, type Access, type PageKey, type User } from "@/db/user/users";
 
 export const SESSION_COOKIE = "autoparking_session";
 

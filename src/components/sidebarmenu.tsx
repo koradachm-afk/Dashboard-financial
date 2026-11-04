@@ -39,7 +39,7 @@ import * as React from "react";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 
-import { getUserById } from "@/db/users";
+import { getUserById } from "@/db/user/users";
 import { usePathname } from "next/navigation";
 
 const user = getUserById("u-superadmin")!;
