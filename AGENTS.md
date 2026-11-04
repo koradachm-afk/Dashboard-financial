@@ -27,7 +27,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## 1. ข้อเท็จจริงของโปรเจกต์
 
 - **ชื่อแบรนด์:** AUTO PARKING (อ่านจาก config ห้าม hard-code) · โดเมนใน mock: `autoparking.co`
-- **ขอบเขตตอนนี้: frontend อย่างเดียว** ไม่มี backend ข้อมูลทั้งหมดเป็น mock ใน `src/db/*.json` ห้ามเพิ่ม API route, ฐานข้อมูล หรือ auth จริงถ้าไม่ได้สั่ง
+- **ขอบเขตตอนนี้: frontend อย่างเดียว** ไม่มี backend · seed อยู่ใน `src/db/*.json` · ข้อมูลที่เกิดระหว่างใช้งานเก็บ localStorage ผ่าน `src/db/store.ts` เท่านั้น · ห้ามเพิ่ม API route, ฐานข้อมูล หรือ auth จริงถ้าไม่ได้สั่ง
+- **ขอบเขตของ localStorage:** เก็บข้อมูลธุรกรรม (session รถ, การชำระเงิน, สถานะช่องจอดที่ผู้ดูแลตั้ง, audit log) และค่าที่ผู้ดูแลแก้ (Settings: ข้อมูลสาขา / ค่าจอด, ประเภทช่องจอด, ผังที่จอดที่กดบันทึก) · **user และสิทธิ์ยังเป็น seed คงที่** ไม่เก็บใน localStorage เพื่อให้การเช็กสิทธิ์ใน `page.tsx` ฝั่ง server ทำงานต่อได้
+- **localStorage ผูกกับ browser และโดเมนเดียว:** การ demo 3 ฝั่ง (Admin / Customer / Kiosk) ต้องเปิดใน browser เดียวกัน
 - **3 ฝั่ง:** Admin Web (Desktop 1440) · Customer Web (มือถือ 390, `/pay`) · Kiosk ทางเข้า / ทางออก (1920×1080)
 - **Stack:** Next.js (App Router) + TypeScript · Tailwind CSS v4 · TailGrids (`src/components/tailgrids/`) · next-themes · Recharts · Fabric.js · SheetJS (Export Excel)
 - **Role:** มีแค่ `Superadmin` และ `Admin` · Admin เห็นหน้าตามสิทธิ์ที่ Superadmin ตั้ง: `ไม่มีสิทธิ์ / ดูได้ / แก้ไขได้`
@@ -42,7 +44,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
   - โลโก้ธนาคารใช้ไอคอน `Landmark` ไปก่อน **ห้ามดึงโลโก้ธนาคารจากเว็บมาใส่เอง**
   - Kiosk ทางออกยังชำระด้วย QR PromptPay อย่างเดียว
 - **ชื่อเมนู:** ใช้ **Activity Log** ห้ามใช้ "Traffic Activity"
-- **ธีม:** Admin มี **สว่าง / มืด** เท่านั้น (ไม่มี "ตามระบบ") บันทึกผูกกับบัญชี · Customer และ Kiosk สว่างเท่านั้น
+- **ธีม:** Admin มี **สว่าง / มืด** เท่านั้น (ไม่มี "ตามระบบ") บันทึกผูกกับบัญชี (เก็บใน store โดเมน `prefs` ใช้ user id เป็น key เพราะ user เป็น seed คงที่) · Customer และ Kiosk สว่างเท่านั้น
 - **Kiosk** ไม่มีปุ่มเรียกพนักงาน และไม่มี hover
 
 ---
@@ -61,23 +63,38 @@ src/
 ├─ components/
 │  ├─ tailgrids/        component ที่ใช้หลายหน้า (ดึงจาก TailGrids แล้วแปลงเป็น token ของเรา)
 │  └─ sidebarmenu.tsx   เมนูด้านซ้ายของ Admin
-├─ db/                  mock data (JSON)
-└─ utils/               cn.ts · format วันที่ / เงิน / ระยะเวลา / ทะเบียน
+├─ db/                  seed (JSON ตรงกับ Figma) · store.ts (ชั้นกลางของ localStorage)
+└─ utils/               cn.ts · id.ts (newSessionId) · format วันที่ / เงิน / ระยะเวลา / ทะเบียน
 ```
 
 **กฎ**
 1. ใน `app/` มีได้แค่ไฟล์ของ Next.js: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`
 2. `page.tsx` ทำแค่ 3 อย่าง: **เช็กสิทธิ์ของหน้า → อ่าน `searchParams` → render component**
+   - หน้าที่ต้องอ่านข้อมูลจาก localStorage: `page.tsx` (Server Component) เช็กสิทธิ์ + อ่าน `searchParams` แล้วส่งต่อให้ Client Component (`"use client"`) ใน `_components/` เป็นคนอ่านข้อมูล
 3. **ห้ามเช็กสิทธิ์ราย page ใน `layout.tsx`** (layout ไม่ทำงานซ้ำเมื่อเปลี่ยนหน้า) · ไม่มีสิทธิ์ → redirect `/403`
 4. ตัวกรอง, ช่วงวัน, เลขหน้า, โหมดดู / แก้ไข เก็บใน URL (`?floor=B1&mode=edit`)
 5. หาข้อมูลไม่เจอใน route แบบ `[id]` → เรียก `notFound()` จาก `next/navigation` ไม่เขียนหน้า "ไม่พบ" เอง
 6. component ที่ใช้หน้าเดียว → `app/(admin)/<page>/_components/` · ใช้ตั้งแต่ 2 หน้า → ย้ายไป `src/components/tailgrids/`
-7. หน้าห้าม import JSON ใน `src/db/` ตรง ๆ ให้เรียกผ่านฟังก์ชันกลาง (วันที่มี backend จะแก้ที่ฟังก์ชันเดียว)
+7. หน้าห้าม import JSON ใน `src/db/` ตรง ๆ ให้เรียกผ่านฟังก์ชันกลาง (วันที่มี backend จะแก้ที่ฟังก์ชันเดียว) · import JSON ได้เฉพาะไฟล์ใน `src/db/` (`store.ts` และฟังก์ชันอ่าน seed)
+   - **ห้ามเรียก `localStorage` / `sessionStorage` ตรง ๆ นอก `src/db/store.ts`** หน้าและ component เรียกผ่านฟังก์ชันกลาง เช่น `getSessions()`, `addSession()`, `updateSlot()` เท่านั้น
 8. mock ใช้ตัวเลขชุดเดียวกับ Figma (เช่น ทะเบียน `ผบ 9370`, ช่อง `B-07`, รายรับ `฿10,080`) · ห้ามใส่ข้อมูลจริงของคน
 9. `sessionId` ใน URL ของหน้าลูกค้าต้องเป็นรหัสสุ่ม **ห้ามใช้ทะเบียนรถ** (คำค้นเก็บใน `?q=` ได้ แต่ห้ามใช้เป็น id ใน path)
+   - สร้างด้วย `newSessionId()` จาก `@/utils/id` (ใช้ `crypto.randomUUID()` และ fallback เป็น `crypto.getRandomValues()` เมื่ออยู่นอก secure context) · **ห้ามใช้ `Math.random()`, ห้ามใช้ทะเบียน, ห้ามใช้ลำดับเลข**
    - วิธีชำระเก็บใน `?method=qr|bank` · ธนาคารที่เลือกเก็บใน `&bank=<รหัส>`
    - การเปิดแอปธนาคารและผลการชำระเรียกผ่านฟังก์ชันกลางที่คืนค่า mock เท่านั้น
 10. ทุกการเปลี่ยนแปลงสำคัญ, การเข้า / ออกจากระบบ และการ Export ต้องเรียก `audit()` กลาง · การแก้ผังที่ยังไม่บันทึกไม่ต้องลง log
+11. **กฎของ store** (`src/db/store.ts`)
+    - key ขึ้นต้น `autoparking:v1:<โดเมน>` (เช่น `sessions`, `payments`, `slots`, `audit`, `settings`, `prefs`) เพื่อ reset / migrate ได้
+    - อ่านครั้งแรกถ้ายังไม่มี key ให้ใช้ seed แล้วเขียนกลับ
+    - ครอบทุกการอ่าน / เขียนด้วย `try/catch` และ fallback เป็น in-memory เมื่อ storage เต็มหรือถูกปิด
+    - parse แล้วต้องตรวจรูปแบบข้อมูลก่อนใช้ (ผู้ใช้แก้ใน DevTools ได้) ถ้าไม่ผ่านให้ใช้ seed
+    - อ่านใน `useEffect` หรือ `useSyncExternalStore` เท่านั้น ห้ามอ่านตอน render บน server เพื่อเลี่ยง hydration mismatch
+    - เรียก `newSessionId()` ใน event handler หรือฟังก์ชันของ store เท่านั้น ห้ามเรียกใน body ของ component
+    - `audit()` ต้องเขียนลง store เดียวกัน เพื่อให้หน้า Audit Logs เห็นรายการจากการใช้งานจริง
+    - sync ข้ามแท็บด้วย event `storage` ได้
+    - seed ที่ใช้ตรงกับ Figma ต้องมี `sessionId` ตายตัว (เช่น `sess_...`) ส่วนรายการที่สร้างใหม่ใช้ id สุ่ม
+    - มีฟังก์ชัน `resetStore()` สำหรับ dev (ล้าง key `autoparking:v1:*` แล้วโหลด seed ใหม่)
+    - ห้ามเก็บข้อมูลจริงของคนใน localStorage (ตรงกับกฎข้อ 8)
 
 **ไฟล์ที่ห้ามแก้ถ้าไม่ได้สั่ง:** `layout.tsx` ระดับกลุ่ม, `src/components/`, `globals.css` (เจ้าของคือ PM) · บล็อก `nextjs-agent-rules` ด้านบนของไฟล์นี้ · `package.json` (ห้ามเพิ่ม dependency โดยไม่ถาม)
 
@@ -200,6 +217,11 @@ Release: PR `dev` → `main` → ทดสอบผ่าน → merge → `git 
 - [ ] ไม่มีคำว่า Traffic Activity หรือ ParkPlan หลงเหลือบน UI
 - [ ] เปิดหน้า Admin ทั้งธีมสว่างและมืดแล้วอ่านได้ทุกจุด
 - [ ] เทียบกับเฟรม Figma ที่มีเลขเดียวกันครบทุก state
+- [ ] ไม่มีการเรียก `localStorage` / `sessionStorage` นอก `src/db/store.ts`
+- [ ] `sessionId` ใหม่สร้างผ่าน `newSessionId()` เท่านั้น ไม่ได้สร้างใน render
+- [ ] เปิดหน้าแล้วไม่มี hydration warning ใน console
+- [ ] ทดสอบหลังกด `resetStore()` แล้วข้อมูลกลับเป็น seed ตรงกับเฟรม Figma
+- [ ] ข้อมูลใน localStorage ที่ถูกแก้ผิดรูปแบบ ไม่ทำให้หน้าพัง
 - [ ] หน้าลูกค้า: ทดสอบครบทุกกรณี
   - ค้นหาเจอ 1 คัน → ไป 17.3 ทันที · เจอหลายคัน → 17.8 · ไม่พบ → 17.2
   - ชำระได้ทั้ง QR PromptPay และ Mobile Banking (mock)
@@ -220,3 +242,4 @@ Release: PR `dev` → `main` → ทดสอบผ่าน → merge → `git 
 - งานต้องเพิ่ม dependency, เปลี่ยน token ใน `globals.css` หรือแก้ component กลาง → ถามก่อน
 - Figma ไม่มี state ที่ต้องใช้ → ทำตาม DESIGN-STYLE.md ข้อ 16 ถ้ายังไม่ครอบคลุมให้ถาม
 - งานต้องต่อระบบชำระเงินจริง (payment gateway, deep link แอปธนาคาร, โลโก้ธนาคาร) → หยุดแล้วถาม เพราะขอบเขตตอนนี้เป็น mock
+- งานที่ต้องให้ Superadmin แก้สิทธิ์ / user แล้วมีผลจริง → หยุดแล้วถาม เพราะต้องย้ายการเช็กสิทธิ์ไปฝั่ง client
