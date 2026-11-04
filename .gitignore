@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# tests stay local only (team decision); the Vitest setup stays in the repo
+*.test.ts
+*.test.tsx
