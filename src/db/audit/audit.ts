@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-import { createStore } from "./store";
+import { createStore } from "../store";
 
 export const AUDIT_ACTIONS = [
   "สร้าง",

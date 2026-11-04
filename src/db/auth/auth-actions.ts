@@ -1,13 +1,13 @@
 "use server";
 // Every export here is a client-callable Server Action: async functions and types only.
 import { cookies, headers } from "next/headers";
-import { SESSION_COOKIE } from "@/db/auth";
-import { clearFailures, lockedUntil, MAX_FAILURES, recordFailure } from "@/db/login-attempts";
-import { findUserByIdentifier, type User } from "@/db/users";
+import { SESSION_COOKIE } from "@/db/auth/auth";
+import { clearFailures, lockedUntil, MAX_FAILURES, recordFailure } from "@/db/auth/login-attempts";
+import { findUserByIdentifier, type User } from "@/db/user/users";
 import { describeUserAgent } from "@/utils/user-agent";
 // Mock demo passwords, plaintext by decision. Only this server module may import the file:
 // anything a client component imports ships to the browser.
-import credentials from "./user/credentials.json";
+import credentials from "../user/credentials.json";
 
 const CREDENTIALS: Readonly<Record<string, string>> = credentials;
 

@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 import data from "./settings.json";
-import { createStore } from "./store";
+import { createStore } from "../store";
 
 export type Settings = { branchName: string };
 

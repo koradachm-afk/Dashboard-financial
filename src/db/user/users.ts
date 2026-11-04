@@ -1,4 +1,4 @@
-import data from "./user/user.json";
+import data from "./user.json";
 
 export type Role = "superadmin" | "admin";
 export type Access = "none" | "view" | "edit";
