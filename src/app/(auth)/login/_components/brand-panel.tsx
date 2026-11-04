@@ -2,6 +2,7 @@ import { Car, SquareParking } from "lucide-react";
 
 import { siteConfig } from "@/config/site";
 import { getSettings } from "@/db/settings";
+import { cn } from "@/utils/cn";
 
 type SlotStatus = "available" | "occupied" | "unknown";
 
@@ -50,9 +51,12 @@ function Slot({ label, status }: { label: string; status: SlotStatus }) {
   const s = SLOT_STYLES[status];
   return (
     <div
-      className={`flex h-20 w-10 shrink-0 flex-col items-center justify-center gap-1.5 rounded-sm border-[1.5px] ${s.box}`}
+      className={cn(
+        "flex h-20 w-10 shrink-0 flex-col items-center justify-center gap-1.5 rounded-sm border-[1.5px]",
+        s.box,
+      )}
     >
-      <span className={`text-micro font-semibold ${s.number}`}>{label}</span>
+      <span className={cn("text-micro font-semibold", s.number)}>{label}</span>
       <Car size={18} className={s.icon} aria-hidden="true" />
     </div>
   );
@@ -77,8 +81,11 @@ export function BrandPanel() {
 
       <div className="flex flex-col gap-3.5">
         <h2 className="text-kiosk-lg font-bold">ระบบจัดการที่จอดรถ</h2>
+        {/* Line break as in Figma 09.7: the browser's Thai word breaking would leave "เดียว" alone. */}
         <p className="text-lead opacity-85 max-w-110">
-          วางผังที่จอด ติดตามสถานะช่องจอด และดูภาพรวมการใช้งานได้ในที่เดียว
+          วางผังที่จอด ติดตามสถานะช่องจอด{" "}
+          <br />
+          และดูภาพรวมการใช้งานได้ในที่เดียว
         </p>
       </div>
 
