@@ -66,7 +66,7 @@ npm test           # รัน test ทั้งหมดครั้งเด�
 
 | URL | หน้า |
 |---|---|
-| `/login` | เข้าสู่ระบบ (บัญชีตัวอย่างอยู่ใน `src/db/user.json`) |
+| `/login` | เข้าสู่ระบบ · บัญชี demo: `superadmin` / `pass` (Superadmin แก้ไขได้ทุกหน้า) · `admin` / `pass` (Admin ดูได้ทุกหน้า ยกเว้น Users) · seed อยู่ใน `src/db/user/` |
 | `/dashboard` | หน้าแรกหลัง login |
 | `/pay` | เว็บลูกค้า (เปิดด้วยมือถือหรือ DevTools โหมดมือถือ) |
 | `/kiosk/entry` · `/kiosk/exit` | จอ Kiosk (เปิดเต็มจอ 1920×1080) |
@@ -125,11 +125,17 @@ auto_parking/
 │  │  ├─ tailgrids/               # component ที่ใช้หลายหน้า ดึงจาก TailGrids แล้วแปลงเป็น token ของเรา
 │  │  └─ sidebarmenu.tsx          # เมนูด้านซ้ายของ Admin
 │  │
-│  ├─ db/                         # mock data (JSON) แทนฐานข้อมูลไปก่อน
-│  │  └─ user.json
+│  ├─ db/                         # ข้อมูลแทนฐานข้อมูลไปก่อน · 1 โดเมน = 1 โฟลเดอร์ (ฟังก์ชันกลาง + seed)
+│  │  ├─ store.ts                 # ชั้นกลางของ localStorage (createStore / resetStore)
+│  │  ├─ settings/                # settings.ts · settings.json
+│  │  ├─ user/                    # users.ts · user.json · credentials.json (รหัสผ่าน demo, ฝั่ง server เท่านั้น)
+│  │  ├─ audit/                   # audit.ts (audit() + Audit Log ใน store)
+│  │  └─ auth/                    # auth.ts (getCurrentUser, requirePage) · auth-actions.ts (login, logout) · login-attempts.ts
 │  │
 │  └─ utils/                      # ฟังก์ชันช่วย (format วันที่ไทย, ฿, ระยะเวลา, ทะเบียน ฯลฯ)
-│     └─ cn.ts                    # รวม className (clsx + tailwind-merge ที่รู้จัก token ของเรา)
+│     ├─ cn.ts                    # รวม className (clsx + tailwind-merge ที่รู้จัก token ของเรา)
+│     ├─ id.ts                    # newSessionId() รหัสสุ่มจาก Web Crypto
+│     └─ user-agent.ts            # describeUserAgent() → "Chrome 130 · Windows"
 │
 ├─ AGENTS.md                      # คำแนะนำสำหรับ AI coding agent
 ├─ DESIGN-STYLE.md                # กติกา UI ทั้งหมด (สี ตัวอักษร component layout)
@@ -463,19 +469,20 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 ## 8. Mock data
 
 ช่วงหน้าบ้านล้วน ข้อมูลแบ่งเป็น 2 ชั้น:
-- **seed** = JSON ใน `src/db/*.json` ค่าตั้งต้นตรงกับ Figma **ห้ามแก้ตามการใช้งาน**
+- **seed** = JSON ใน `src/db/<โดเมน>/*.json` ค่าตั้งต้นตรงกับ Figma **ห้ามแก้ตามการใช้งาน** · แต่ละโดเมนมีโฟลเดอร์ของตัวเอง (ฟังก์ชันกลาง + seed) ส่วน `store.ts` อยู่ที่ `src/db/`
 - **store** = ข้อมูลที่เพิ่ม / แก้ระหว่างใช้งาน เก็บ localStorage ผ่าน `src/db/store.ts` ชั้นเดียว (key `autoparking:v1:<โดเมน>`) · เปิดครั้งแรกยังไม่มี key จะโหลดจาก seed · กติกาเต็มอยู่ใน [AGENTS.md](./AGENTS.md) ข้อ 2 กฎข้อ 11
 
 | ไฟล์ seed | ข้อมูล | เก็บระหว่างใช้งาน (store) | ใช้ที่ |
 |---|---|---|---|
-| `user.json` | ผู้ใช้ (อีเมล `@autoparking.co`), Role, สิทธิ์ราย page (System Settings แยก 3 แท็บ), ธีมตั้งต้น | ไม่เก็บ (seed คงที่) · ธีมที่เลือกเก็บที่ `prefs` (key = user id) | Login, Users, Account, Sidebar |
-| `floors.json` *(เพิ่ม)* | อาคาร, ชั้น, ช่องจอด, วัตถุบนผัง | ผังที่กดบันทึก · สถานะปิดใช้งาน / ซ่อมบำรุงที่ผู้ดูแลตั้ง (`slots`) | Parking Layout, Heat Map |
-| `slot-types.json` *(เพิ่ม)* | ประเภทช่องจอด | ประเภทที่เพิ่ม / แก้ใน Settings | Settings, Parking Layout |
-| `sessions.json` *(เพิ่ม)* | รถเข้า–ออก + รูปตอนเข้า (`entryImage`) และประตูที่เข้า (`entryGate`) · มีเคสทะเบียนซ้ำ กข 1234 กรุงเทพฯ / นนทบุรี / 1กข 1234 | `sessions` · seed ใช้ `sessionId` ตายตัว (`sess_...`) รายการใหม่ใช้ `newSessionId()` | Activity Log, Dashboard, Customer, Kiosk |
-| `payments.json` *(เพิ่ม)* | รายการชำระ + วิธีชำระ (`method: "qr" \| "bank"`) และธนาคาร (`bank`) | `payments` | Financial, Dashboard, Customer |
-| `banks.json` *(เพิ่ม)* | รายชื่อธนาคารสำหรับ Mobile Banking (รหัส + ชื่อไทย) 6 แห่งตาม 17.10 | ไม่เก็บ (seed คงที่) | Customer |
-| `audit-logs.json` *(เพิ่ม)* | ประวัติการใช้งาน | `audit` (ทุกครั้งที่เรียก `audit()`) | Audit Logs |
-| `settings.json` *(เพิ่ม)* | ข้อมูลสาขา, ราคาต่อชั่วโมง, เวลาออกหลังชำระ, เปิด/ปิดการคิดค่าจอดใหม่ | `settings` | Settings, Customer, Kiosk |
+| `user/user.json` | ผู้ใช้ demo 2 บัญชี `superadmin` · `admin` (อีเมล `@autoparking.co`), Role, สิทธิ์ราย page (System Settings แยก 3 แท็บ), ธีมตั้งต้น · **ไม่มีรหัสผ่าน** (ไฟล์นี้ถูก client import) | ไม่เก็บ (seed คงที่) · ธีมที่เลือกเก็บที่ `prefs` (key = user id) | Login, Users, Account, Sidebar |
+| `user/credentials.json` | รหัสผ่าน demo (`pass`) ราย user id | ไม่เก็บ · **import ได้เฉพาะ `src/db/auth/auth-actions.ts`** (ฝั่ง server) | Login |
+| `floors/floors.json` *(เพิ่ม)* | อาคาร, ชั้น, ช่องจอด, วัตถุบนผัง | ผังที่กดบันทึก · สถานะปิดใช้งาน / ซ่อมบำรุงที่ผู้ดูแลตั้ง (`slots`) | Parking Layout, Heat Map |
+| `slot-types/slot-types.json` *(เพิ่ม)* | ประเภทช่องจอด | ประเภทที่เพิ่ม / แก้ใน Settings | Settings, Parking Layout |
+| `sessions/sessions.json` *(เพิ่ม)* | รถเข้า–ออก + รูปตอนเข้า (`entryImage`) และประตูที่เข้า (`entryGate`) · มีเคสทะเบียนซ้ำ กข 1234 กรุงเทพฯ / นนทบุรี / 1กข 1234 | `sessions` · seed ใช้ `sessionId` ตายตัว (`sess_...`) รายการใหม่ใช้ `newSessionId()` | Activity Log, Dashboard, Customer, Kiosk |
+| `payments/payments.json` *(เพิ่ม)* | รายการชำระ + วิธีชำระ (`method: "qr" \| "bank"`) และธนาคาร (`bank`) | `payments` | Financial, Dashboard, Customer |
+| `banks/banks.json` *(เพิ่ม)* | รายชื่อธนาคารสำหรับ Mobile Banking (รหัส + ชื่อไทย) 6 แห่งตาม 17.10 | ไม่เก็บ (seed คงที่) | Customer |
+| `audit/audit-logs.json` *(เพิ่ม)* | ประวัติการใช้งาน (ตอนนี้ seed เป็น `[]` ใน `audit/audit.ts` · 20 เคสตาม Figma เพิ่มตอนทำหน้า Audit Logs) | `audit` (ทุกครั้งที่เรียก `audit()`) | Audit Logs |
+| `settings/settings.json` | ข้อมูลสาขา (มีแล้ว: `branchName`) · เพิ่มภายหลัง: ราคาต่อชั่วโมง, เวลาออกหลังชำระ, เปิด/ปิดการคิดค่าจอดใหม่ | `settings` | Settings, Customer, Kiosk |
 
 กติกา:
 - ใช้ตัวเลขชุดเดียวกับใน Figma (เช่น ทะเบียน `ผบ 9370`, ช่อง `B-07`, รายรับ `฿10,080`) จะเทียบหน้าจอกับเฟรมได้ง่าย

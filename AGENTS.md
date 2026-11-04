@@ -27,7 +27,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## 1. ข้อเท็จจริงของโปรเจกต์
 
 - **ชื่อแบรนด์:** AUTO PARKING (อ่านจาก config ห้าม hard-code) · โดเมนใน mock: `autoparking.co`
-- **ขอบเขตตอนนี้: frontend อย่างเดียว** ไม่มี backend · seed อยู่ใน `src/db/*.json` · ข้อมูลที่เกิดระหว่างใช้งานเก็บ localStorage ผ่าน `src/db/store.ts` เท่านั้น · ห้ามเพิ่ม API route, ฐานข้อมูล หรือ auth จริงถ้าไม่ได้สั่ง
+- **ขอบเขตตอนนี้: frontend อย่างเดียว** ไม่มี backend · seed อยู่ใน `src/db/<โดเมน>/*.json` · ข้อมูลที่เกิดระหว่างใช้งานเก็บ localStorage ผ่าน `src/db/store.ts` เท่านั้น · ห้ามเพิ่ม API route, ฐานข้อมูล หรือ auth จริงถ้าไม่ได้สั่ง
 - **ขอบเขตของ localStorage:** เก็บข้อมูลธุรกรรม (session รถ, การชำระเงิน, สถานะช่องจอดที่ผู้ดูแลตั้ง, audit log) และค่าที่ผู้ดูแลแก้ (Settings: ข้อมูลสาขา / ค่าจอด, ประเภทช่องจอด, ผังที่จอดที่กดบันทึก) · **user และสิทธิ์ยังเป็น seed คงที่** ไม่เก็บใน localStorage เพื่อให้การเช็กสิทธิ์ใน `page.tsx` ฝั่ง server ทำงานต่อได้
 - **localStorage ผูกกับ browser และโดเมนเดียว:** การ demo 3 ฝั่ง (Admin / Customer / Kiosk) ต้องเปิดใน browser เดียวกัน
 - **3 ฝั่ง:** Admin Web (Desktop 1440) · Customer Web (มือถือ 390, `/pay`) · Kiosk ทางเข้า / ทางออก (1920×1080)
@@ -63,8 +63,9 @@ src/
 ├─ components/
 │  ├─ tailgrids/        component ที่ใช้หลายหน้า (ดึงจาก TailGrids แล้วแปลงเป็น token ของเรา)
 │  └─ sidebarmenu.tsx   เมนูด้านซ้ายของ Admin
-├─ db/                  seed (JSON ตรงกับ Figma) · store.ts (ชั้นกลางของ localStorage)
-└─ utils/               cn.ts · id.ts (newSessionId) · format วันที่ / เงิน / ระยะเวลา / ทะเบียน
+├─ db/                  store.ts (ชั้นกลางของ localStorage) · 1 โดเมน = 1 โฟลเดอร์ (ฟังก์ชันกลาง + seed JSON)
+│                       settings/ · user/ · audit/ · auth/
+└─ utils/               cn.ts · id.ts (newSessionId) · user-agent.ts · format วันที่ / เงิน / ระยะเวลา / ทะเบียน
 ```
 
 **กฎ**
@@ -72,11 +73,16 @@ src/
 2. `page.tsx` ทำแค่ 3 อย่าง: **เช็กสิทธิ์ของหน้า → อ่าน `searchParams` → render component**
    - หน้าที่ต้องอ่านข้อมูลจาก localStorage: `page.tsx` (Server Component) เช็กสิทธิ์ + อ่าน `searchParams` แล้วส่งต่อให้ Client Component (`"use client"`) ใน `_components/` เป็นคนอ่านข้อมูล
 3. **ห้ามเช็กสิทธิ์ราย page ใน `layout.tsx`** (layout ไม่ทำงานซ้ำเมื่อเปลี่ยนหน้า) · ไม่มีสิทธิ์ → redirect `/403`
+   - เช็กด้วย `await requirePage("<page-key>")` จาก `@/db/auth/auth` ใน `page.tsx` (Server Component, ไม่มี `"use client"`) · ต้องการสิทธิ์แก้ไขใส่ `requirePage("<page-key>", "edit")` · ไม่มี session → `/login` · สิทธิ์ไม่พอ → `/403`
+   - page-key: `dashboard` · `parking-layout` · `financial-overview` · `activity-log` · `heat-map` · `users` · `audit-logs` · `settings.branch` · `settings.slot-types` · `settings.fees`
+   - ต้องการข้อมูลผู้ใช้ที่ login อยู่ (ชื่อ, Role) ใช้ค่าที่ `requirePage` คืนมา หรือ `getCurrentUser()`
 4. ตัวกรอง, ช่วงวัน, เลขหน้า, โหมดดู / แก้ไข เก็บใน URL (`?floor=B1&mode=edit`)
 5. หาข้อมูลไม่เจอใน route แบบ `[id]` → เรียก `notFound()` จาก `next/navigation` ไม่เขียนหน้า "ไม่พบ" เอง
 6. component ที่ใช้หน้าเดียว → `app/(admin)/<page>/_components/` · ใช้ตั้งแต่ 2 หน้า → ย้ายไป `src/components/tailgrids/`
 7. หน้าห้าม import JSON ใน `src/db/` ตรง ๆ ให้เรียกผ่านฟังก์ชันกลาง (วันที่มี backend จะแก้ที่ฟังก์ชันเดียว) · import JSON ได้เฉพาะไฟล์ใน `src/db/` (`store.ts` และฟังก์ชันอ่าน seed)
    - **ห้ามเรียก `localStorage` / `sessionStorage` ตรง ๆ นอก `src/db/store.ts`** หน้าและ component เรียกผ่านฟังก์ชันกลาง เช่น `getSessions()`, `addSession()`, `updateSlot()` เท่านั้น
+   - 1 โดเมน = 1 โฟลเดอร์ `src/db/<โดเมน>/` (ฟังก์ชันกลาง `<โดเมน>.ts` + seed JSON) · import ผ่าน `@/db/<โดเมน>/<ไฟล์>` · `store.ts` อยู่ที่ `src/db/` ที่เดียว
+   - **`src/db/user/credentials.json` import ได้เฉพาะ `src/db/auth/auth-actions.ts`** (ฝั่ง server) ห้าม client component หรือไฟล์ที่ client import ดึงไปใช้ เพราะรหัสผ่านจะหลุดไปอยู่ใน bundle ของ browser · ตรวจหลัง build ว่า `.next/static` ไม่มีเนื้อหาของไฟล์นี้
 8. mock ใช้ตัวเลขชุดเดียวกับ Figma (เช่น ทะเบียน `ผบ 9370`, ช่อง `B-07`, รายรับ `฿10,080`) · ห้ามใส่ข้อมูลจริงของคน
 9. `sessionId` ใน URL ของหน้าลูกค้าต้องเป็นรหัสสุ่ม **ห้ามใช้ทะเบียนรถ** (คำค้นเก็บใน `?q=` ได้ แต่ห้ามใช้เป็น id ใน path)
    - สร้างด้วย `newSessionId()` จาก `@/utils/id` (ใช้ `crypto.randomUUID()` และ fallback เป็น `crypto.getRandomValues()` เมื่ออยู่นอก secure context) · **ห้ามใช้ `Math.random()`, ห้ามใช้ทะเบียน, ห้ามใช้ลำดับเลข**
