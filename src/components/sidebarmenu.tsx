@@ -39,8 +39,10 @@ import * as React from "react";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 
-import user from "@/db/user/user.json";
+import { getUserById } from "@/db/users";
 import { usePathname } from "next/navigation";
+
+const user = getUserById("u-admin")!;
 
 const navItem =
   "flex h-10 w-full items-center justify-between gap-3 rounded-lg px-3 text-control font-medium text-fg-2 transition-colors hover:bg-subtle";
@@ -212,10 +214,10 @@ function SidebarFooterSection({ open }: { open: boolean }) {
             {open && (
               <div className="grid flex-1 text-left text-control leading-tight">
                 <span className="truncate font-semibold text-fg">
-                  {user[0].name}
+                  {user.name}
                 </span>
                 <span className="truncate text-label text-fg-2">
-                  {user[0].email}
+                  {user.email}
                 </span>
               </div>
             )}
@@ -236,9 +238,9 @@ function SidebarFooterSection({ open }: { open: boolean }) {
               <User2 className="size-4" />
             </div>
             <div className="grid flex-1 text-left text-control leading-tight">
-              <span className="truncate font-semibold text-fg">{user[0].name}</span>
+              <span className="truncate font-semibold text-fg">{user.name}</span>
               <span className="truncate text-label text-fg-2">
-                {user[0].email}
+                {user.email}
               </span>
             </div>
           </DropdownMenuHeader>
