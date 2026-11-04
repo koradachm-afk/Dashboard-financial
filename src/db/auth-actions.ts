@@ -30,7 +30,9 @@ export type LoginResult =
   | { ok: false; reason: "invalid"; attemptsLeft: number; attempt: number; audit: AuditInfo }
   | { ok: false; reason: "locked"; lockedUntil: number; audit: AuditInfo | null };
 
-const ROLE_LABEL = { superadmin: "Superadmin", admin: "Admin" } as const;
+const MAX_IDENTIFIER = 254;
+
+const ROLE_LABEL ={ superadmin: "Superadmin", admin: "Admin" } as const;
 
 async function auditFor(user: User | undefined, identifier: string): Promise<AuditInfo> {
   const h = await headers();
@@ -43,17 +45,20 @@ async function auditFor(user: User | undefined, identifier: string): Promise<Aud
 
 export async function login(input: { identifier: string; password: string }): Promise<LoginResult> {
   // A Server Action is a public endpoint: never trust the input's shape.
-  const identifier = typeof input?.identifier === "string" ? input.identifier.trim() : "";
+  // Capped at the longest valid email, so a huge input cannot bloat the counter map or the audit log.
+  const identifier = typeof input?.identifier === "string" ? input.identifier.trim().slice(0, MAX_IDENTIFIER) : "";
   const password = typeof input?.password === "string" ? input.password : "";
   const user = findUserByIdentifier(identifier);
   // Username and email of one user share a counter; unknown identifiers are counted the same way.
   const key = user ? user.username : identifier.toLowerCase();
+
+  // Every await happens before the lock check: check → compare → record must run without a
+  // yield, or concurrent requests that passed the check could overwrite a fresh lock.
+  const audit = await auditFor(user, identifier);
   const now = Date.now();
 
   const locked = lockedUntil(key, now);
   if (locked !== null) return { ok: false, reason: "locked", lockedUntil: locked, audit: null };
-
-  const audit = await auditFor(user, identifier);
 
   if (!user || !passwordMatches(user, password)) {
     const failure = recordFailure(key, now);

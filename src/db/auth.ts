@@ -17,6 +17,7 @@ export async function getCurrentUser(): Promise<User | null> {
 export async function requirePage(page: PageKey, need: "view" | "edit" = "view"): Promise<User> {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  if (RANK[accessFor(user, page)] < RANK[need]) redirect("/403");
+  // Fail closed: a missing or unknown access value ranks as "none".
+  if ((RANK[accessFor(user, page)] ?? 0) < RANK[need]) redirect("/403");
   return user;
 }
