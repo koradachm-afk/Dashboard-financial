@@ -42,7 +42,7 @@ import Link from "next/link";
 import { getUserById } from "@/db/users";
 import { usePathname } from "next/navigation";
 
-const user = getUserById("u-admin")!;
+const user = getUserById("u-superadmin")!;
 
 const navItem =
   "flex h-10 w-full items-center justify-between gap-3 rounded-lg px-3 text-control font-medium text-fg-2 transition-colors hover:bg-subtle";

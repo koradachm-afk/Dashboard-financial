@@ -20,7 +20,6 @@ export type User = {
   name: string;
   email: string;
   role: Role;
-  password: string; // mock demo password, plaintext by decision
   mustSetPassword: boolean;
   theme: "light" | "dark";
   createdAt: string; // "2026-10-17 01:58"
@@ -28,6 +27,7 @@ export type User = {
 };
 
 // The only importer of user.json. Frozen so callers cannot mutate the seed.
+// Client code imports this module, so user.json must never hold passwords (see user/credentials.json).
 const USERS: readonly User[] = Object.freeze(
   (data as User[]).map((u) =>
     Object.freeze({ ...u, permissions: Object.freeze({ ...u.permissions }) }),

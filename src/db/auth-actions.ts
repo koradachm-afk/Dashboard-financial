@@ -5,6 +5,15 @@ import { SESSION_COOKIE } from "@/db/auth";
 import { clearFailures, lockedUntil, MAX_FAILURES, recordFailure } from "@/db/login-attempts";
 import { findUserByIdentifier, type User } from "@/db/users";
 import { describeUserAgent } from "@/utils/user-agent";
+// Mock demo passwords, plaintext by decision. Only this server module may import the file:
+// anything a client component imports ships to the browser.
+import credentials from "./user/credentials.json";
+
+const CREDENTIALS: Readonly<Record<string, string>> = credentials;
+
+function passwordMatches(user: User, password: string): boolean {
+  return Object.hasOwn(CREDENTIALS, user.id) && CREDENTIALS[user.id] === password;
+}
 
 export type AuditInfo = {
   actor: string;
@@ -46,7 +55,7 @@ export async function login(input: { identifier: string; password: string }): Pr
 
   const audit = await auditFor(user, identifier);
 
-  if (!user || password !== user.password) {
+  if (!user || !passwordMatches(user, password)) {
     const failure = recordFailure(key, now);
     if (failure.lockedUntil !== null) {
       return { ok: false, reason: "locked", lockedUntil: failure.lockedUntil, audit };
