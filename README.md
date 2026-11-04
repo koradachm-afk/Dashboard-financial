@@ -49,7 +49,7 @@
 
 ## 1. เริ่มต้นใช้งาน
 
-ต้องใช้ **Node.js 20.9 ขึ้นไป**
+ต้องใช้ **Node.js 22.22.2+ หรือ 24.15+** (แนะนำ 24 LTS) · Node 20 และ 23 ใช้ไม่ได้ เพราะ Vitest (ผ่าน Vite 8) ต้องใช้เวอร์ชันนี้
 
 ```bash
 npm install
@@ -57,6 +57,7 @@ npm run dev        # http://localhost:3000
 npm run build      # build สำหรับ production
 npm run start      # รันเวอร์ชันที่ build แล้ว (ต้อง npm run build ก่อน) http://localhost:3000
 npm run lint       # ตรวจโค้ดด้วย ESLint
+npm test           # รัน test ทั้งหมดครั้งเดียว (Vitest) · npm run test:watch = โหมด watch
 ```
 
 หน้าเริ่มต้นที่ควรลองเปิด:
