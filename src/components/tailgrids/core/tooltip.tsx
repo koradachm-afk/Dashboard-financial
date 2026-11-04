@@ -33,7 +33,9 @@ function useTooltip({
   onOpenChange: setControlledOpen
 }: TooltipOptions = {}) {
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(initialOpen);
-  const arrowRef = React.useRef(null);
+  const [arrowElement, setArrowElement] = React.useState<SVGSVGElement | null>(
+    null
+  );
 
   const open = controlledOpen ?? uncontrolledOpen;
   const setOpen = setControlledOpen ?? setUncontrolledOpen;
@@ -53,7 +55,7 @@ function useTooltip({
       }),
       shift({ padding: 5 }),
       arrow({
-        element: arrowRef
+        element: arrowElement
       })
     ]
   });
@@ -79,7 +81,7 @@ function useTooltip({
       setOpen,
       ...interactions,
       ...data,
-      arrowRef
+      setArrowElement
     }),
     [open, setOpen, interactions, data]
   );
@@ -121,17 +123,15 @@ export const TooltipTrigger = React.forwardRef<
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
 
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(
-      children,
-      context.getReferenceProps({
-        ref,
-        ...props,
-        ...(React.isValidElement(children) && typeof children.props === "object"
-          ? children.props
-          : {}),
-        "data-state": context.open ? "open" : "closed"
-      } as React.HTMLProps<Element>)
-    );
+    const referenceProps = context.getReferenceProps({
+      ...props,
+      ...(typeof children.props === "object" ? children.props : {}),
+      "data-state": context.open ? "open" : "closed"
+    } as React.HTMLProps<Element>);
+    return React.cloneElement(children, {
+      ...referenceProps,
+      ref
+    } as React.HTMLProps<Element>);
   }
 
   return (
@@ -150,6 +150,7 @@ export const TooltipContent = React.forwardRef<
   React.ComponentPropsWithoutRef<"div">
 >(function TooltipContent({ style, className, ...props }, propRef) {
   const context = useTooltipContext();
+  const { setArrowElement, context: floatingContext } = context;
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
   if (!context.open) return null;
@@ -169,8 +170,8 @@ export const TooltipContent = React.forwardRef<
         )}
       >
         <FloatingArrow
-          ref={context.arrowRef}
-          context={context.context}
+          ref={setArrowElement}
+          context={floatingContext}
           className="fill-surface [&>path:last-of-type]:stroke-line"
           width={18}
           height={18}
