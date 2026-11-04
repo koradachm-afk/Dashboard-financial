@@ -11,7 +11,7 @@ const inputVariants = cva(
         lg: "h-14 px-4 gap-2.5 rounded-xl text-h3 font-normal",
       },
       error: {
-        true: "border-danger ring-1 ring-danger",
+        true: "border-danger ring-1 ring-danger focus-within:border-danger focus-within:ring-danger",
         false: "",
       },
     },

@@ -82,5 +82,6 @@ describe("Button", () => {
     expect(b.firstElementChild).toBe(svg);
     expect(svg).toHaveAttribute("width", px);
     expect(svg).toHaveAttribute("aria-hidden", "true");
+    expect(svg).toHaveClass("shrink-0");
   });
 });

@@ -43,6 +43,14 @@ describe("Input", () => {
     expect(screen.getByRole("textbox")).not.toHaveAttribute("aria-invalid");
   });
 
+  it("keeps the error colors while focused", () => {
+    render(<Input error />);
+    expect(screen.getByRole("textbox").parentElement).toHaveClass(
+      "focus-within:border-danger",
+      "focus-within:ring-danger",
+    );
+  });
+
   it("renders a leading icon at 16px (md) / 20px (lg)", () => {
     const { container, rerender } = render(<Input icon={User} />);
     let svg = container.querySelector("svg");

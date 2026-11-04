@@ -44,7 +44,9 @@ export function Button({
       className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     >
-      {Icon && <Icon size={size === "lg" ? 20 : 16} aria-hidden />}
+      {Icon && (
+        <Icon size={size === "lg" ? 20 : 16} className="shrink-0" aria-hidden />
+      )}
       {children}
     </button>
   );
