@@ -271,7 +271,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 - ☐ ข้อมูลตัวอย่าง 20 เคสไม่ซ้ำกัน แบ่ง 2 หน้า (08, [08.19](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=364-49773)) ใช้ mock ชุดนี้ให้ตรงกับ Figma
 - ☐ Export Excel เฉพาะผู้มีสิทธิ์แก้ไขได้ · สิทธิ์ดูได้เห็นข้อความแจ้งแทนปุ่ม (08.3)
 - ☐ log **แก้ไขหรือลบไม่ได้**
-- ☐ มี `audit()` กลางให้ทุกหน้าเรียกใช้ (ตอนนี้เก็บใน memory หรือ mock) · การ Export ทุกหน้าต้องเรียก `audit()` ด้วยการกระทำ "ส่งออก"
+- ☐ มี `audit()` กลางให้ทุกหน้าเรียกใช้ (เขียนลง localStorage ผ่าน `src/db/store.ts` โดเมน `audit` หน้า Audit Logs จึงเห็นรายการจากการใช้งานจริงต่อจาก seed 20 เคส) · การ Export ทุกหน้าต้องเรียก `audit()` ด้วยการกระทำ "ส่งออก"
 - ☐ การแก้ผังที่ยังไม่บันทึก **ไม่ลง log** บันทึกเฉพาะตอนกดบันทึก
 
 ### 6.6 Dashboard — ตาล
@@ -462,22 +462,25 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 
 ## 8. Mock data
 
-ช่วงหน้าบ้านล้วน ข้อมูลทั้งหมดอยู่ใน `src/db/*.json`
+ช่วงหน้าบ้านล้วน ข้อมูลแบ่งเป็น 2 ชั้น:
+- **seed** = JSON ใน `src/db/*.json` ค่าตั้งต้นตรงกับ Figma **ห้ามแก้ตามการใช้งาน**
+- **store** = ข้อมูลที่เพิ่ม / แก้ระหว่างใช้งาน เก็บ localStorage ผ่าน `src/db/store.ts` ชั้นเดียว (key `autoparking:v1:<โดเมน>`) · เปิดครั้งแรกยังไม่มี key จะโหลดจาก seed · กติกาเต็มอยู่ใน [AGENTS.md](./AGENTS.md) ข้อ 2 กฎข้อ 11
 
-| ไฟล์ | ข้อมูล | ใช้ที่ |
-|---|---|---|
-| `user.json` | ผู้ใช้ (อีเมล `@autoparking.co`), Role, สิทธิ์ราย page (System Settings แยก 3 แท็บ), ธีมที่เลือก | Login, Users, Account, Sidebar |
-| `floors.json` *(เพิ่ม)* | อาคาร, ชั้น, ช่องจอด, วัตถุบนผัง | Parking Layout, Heat Map |
-| `slot-types.json` *(เพิ่ม)* | ประเภทช่องจอด | Settings, Parking Layout |
-| `sessions.json` *(เพิ่ม)* | รถเข้า–ออก + รูปตอนเข้า (`entryImage`) และประตูที่เข้า (`entryGate`) · มีเคสทะเบียนซ้ำ กข 1234 กรุงเทพฯ / นนทบุรี / 1กข 1234 | Activity Log, Dashboard, Customer, Kiosk |
-| `payments.json` *(เพิ่ม)* | รายการชำระ + วิธีชำระ (`method: "qr" \| "bank"`) และธนาคาร (`bank`) | Financial, Dashboard, Customer |
-| `banks.json` *(เพิ่ม)* | รายชื่อธนาคารสำหรับ Mobile Banking (รหัส + ชื่อไทย) 6 แห่งตาม 17.10 | Customer |
-| `audit-logs.json` *(เพิ่ม)* | ประวัติการใช้งาน | Audit Logs |
-| `settings.json` *(เพิ่ม)* | ข้อมูลสาขา, ราคาต่อชั่วโมง, เวลาออกหลังชำระ, เปิด/ปิดการคิดค่าจอดใหม่ | Settings, Customer, Kiosk |
+| ไฟล์ seed | ข้อมูล | เก็บระหว่างใช้งาน (store) | ใช้ที่ |
+|---|---|---|---|
+| `user.json` | ผู้ใช้ (อีเมล `@autoparking.co`), Role, สิทธิ์ราย page (System Settings แยก 3 แท็บ), ธีมตั้งต้น | ไม่เก็บ (seed คงที่) · ธีมที่เลือกเก็บที่ `prefs` (key = user id) | Login, Users, Account, Sidebar |
+| `floors.json` *(เพิ่ม)* | อาคาร, ชั้น, ช่องจอด, วัตถุบนผัง | ผังที่กดบันทึก · สถานะปิดใช้งาน / ซ่อมบำรุงที่ผู้ดูแลตั้ง (`slots`) | Parking Layout, Heat Map |
+| `slot-types.json` *(เพิ่ม)* | ประเภทช่องจอด | ประเภทที่เพิ่ม / แก้ใน Settings | Settings, Parking Layout |
+| `sessions.json` *(เพิ่ม)* | รถเข้า–ออก + รูปตอนเข้า (`entryImage`) และประตูที่เข้า (`entryGate`) · มีเคสทะเบียนซ้ำ กข 1234 กรุงเทพฯ / นนทบุรี / 1กข 1234 | `sessions` · seed ใช้ `sessionId` ตายตัว (`sess_...`) รายการใหม่ใช้ `newSessionId()` | Activity Log, Dashboard, Customer, Kiosk |
+| `payments.json` *(เพิ่ม)* | รายการชำระ + วิธีชำระ (`method: "qr" \| "bank"`) และธนาคาร (`bank`) | `payments` | Financial, Dashboard, Customer |
+| `banks.json` *(เพิ่ม)* | รายชื่อธนาคารสำหรับ Mobile Banking (รหัส + ชื่อไทย) 6 แห่งตาม 17.10 | ไม่เก็บ (seed คงที่) | Customer |
+| `audit-logs.json` *(เพิ่ม)* | ประวัติการใช้งาน | `audit` (ทุกครั้งที่เรียก `audit()`) | Audit Logs |
+| `settings.json` *(เพิ่ม)* | ข้อมูลสาขา, ราคาต่อชั่วโมง, เวลาออกหลังชำระ, เปิด/ปิดการคิดค่าจอดใหม่ | `settings` | Settings, Customer, Kiosk |
 
 กติกา:
 - ใช้ตัวเลขชุดเดียวกับใน Figma (เช่น ทะเบียน `ผบ 9370`, ช่อง `B-07`, รายรับ `฿10,080`) จะเทียบหน้าจอกับเฟรมได้ง่าย
-- หน้าห้าม import JSON ตรง ๆ ให้เรียกผ่านฟังก์ชันกลาง วันที่มี backend จะแก้แค่ฟังก์ชันนั้น ส่วนหน้าไม่ต้องแตะ
+- หน้าห้าม import JSON ตรง ๆ และห้ามเรียก `localStorage` / `sessionStorage` เอง ให้เรียกผ่านฟังก์ชันกลาง วันที่มี backend จะแก้แค่ฟังก์ชันนั้น ส่วนหน้าไม่ต้องแตะ
+- localStorage ผูกกับ browser และโดเมน · demo 3 ฝั่ง (Admin / Customer / Kiosk) ต้องเปิดใน browser เดียวกัน · อยากกลับไปเป็นค่าตาม Figma ให้เรียก `resetStore()`
 - ห้ามใส่ข้อมูลจริงของคน (ชื่อ, อีเมล, ทะเบียนจริง) ลงใน mock
 - รูปตอนเข้าใช้ภาพตัวอย่างใน `public/mock/entry/` ห้ามใช้รูปรถจริงที่เห็นทะเบียน
 

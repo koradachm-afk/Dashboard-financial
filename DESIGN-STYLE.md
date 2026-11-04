@@ -693,7 +693,7 @@ Fabric.js อ่าน CSS variable ไม่ได้เอง ต้องด�
 
 | ฝั่ง | ธีม |
 |---|---|
-| Admin Web | **สว่าง / มืด** (ไม่มี "ตามระบบ") ผ่าน `next-themes` (`attribute="data-theme"`, `themes={["light","dark"]}`, `enableSystem={false}`) · ค่าที่เลือก**บันทึกผูกกับบัญชี** ไม่ใช่แค่ในเครื่อง ตอนนี้เก็บใน mock data ของผู้ใช้ |
+| Admin Web | **สว่าง / มืด** (ไม่มี "ตามระบบ") ผ่าน `next-themes` (`attribute="data-theme"`, `themes={["light","dark"]}`, `enableSystem={false}`) · ค่าที่เลือก**บันทึกผูกกับบัญชี** (key = user id) · ช่วงหน้าบ้านล้วนเก็บใน localStorage ผ่าน `src/db/store.ts` โดเมน `prefs` จึงจำได้เฉพาะ browser นั้น วันที่มี backend จะย้ายไปเก็บกับบัญชีจริง · ค่าตั้งต้นมาจาก seed ของผู้ใช้ |
 | Customer Web | **สว่างเท่านั้น** ครอบ layout ด้วย `<div data-theme="light">` |
 | Kiosk | **สว่างเท่านั้น** ครอบ layout ด้วย `<div data-theme="light">` |
 
