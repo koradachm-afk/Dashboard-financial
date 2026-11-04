@@ -23,11 +23,14 @@ export function createStore<T>(options: {
   let cache: T | undefined;
   let hasCache = false;
   let memory: T = seed; // last known value, used when storage throws
+  let lastRaw: string | null | undefined; // last raw string read from or written to storage
 
   const write = (value: T) => {
     memory = value;
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      const raw = JSON.stringify(value);
+      localStorage.setItem(key, raw);
+      lastRaw = raw;
     } catch {
       // storage unavailable: memory keeps the value
     }
@@ -36,6 +39,7 @@ export function createStore<T>(options: {
   const read = (): T => {
     try {
       const raw = localStorage.getItem(key);
+      lastRaw = raw;
       if (raw !== null) {
         const parsed: unknown = JSON.parse(raw);
         if (validate(parsed)) {
@@ -78,6 +82,15 @@ export function createStore<T>(options: {
     },
     subscribe(onChange) {
       if (hasWindow() && listeners.size === 0) {
+        // storage may have changed while nobody was listening
+        try {
+          if (hasCache && localStorage.getItem(key) !== lastRaw) {
+            hasCache = false;
+            cache = undefined;
+          }
+        } catch {
+          // keep the cache
+        }
         window.addEventListener("storage", onStorage);
       }
       listeners.add(onChange);
