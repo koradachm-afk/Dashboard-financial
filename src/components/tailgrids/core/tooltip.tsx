@@ -164,14 +164,14 @@ export const TooltipContent = React.forwardRef<
         }}
         {...context.getFloatingProps(props)}
         className={cn(
-          "bg-background-100 hidden sm:block rounded-lg px-3 py-2 text-sm font-medium text-tooltip-text shadow-md border border-tooltip-border",
+          "bg-surface hidden sm:block rounded-lg px-3 py-2 text-control font-medium text-fg-2 shadow-tooltip border border-line",
           className
         )}
       >
         <FloatingArrow
           ref={context.arrowRef}
           context={context.context}
-          className="fill-background-100 [&>path:last-of-type]:stroke-tooltip-border"
+          className="fill-surface [&>path:last-of-type]:stroke-line"
           width={18}
           height={18}
           d="M0 20C0 20 2.06906 19.9829 5.91817 15.4092C7.49986 13.5236 8.97939 12.3809 10.0002 12.3809C11.0202 12.3809 12.481 13.6451 14.0814 15.5472C17.952 20.1437 20 20 20 20H0Z"
