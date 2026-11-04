@@ -60,6 +60,8 @@ npm run lint       # ตรวจโค้ดด้วย ESLint
 npm test           # รัน test ทั้งหมดครั้งเดียว (Vitest) · npm run test:watch = โหมด watch
 ```
 
+> ไฟล์ test (`*.test.ts` / `*.test.tsx`) **ไม่ขึ้น repo** (อยู่ใน `.gitignore`) แต่ละคนเขียนและรันในเครื่องตัวเอง · clone ใหม่แล้วยังไม่มี test `npm test` ก็ยังผ่าน
+
 หน้าเริ่มต้นที่ควรลองเปิด:
 
 | URL | หน้า |
