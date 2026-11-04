@@ -1,18 +1,46 @@
 [
   {
-    "id": "1",
-    "name": "Superadmin",
-    "email": "superadmin@company.com",
-    "role_id": "superadmin",
+    "id": "u-superadmin",
+    "username": "superadmin",
+    "name": "superadmin",
+    "email": "superadmin@autoparking.co",
+    "role": "superadmin",
+    "mustSetPassword": false,
     "theme": "dark",
-    "status": "active"
+    "createdAt": "2026-09-01 10:00",
+    "permissions": {
+      "dashboard": "edit",
+      "parking-layout": "edit",
+      "financial-overview": "edit",
+      "activity-log": "edit",
+      "heat-map": "edit",
+      "users": "edit",
+      "audit-logs": "edit",
+      "settings.branch": "edit",
+      "settings.slot-types": "edit",
+      "settings.fees": "edit"
+    }
   },
   {
-    "id": "2",
-    "name": "Admin",
-    "email": "admin@company.com",
-    "role_id": "admin",
+    "id": "u-admin",
+    "username": "admin",
+    "name": "admin",
+    "email": "admin@autoparking.co",
+    "role": "admin",
+    "mustSetPassword": false,
     "theme": "light",
-    "status": "active"
+    "createdAt": "2026-09-05 12:00",
+    "permissions": {
+      "dashboard": "view",
+      "parking-layout": "view",
+      "financial-overview": "view",
+      "activity-log": "view",
+      "heat-map": "view",
+      "users": "none",
+      "audit-logs": "view",
+      "settings.branch": "view",
+      "settings.slot-types": "view",
+      "settings.fees": "view"
+    }
   }
 ]
