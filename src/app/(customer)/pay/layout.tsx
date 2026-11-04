@@ -1,11 +1,7 @@
-import "@/app/globals.css";
-
-export default function Layout({ children }: LayoutProps<"/">) {
+export default function PayLayout({ children }: LayoutProps<"/">) {
   return (
-    <html>
-      <body className="h-dvh w-screen flex flex-col overflow-hidden m-0">
-        {children}
-      </body>
-    </html>
+    <div data-theme="light" className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      {children}
+    </div>
   );
 }
