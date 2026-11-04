@@ -1,9 +1,9 @@
-'use client';
+import { requirePage } from "@/db/auth";
 
-export default function Page() {
-  return (
-    <>
+// The guard reads the session cookie, so this route renders per request (blocking) to give a real redirect.
+export const instant = false;
 
-    </>
-  );
+export default async function Page() {
+  await requirePage("dashboard");
+  return <></>;
 }
