@@ -87,6 +87,8 @@ export async function login(input: { identifier: string; password: string }): Pr
 
   clearFailures(key);
   await startSession(user.id);
+  // A reset abandoned on this browser would otherwise win over this user's invite on /set-password.
+  (await cookies()).delete(RESET_COOKIE);
   return { ok: true, redirectTo: mustSetPasswordFor(user) ? "/set-password" : "/dashboard", audit };
 }
 
