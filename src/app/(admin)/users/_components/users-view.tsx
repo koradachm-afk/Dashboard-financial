@@ -14,6 +14,7 @@ import type { User } from "@/db/user/users";
 import { cn } from "@/utils/cn";
 
 import { ACCESS_PAGES, AccessChips, AccessLegend } from "./access-chips";
+import { DeleteUserDialog } from "./delete-user-dialog";
 
 /** Display fields only: the page never hands credentials or preferences to the client. */
 export type UserRow = Pick<User, "id" | "username" | "email" | "role" | "createdAt" | "permissions">;
@@ -54,6 +55,7 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
   const [applied, setApplied] = useState<Criteria>(EMPTY);
   const [sort, setSort] = useState<"descending" | "ascending">("descending");
   const [page, setPage] = useState(1);
+  const [deleting, setDeleting] = useState<UserRow | null>(null);
 
   const apply = (next: Criteria) => {
     setApplied(next);
@@ -218,6 +220,7 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
                           type="button"
                           aria-label={`ลบ ${u.username}`}
                           disabled={me}
+                          onClick={() => setDeleting(u)}
                           className={ICON_BUTTON}
                         >
                           <Trash2 size={18} aria-hidden="true" />
@@ -268,6 +271,8 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
           )}
         </footer>
       </section>
+
+      <DeleteUserDialog user={deleting} onClose={() => setDeleting(null)} />
     </div>
   );
 }

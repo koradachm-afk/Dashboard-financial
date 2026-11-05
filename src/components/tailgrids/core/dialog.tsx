@@ -10,9 +10,13 @@ export type ConfirmDialogProps = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   icon: LucideIcon;
-  iconTone?: "neutral" | "warning";
+  iconTone?: "neutral" | "warning" | "danger";
   title: string;
   description: ReactNode;
+  /** Extra content under the description, inside the text column. */
+  children?: ReactNode;
+  /** Shown on the footer's left, before the buttons. */
+  footerNote?: ReactNode;
   cancelLabel?: string;
   confirmLabel: string;
   confirmIcon?: LucideIcon;
@@ -28,6 +32,8 @@ export function ConfirmDialog({
   iconTone = "neutral",
   title,
   description,
+  children,
+  footerNote,
   cancelLabel = "ยกเลิก",
   confirmLabel,
   confirmIcon,
@@ -49,9 +55,11 @@ export function ConfirmDialog({
             <span
               className={cn(
                 "flex size-10 shrink-0 items-center justify-center rounded-full",
-                iconTone === "warning"
-                  ? "bg-warning-soft text-warning"
-                  : "bg-page text-fg-2",
+                {
+                  neutral: "bg-page text-fg-2",
+                  warning: "bg-warning-soft text-warning",
+                  danger: "bg-danger-soft text-danger",
+                }[iconTone],
               )}
             >
               <Icon size={20} aria-hidden />
@@ -64,9 +72,11 @@ export function ConfirmDialog({
                 {title}
               </Heading>
               <div className="text-body text-fg-2">{description}</div>
+              {children}
             </div>
           </div>
           <div className="flex justify-end gap-2 border-t border-line bg-subtle px-6 py-3.5">
+            {footerNote && <div className="mr-auto self-center">{footerNote}</div>}
             <Button
               variant="secondary"
               disabled={pending}
