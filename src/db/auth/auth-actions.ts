@@ -1,9 +1,10 @@
 "use server";
 // Every export here is a client-callable Server Action: async functions and types only.
 import { cookies, headers } from "next/headers";
-import { getCurrentUser, RESET_COOKIE, SESSION_COOKIE } from "@/db/auth/auth";
+import { getCurrentUser, getPasswordSetter, RESET_COOKIE, SESSION_COOKIE } from "@/db/auth/auth";
 import { clearFailures, lockedUntil, MAX_FAILURES, recordFailure } from "@/db/auth/login-attempts";
-import { mustSetPasswordFor, passwordOverride } from "@/db/auth/password-store";
+import { passwordRulesMet } from "@/db/auth/password-rules";
+import { mustSetPasswordFor, passwordOverride, recordPasswordSet } from "@/db/auth/password-store";
 import { findUserByIdentifier, type User } from "@/db/user/users";
 import { describeUserAgent } from "@/utils/user-agent";
 // Mock demo passwords, plaintext by decision. Only this server module may import the file:
@@ -106,6 +107,38 @@ export async function requestPasswordReset(input: {
     maxAge: 60 * 60 * 24,
   });
   return { ok: true };
+}
+
+/**
+ * Sets the password of whoever the request's cookies allow (reset cookie, else an invited session;
+ * never the client's word), unlocks the account and signs in. No such user → "expired";
+ * malformed input or a password that breaks a rule → "invalid", with nothing changed.
+ */
+export async function setPassword(input: {
+  password: string;
+  confirm: string;
+}): Promise<{ ok: true; source: "reset" | "invite"; audit: AuditInfo } | { ok: false; reason: "expired" | "invalid" }> {
+  const setter = await getPasswordSetter();
+  if (!setter) return { ok: false, reason: "expired" };
+
+  // A Server Action is a public endpoint: never trust the input's shape. Over-long is rejected, not cut.
+  const password = input?.password;
+  const confirm = input?.confirm;
+  if (typeof password !== "string" || typeof confirm !== "string" || password.length > MAX_IDENTIFIER) {
+    return { ok: false, reason: "invalid" };
+  }
+  if (!passwordRulesMet(password, confirm)) return { ok: false, reason: "invalid" };
+
+  const { user, source } = setter;
+  // Every request read happens before any change, so a failed read cannot leave half a reset.
+  const audit = await auditFor(user, user.username);
+  const jar = await cookies();
+
+  recordPasswordSet(user.id, password);
+  clearFailures(user.username);
+  jar.delete(RESET_COOKIE);
+  await startSession(user.id);
+  return { ok: true, source, audit };
 }
 
 /** Ends the session and returns the audit info of who left (null without a valid session). The caller writes the "ออกจากระบบ" entry. */
