@@ -41,7 +41,7 @@ export function ConfirmDialog({
       onOpenChange={onOpenChange}
       isDismissable={!pending}
       isKeyboardDismissDisabled={pending}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-overlay"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4"
     >
       <Modal className="w-105 max-w-full overflow-hidden rounded-xl bg-surface shadow-modal outline-none">
         <Dialog className="outline-none">
