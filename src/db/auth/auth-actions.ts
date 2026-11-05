@@ -1,7 +1,7 @@
 "use server";
 // Every export here is a client-callable Server Action: async functions and types only.
 import { cookies, headers } from "next/headers";
-import { SESSION_COOKIE } from "@/db/auth/auth";
+import { getCurrentUser, SESSION_COOKIE } from "@/db/auth/auth";
 import { clearFailures, lockedUntil, MAX_FAILURES, recordFailure } from "@/db/auth/login-attempts";
 import { findUserByIdentifier, type User } from "@/db/user/users";
 import { describeUserAgent } from "@/utils/user-agent";
@@ -80,7 +80,11 @@ export async function login(input: { identifier: string; password: string }): Pr
   return { ok: true, redirectTo: user.mustSetPassword ? "/set-password" : "/dashboard", audit };
 }
 
-/** Ends the session. The caller writes the "ออกจากระบบ" audit entry. */
-export async function logout(): Promise<void> {
+/** Ends the session and returns the audit info of who left (null without a valid session). The caller writes the "ออกจากระบบ" entry. */
+export async function logout(): Promise<AuditInfo | null> {
+  // Read the user before the cookie is deleted.
+  const user = await getCurrentUser();
+  const info = user ? await auditFor(user, user.username) : null;
   (await cookies()).delete(SESSION_COOKIE);
+  return info;
 }
