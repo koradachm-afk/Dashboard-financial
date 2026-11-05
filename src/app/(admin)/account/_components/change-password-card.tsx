@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader, Lock } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/tailgrids/core/button";
@@ -12,6 +11,7 @@ import { Toast } from "@/components/tailgrids/core/toast";
 import { audit } from "@/db/audit/audit";
 import { changePassword } from "@/db/auth/auth-actions";
 import { passwordRulesMet } from "@/db/auth/password-rules";
+import { reloadTo } from "@/utils/reload-to";
 
 const ERROR_MESSAGE = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
 const WRONG_CURRENT = "รหัสผ่านปัจจุบันไม่ถูกต้อง";
@@ -51,7 +51,6 @@ function PasswordField({
 
 // Mirrors Figma 09.2 / 09.3 (unmet rules, dimmed button), 09.4 (cleared form + toast), 09.19 (wrong current password).
 export function ChangePasswordCard() {
-  const router = useRouter();
   const [pending, start] = useTransition();
   const [current, setCurrent] = useState("");
   const [password, setPassword] = useState("");
@@ -84,7 +83,8 @@ export function ChangePasswordCard() {
         setSuccessCount((n) => n + 1);
         setToastOpen(true);
       } else if (r.reason === "expired") {
-        router.replace("/login");
+        // Full page load: a client navigation would keep this page, with the typed passwords, alive but hidden.
+        reloadTo("/login");
       } else if (r.reason === "wrong-current") {
         setWrongCurrent(true);
       } else {

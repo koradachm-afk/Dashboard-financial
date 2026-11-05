@@ -11,6 +11,7 @@ import { PasswordRuleList } from "@/components/tailgrids/core/password-rule-list
 import { audit } from "@/db/audit/audit";
 import { setPassword } from "@/db/auth/auth-actions";
 import { passwordRulesMet } from "@/db/auth/password-rules";
+import { reloadTo } from "@/utils/reload-to";
 
 const ERROR_MESSAGE = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
 const MESSAGE_ID = "set-password-message";
@@ -46,7 +47,8 @@ export function SetPasswordForm({ username }: { username: string }) {
         });
         router.push("/dashboard");
       } else if (r.reason === "expired") {
-        router.replace("/login");
+        // Full page load: a client navigation would keep this page, with the typed password, alive but hidden.
+        reloadTo("/login");
       } else {
         // The rules above already block this; the server re-checked and disagreed.
         setFailed(true);
