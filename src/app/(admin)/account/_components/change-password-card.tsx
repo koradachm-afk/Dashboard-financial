@@ -58,8 +58,9 @@ export function ChangePasswordCard() {
   const [confirm, setConfirm] = useState("");
   const [wrongCurrent, setWrongCurrent] = useState(false);
   const [failed, setFailed] = useState(false);
-  // A new key per success remounts the toast, so a second success restarts its countdown.
-  const [toastKey, setToastKey] = useState<number | null>(null);
+  const [toastOpen, setToastOpen] = useState(false);
+  // Bumped per success so a second success restarts the toast's countdown and re-announces it.
+  const [successCount, setSuccessCount] = useState(0);
   const ready = current !== "" && passwordRulesMet(password, confirm);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -80,7 +81,8 @@ export function ChangePasswordCard() {
         setCurrent("");
         setPassword("");
         setConfirm("");
-        setToastKey((k) => (k ?? 0) + 1);
+        setSuccessCount((n) => n + 1);
+        setToastOpen(true);
       } else if (r.reason === "expired") {
         router.replace("/login");
       } else if (r.reason === "wrong-current") {
@@ -152,15 +154,13 @@ export function ChangePasswordCard() {
         </div>
       </form>
 
-      {toastKey !== null && (
-        <Toast
-          key={toastKey}
-          open
-          title="เปลี่ยนรหัสผ่านเรียบร้อยแล้ว"
-          description="ใช้รหัสผ่านใหม่ในการเข้าสู่ระบบครั้งถัดไป"
-          onClose={() => setToastKey(null)}
-        />
-      )}
+      <Toast
+        open={toastOpen}
+        messageId={successCount}
+        title="เปลี่ยนรหัสผ่านเรียบร้อยแล้ว"
+        description="ใช้รหัสผ่านใหม่ในการเข้าสู่ระบบครั้งถัดไป"
+        onClose={() => setToastOpen(false)}
+      />
     </section>
   );
 }
