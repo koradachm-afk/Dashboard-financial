@@ -1,4 +1,5 @@
 import { requirePage } from "@/db/auth/auth";
+import { SETTINGS_PAGES } from "@/db/user/access";
 
 // The guard reads the session cookie, so the route blocks on that read and renders per request.
 // redirect() is delivered inside the stream (a client-side navigation on an HTTP 200);
@@ -6,6 +7,6 @@ import { requirePage } from "@/db/auth/auth";
 export const instant = false;
 
 export default async function Page() {
-  await requirePage(["settings.branch", "settings.slot-types", "settings.fees"]);
+  await requirePage(SETTINGS_PAGES);
   return <></>;
 }

@@ -51,7 +51,7 @@ import { siteConfig } from "@/config/site";
 import { useSettings } from "@/db/settings/settings";
 import { audit } from "@/db/audit/audit";
 import { logout } from "@/db/auth/auth-actions";
-import { accessFor } from "@/db/user/access";
+import { accessFor, SETTINGS_PAGES } from "@/db/user/access";
 import { setThemeFor, usePrefs, type Theme } from "@/db/prefs/prefs";
 import type { PageKey, User as UserRecord } from "@/db/user/users";
 import { usePathname, useRouter } from "next/navigation";
@@ -84,7 +84,7 @@ const NAV: readonly { group: string; items: readonly NavItem[] }[] = [
         label: "System Settings",
         href: "/settings",
         icon: Settings,
-        pages: ["settings.branch", "settings.slot-types", "settings.fees"],
+        pages: SETTINGS_PAGES,
       },
       { label: "Audit Logs", href: "/audit-logs", icon: History, pages: ["audit-logs"] },
     ],
