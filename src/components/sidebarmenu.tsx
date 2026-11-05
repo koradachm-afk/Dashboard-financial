@@ -13,15 +13,19 @@ import {
 } from "@/components/tailgrids/core/sidebar";
 import {
   Activity,
+  Check,
+  ChevronRight,
   ChevronsUpDown,
   Flame,
   History,
   LayoutDashboard,
   LogOut,
   Map,
+  Moon,
   Settings,
   ShieldCheck,
   SquareParking,
+  Sun,
   User,
   Wallet,
   type LucideIcon
@@ -33,6 +37,7 @@ import {
   DropdownMenuHeader,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuSubmenu,
   DropdownMenuTrigger
 } from "@/components/tailgrids/core/dropdown";
 import { ConfirmDialog } from "@/components/tailgrids/core/dialog";
@@ -47,11 +52,13 @@ import { useSettings } from "@/db/settings/settings";
 import { audit } from "@/db/audit/audit";
 import { logout } from "@/db/auth/auth-actions";
 import { accessFor } from "@/db/user/access";
+import { setThemeFor, usePrefs, type Theme } from "@/db/prefs/prefs";
 import type { PageKey, User as UserRecord } from "@/db/user/users";
 import { usePathname, useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 
 /** Display fields only: the server passes these as props, so the user seed never reaches the client bundle. */
-export type SidebarUser = Pick<UserRecord,"username" | "email" | "role" | "permissions">;
+export type SidebarUser = Pick<UserRecord, "id" | "username" | "email" | "role" | "permissions" | "theme">;
 
 const ROLE_LABEL = { superadmin: "Superadmin", admin: "Admin" } as const;
 
@@ -88,6 +95,12 @@ const navItem =
   "flex h-10 items-center gap-3 rounded-lg px-3 text-control font-medium text-fg-2 transition-colors hover:bg-subtle";
 const navItemActive = "bg-primary-soft font-semibold text-primary hover:bg-primary-soft";
 const menuItem = "h-9 gap-2.5 rounded-md px-2.5 py-0 text-body";
+
+// Figma 09.1: light / dark only, no "system".
+const THEMES: readonly { id: Theme; label: string; icon: LucideIcon }[] = [
+  { id: "light", label: "สว่าง", icon: Sun },
+  { id: "dark", label: "มืด", icon: Moon },
+];
 
 const isActive = (pathname: string, href: string) =>
   pathname === href || pathname.startsWith(href + "/");
@@ -157,6 +170,58 @@ export default function Sidebarmenu({ user }: { user: SidebarUser | null }) {
   );
 }
 
+function ThemeSubmenu({ user }: { user: SidebarUser }) {
+  const { setTheme } = useTheme();
+  // The account's stored-or-seed theme, not next-themes' resolvedTheme: the store's server
+  // snapshot is the empty seed, so server and first client render agree.
+  const theme = usePrefs()[user.id]?.theme ?? user.theme;
+  const current = THEMES.find((t) => t.id === theme) ?? THEMES[0];
+
+  const choose = (key: string) => {
+    const next = key as Theme; // keys are the THEMES ids below
+    // Prefs first: other tabs must see the new pref before the theme key, or they write the old one back.
+    setThemeFor(user.id, next);
+    setTheme(next);
+  };
+
+  return (
+    <DropdownMenuSubmenu
+      aria-label="ธีม"
+      header="ธีม · บันทึกกับบัญชีของคุณ"
+      selectedKey={theme}
+      onSelect={choose}
+      trigger={
+        <DropdownMenuItem id="theme" textValue="ธีม" className={cn(menuItem, "font-medium text-fg")}>
+          <current.icon size={16} aria-hidden="true" className="shrink-0 text-fg-2" />
+          ธีม
+          <span className="ml-auto text-label text-fg-3">{current.label}</span>
+          <ChevronRight size={14} aria-hidden="true" className="shrink-0 text-fg-3" />
+        </DropdownMenuItem>
+      }
+    >
+      {THEMES.map(({ id, label, icon: Icon }) => {
+        const selected = id === theme;
+        return (
+          <DropdownMenuItem
+            key={id}
+            id={id}
+            textValue={label}
+            className={cn(
+              menuItem,
+              "font-medium text-fg",
+              selected && "bg-primary-soft font-semibold text-primary focus:text-primary"
+            )}
+          >
+            <Icon size={16} aria-hidden="true" className={cn("shrink-0", !selected && "text-fg-2")} />
+            {label}
+            {selected && <Check size={16} aria-hidden="true" className="ml-auto shrink-0" />}
+          </DropdownMenuItem>
+        );
+      })}
+    </DropdownMenuSubmenu>
+  );
+}
+
 function SidebarFooterSection({ user }: { user: SidebarUser }) {
   const router = useRouter();
   const [confirmOpen, setConfirmOpen] = React.useState(false);
@@ -218,6 +283,7 @@ function SidebarFooterSection({ user }: { user: SidebarUser }) {
             <User size={16} aria-hidden="true" className="shrink-0 text-fg-2" />
             บัญชีของฉัน
           </DropdownMenuItem>
+          <ThemeSubmenu user={user} />
           <DropdownMenuSeparator className="my-0.5" />
           <DropdownMenuItem
             onAction={() => setConfirmOpen(true)}
