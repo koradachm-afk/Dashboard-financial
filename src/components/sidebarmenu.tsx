@@ -51,7 +51,7 @@ import type { PageKey, User as UserRecord } from "@/db/user/users";
 import { usePathname, useRouter } from "next/navigation";
 
 /** Display fields only: the server passes these as props, so the user seed never reaches the client bundle. */
-export type SidebarUser = Pick<UserRecord,"username" | "email" | "role" | "permissions">;
+export type SidebarUser = Pick<UserRecord, "id" | "username" | "email" | "role" | "permissions" | "theme">;
 
 const ROLE_LABEL = { superadmin: "Superadmin", admin: "Admin" } as const;
 
