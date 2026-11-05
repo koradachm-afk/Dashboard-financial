@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-import { FormAlert } from "@/app/(auth)/_components/form-alert";
+import { FormAlert } from "@/components/tailgrids/core/form-alert";
 import { Button } from "@/components/tailgrids/core/button";
 import { Input } from "@/components/tailgrids/core/input";
 import { requestPasswordReset } from "@/db/auth/auth-actions";

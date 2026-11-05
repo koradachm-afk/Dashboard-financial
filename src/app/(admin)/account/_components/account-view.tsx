@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/db/auth/auth";
 
 import { AccountInfoCard, type AccountInfo } from "./account-info-card";
+import { ChangePasswordCard } from "./change-password-card";
 import { PermissionsCard, type AccountPermissions } from "./permissions-card";
 
 /** Reads the session behind Suspense (the page's boundary) and hands the cards display fields only. */
@@ -29,8 +30,9 @@ export async function AccountView() {
           <AccountInfoCard user={picked} />
           <PermissionsCard user={picked} />
         </div>
-        {/* Change-password card (Figma 09.2, 440 wide) goes here. */}
-        <div className="w-110 shrink-0" />
+        <div className="w-110 shrink-0">
+          <ChangePasswordCard />
+        </div>
       </div>
     </div>
   );
