@@ -1,15 +1,16 @@
 "use client";
 
-import { Circle, CircleCheck, Loader, Lock } from "lucide-react";
+import { Loader, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { FormAlert } from "@/components/tailgrids/core/form-alert";
 import { Button } from "@/components/tailgrids/core/button";
 import { Input } from "@/components/tailgrids/core/input";
+import { PasswordRuleList } from "@/components/tailgrids/core/password-rule-list";
 import { audit } from "@/db/audit/audit";
 import { setPassword } from "@/db/auth/auth-actions";
-import { PASSWORD_RULES, passwordRulesMet } from "@/db/auth/password-rules";
+import { passwordRulesMet } from "@/db/auth/password-rules";
 
 const ERROR_MESSAGE = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
 const MESSAGE_ID = "set-password-message";
@@ -100,26 +101,7 @@ export function SetPasswordForm({ username }: { username: string }) {
         />
       </div>
 
-      {/* Each rule is a read-only checkbox: screen readers announce checked / not checked in their own words. */}
-      <div className="flex flex-col gap-2 rounded-lg bg-subtle px-3.5 py-3">
-        {PASSWORD_RULES.map((rule) => {
-          const met = rule.test(password, confirm);
-          const Icon = met ? CircleCheck : Circle;
-          return (
-            <div
-              key={rule.id}
-              role="checkbox"
-              aria-checked={met}
-              aria-readonly="true"
-              data-met={met}
-              className="flex items-center gap-2 text-label font-medium text-fg"
-            >
-              <Icon size={16} className={met ? "shrink-0 text-success" : "shrink-0 text-fg-3"} aria-hidden="true" />
-              {rule.label}
-            </div>
-          );
-        })}
-      </div>
+      <PasswordRuleList password={password} confirm={confirm} />
 
       {failed && (
         <FormAlert id={MESSAGE_ID}>{ERROR_MESSAGE}</FormAlert>
