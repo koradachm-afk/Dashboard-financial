@@ -1,5 +1,5 @@
 import { cn } from "@/utils/cn";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactElement, ReactNode } from "react";
 import {
   Button,
   type ButtonProps,
@@ -13,7 +13,8 @@ import {
   type MenuTriggerProps,
   Popover,
   type PopoverProps,
-  Separator
+  Separator,
+  SubmenuTrigger
 } from "react-aria-components";
 
 export function DropdownMenu(props: MenuTriggerProps) {
@@ -90,5 +91,58 @@ export function DropdownMenuSeparator({
       className={cn("bg-line h-px border-none", className)}
       {...props}
     />
+  );
+}
+
+type DropdownMenuSubmenuProps = {
+  /** The parent row; must be a DropdownMenuItem. */
+  trigger: ReactElement;
+  /** DropdownMenuItem options; each needs an `id`. */
+  children: ReactNode;
+  "aria-label"?: string;
+  /** Optional non-interactive header row above the options. */
+  header?: ReactNode;
+  /** Id of the checked option (single selection). */
+  selectedKey?: string;
+  onSelect?: (key: string) => void;
+  className?: string;
+};
+
+export function DropdownMenuSubmenu({
+  trigger,
+  children,
+  "aria-label": ariaLabel,
+  header,
+  selectedKey,
+  onSelect,
+  className
+}: DropdownMenuSubmenuProps) {
+  return (
+    <SubmenuTrigger>
+      {trigger}
+      <Popover placement="end top">
+        <Menu
+          aria-label={ariaLabel}
+          selectionMode="single"
+          disallowEmptySelection
+          selectedKeys={selectedKey ? [selectedKey] : []}
+          onSelectionChange={(keys) => {
+            const key = [...keys][0];
+            if (key !== undefined) onSelect?.(String(key));
+          }}
+          className={cn(
+            "outline-hidden rounded-pop border border-line bg-surface shadow-pop overflow-clip min-w-40 flex flex-col gap-0.5 p-1.5",
+            className
+          )}
+        >
+          {header ? (
+            <Header className="text-caption font-medium text-fg-3 px-2.5 py-1">
+              {header}
+            </Header>
+          ) : null}
+          {children}
+        </Menu>
+      </Popover>
+    </SubmenuTrigger>
   );
 }
