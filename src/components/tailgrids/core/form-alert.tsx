@@ -1,6 +1,6 @@
 import { type LucideIcon, TriangleAlert } from "lucide-react";
 
-/** The red message box under an auth form. */
+/** The red message box under a form (auth pages, account change-password card). */
 export function FormAlert({
   id,
   icon: Icon = TriangleAlert,

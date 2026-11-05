@@ -12,22 +12,14 @@ import {
   SidebarFooter
 } from "@/components/tailgrids/core/sidebar";
 import {
-  Activity,
   Check,
   ChevronRight,
   ChevronsUpDown,
-  Flame,
-  History,
-  LayoutDashboard,
   LogOut,
-  Map,
   Moon,
-  Settings,
-  ShieldCheck,
   SquareParking,
   Sun,
   User,
-  Wallet,
   type LucideIcon
 } from "lucide-react";
 
@@ -41,7 +33,9 @@ import {
   DropdownMenuTrigger
 } from "@/components/tailgrids/core/dropdown";
 import { ConfirmDialog } from "@/components/tailgrids/core/dialog";
-import { RoleBadge } from "@/components/tailgrids/core/role-badge";
+import { Avatar } from "@/components/tailgrids/core/avatar";
+import { ROLE_LABEL, RoleBadge } from "@/components/tailgrids/core/role-badge";
+import { NAV } from "@/components/admin-nav";
 
 import * as React from "react";
 import { cn } from "@/utils/cn";
@@ -51,45 +45,14 @@ import { siteConfig } from "@/config/site";
 import { useSettings } from "@/db/settings/settings";
 import { audit } from "@/db/audit/audit";
 import { logout } from "@/db/auth/auth-actions";
-import { accessFor, SETTINGS_PAGES } from "@/db/user/access";
+import { accessFor } from "@/db/user/access";
 import { setThemeFor, usePrefs, type Theme } from "@/db/prefs/prefs";
-import type { PageKey, User as UserRecord } from "@/db/user/users";
+import type { User as UserRecord } from "@/db/user/users";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 
 /** Display fields only: the server passes these as props, so the user seed never reaches the client bundle. */
 export type SidebarUser = Pick<UserRecord, "id" | "username" | "email" | "role" | "permissions" | "theme">;
-
-const ROLE_LABEL = { superadmin: "Superadmin", admin: "Admin" } as const;
-
-// An item shows when the user can reach any of its pages (README §6.2).
-type NavItem = { label: string; href: string; icon: LucideIcon; pages: readonly PageKey[] };
-
-const NAV: readonly { group: string; items: readonly NavItem[] }[] = [
-  {
-    group: "เมนูหลัก",
-    items: [
-      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, pages: ["dashboard"] },
-      { label: "Parking Layout", href: "/parking-layout", icon: Map, pages: ["parking-layout"] },
-      { label: "Financial Overview", href: "/financial-overview", icon: Wallet, pages: ["financial-overview"] },
-      { label: "Activity Log", href: "/activity-log", icon: Activity, pages: ["activity-log"] },
-      { label: "Parking Heat Map", href: "/heat-map", icon: Flame, pages: ["heat-map"] },
-    ],
-  },
-  {
-    group: "จัดการระบบ",
-    items: [
-      { label: "User & Permissions", href: "/users", icon: ShieldCheck, pages: ["users"] },
-      {
-        label: "System Settings",
-        href: "/settings",
-        icon: Settings,
-        pages: SETTINGS_PAGES,
-      },
-      { label: "Audit Logs", href: "/audit-logs", icon: History, pages: ["audit-logs"] },
-    ],
-  },
-];
 
 const navItem =
   "flex h-10 items-center gap-3 rounded-lg px-3 text-control font-medium text-fg-2 transition-colors hover:bg-subtle";
@@ -104,8 +67,6 @@ const THEMES: readonly { id: Theme; label: string; icon: LucideIcon }[] = [
 
 const isActive = (pathname: string, href: string) =>
   pathname === href || pathname.startsWith(href + "/");
-
-const initials = (username: string) => username.slice(0, 2).toUpperCase();
 
 // Hiding is cosmetic: requirePage in each page.tsx is the real guard.
 function visibleNav(user: SidebarUser) {
@@ -255,9 +216,7 @@ function SidebarFooterSection({ user }: { user: SidebarUser }) {
     <SidebarFooter>
       <DropdownMenu>
         <DropdownMenuTrigger className="flex w-full items-center gap-2.5 rounded-pop border border-line bg-page px-3 py-2.5 duration-200 aria-expanded:border-focus">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-body font-semibold text-primary">
-            {initials(user.username)}
-          </div>
+          <Avatar username={user.username} className="size-9 bg-primary-soft text-body text-primary" />
           <div className="grid text-left leading-tight">
             <span className="truncate text-control font-semibold text-fg">{user.username}</span>
             <span className="truncate text-label text-fg-2">{ROLE_LABEL[user.role]}</span>
@@ -268,9 +227,7 @@ function SidebarFooterSection({ user }: { user: SidebarUser }) {
 
         <DropdownMenuContent className="w-(--trigger-width) min-w-56 p-1.5" placement="top" offset={6}>
           <DropdownMenuHeader className="flex items-center gap-2.5 p-2">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-body font-semibold text-on-primary">
-              {initials(user.username)}
-            </div>
+            <Avatar username={user.username} className="size-9 bg-primary text-body text-on-primary" />
             <div className="flex min-w-0 flex-col items-start gap-0.75 text-left">
               <span className="max-w-full truncate text-control font-semibold text-fg">{user.username}</span>
               <span className="max-w-full truncate text-label text-fg-2">{user.email}</span>

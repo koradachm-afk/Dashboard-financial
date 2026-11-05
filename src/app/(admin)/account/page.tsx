@@ -1,12 +1,13 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/db/auth/auth";
+import { Suspense } from "react";
 
-// The guard reads the session cookie, so the route blocks on that read and renders per request.
-// redirect() is delivered inside the stream (a client-side navigation on an HTTP 200);
-// an HTTP 307 before any bytes would need a proxy.ts check.
-export const instant = false;
+import { AccountView } from "./_components/account-view";
 
-export default async function Page() {
-  if (!(await getCurrentUser())) redirect("/login");
-  return <></>;
+// Any signed-in user may open their own account, so there is no page permission to check.
+// AccountView reads the session behind this boundary and redirects to /login without one.
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <AccountView />
+    </Suspense>
+  );
 }
