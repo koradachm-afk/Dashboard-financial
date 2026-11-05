@@ -1,9 +1,10 @@
 "use client";
 
-import { Circle, CircleCheck, Loader, Lock, TriangleAlert } from "lucide-react";
+import { Circle, CircleCheck, Loader, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
+import { FormAlert } from "@/app/(auth)/_components/form-alert";
 import { Button } from "@/components/tailgrids/core/button";
 import { Input } from "@/components/tailgrids/core/input";
 import { audit } from "@/db/audit/audit";
@@ -121,14 +122,7 @@ export function SetPasswordForm({ username }: { username: string }) {
       </div>
 
       {failed && (
-        <div
-          id={MESSAGE_ID}
-          role="alert"
-          className="flex items-start gap-2 rounded-lg border border-danger bg-danger-soft px-3 py-2.5 text-body text-danger"
-        >
-          <TriangleAlert size={16} className="shrink-0" aria-hidden="true" />
-          <p className="min-w-0 flex-1">{ERROR_MESSAGE}</p>
-        </div>
+        <FormAlert id={MESSAGE_ID}>{ERROR_MESSAGE}</FormAlert>
       )}
 
       <Button type="submit" className="h-11 w-full" disabled={pending || !ready}>
