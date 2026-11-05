@@ -45,10 +45,10 @@ export function ConfirmDialog({
     >
       <Modal className="w-105 max-w-full overflow-hidden rounded-xl bg-surface shadow-modal outline-none">
         <Dialog className="outline-none">
-          <div className="flex flex-col gap-4 p-6">
+          <div className="flex items-start gap-4 p-6">
             <span
               className={cn(
-                "flex size-10 items-center justify-center rounded-full",
+                "flex size-10 shrink-0 items-center justify-center rounded-full",
                 iconTone === "warning"
                   ? "bg-warning-soft text-warning"
                   : "bg-page text-fg-2",
@@ -56,7 +56,7 @@ export function ConfirmDialog({
             >
               <Icon size={20} aria-hidden />
             </span>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <Heading
                 slot="title"
                 className="text-lead font-semibold text-fg"
