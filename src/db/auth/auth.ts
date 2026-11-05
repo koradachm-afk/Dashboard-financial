@@ -2,13 +2,12 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { mustSetPasswordFor } from "@/db/auth/password-store";
-import { accessFor, getUserById, type Access, type PageKey, type User } from "@/db/user/users";
+import { ACCESS_RANK, bestAccess } from "@/db/user/access";
+import { getUserById, type PageKey, type User } from "@/db/user/users";
 
 export const SESSION_COOKIE = "autoparking_session";
 /** Set by the forgot-password flow. Mock: the cookie holds the user id. */
 export const RESET_COOKIE = "autoparking_reset";
-
-const RANK: Record<Access, number> = { none: 0, view: 1, edit: 2 };
 
 /** The signed-in user from the session cookie, or null. Mock: the cookie holds the user id. */
 export async function getCurrentUser(): Promise<User | null> {
@@ -39,8 +38,6 @@ export async function requirePage(
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   const pages: readonly PageKey[] = typeof page === "string" ? [page] : page;
-  // Fail closed: a missing or unknown access value ranks as "none".
-  const best = Math.max(0, ...pages.map((p) => RANK[accessFor(user, p)] ?? 0));
-  if (best < RANK[need]) redirect("/403");
+  if (ACCESS_RANK[bestAccess(user, pages)] < ACCESS_RANK[need]) redirect("/403");
   return user;
 }
