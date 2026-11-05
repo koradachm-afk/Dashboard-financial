@@ -207,7 +207,7 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
                     <td className={TD}>
                       <AccessChips user={u} />
                     </td>
-                    <td className={cn(TD, "text-body text-fg tabular-nums")}>{u.createdAt}</td>
+                    <td className={cn(TD, "whitespace-nowrap text-body text-fg tabular-nums")}>{u.createdAt}</td>
                     <td className={TD}>
                       <div className="flex justify-end gap-1">
                         <button type="button" aria-label={`แก้ไข ${u.username}`} className={ICON_BUTTON}>
