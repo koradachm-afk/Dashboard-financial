@@ -28,11 +28,19 @@ export async function getPasswordSetter(): Promise<{ user: User; source: "reset"
   return user && mustSetPasswordFor(user) ? { user, source: "invite" } : null;
 }
 
-/** Guard for a server page: no session → /login; access below `need` → /403. */
-export async function requirePage(page: PageKey, need: "view" | "edit" = "view"): Promise<User> {
+/**
+ * Guard for a server page: no session → /login; best access across `page` below `need` → /403.
+ * A list passes if any one listed page grants `need`; an empty list grants nothing.
+ */
+export async function requirePage(
+  page: PageKey | readonly PageKey[],
+  need: "view" | "edit" = "view",
+): Promise<User> {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const pages: readonly PageKey[] = typeof page === "string" ? [page] : page;
   // Fail closed: a missing or unknown access value ranks as "none".
-  if ((RANK[accessFor(user, page)] ?? 0) < RANK[need]) redirect("/403");
+  const best = Math.max(0, ...pages.map((p) => RANK[accessFor(user, p)] ?? 0));
+  if (best < RANK[need]) redirect("/403");
   return user;
 }
