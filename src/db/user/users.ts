@@ -4,6 +4,7 @@ export type Role = "superadmin" | "admin";
 export type Access = "none" | "view" | "edit";
 export type PageKey =
   | "dashboard"
+  | "account"
   | "parking-layout"
   | "financial-overview"
   | "activity-log"

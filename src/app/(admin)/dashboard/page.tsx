@@ -7,5 +7,8 @@ export const instant = false;
 
 export default async function Page() {
   await requirePage("dashboard");
-  return <></>;
+  return <>
+
+  </>
+  ;
 }
