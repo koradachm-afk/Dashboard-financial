@@ -14,6 +14,7 @@ import type { User } from "@/db/user/users";
 import { cn } from "@/utils/cn";
 
 import { ACCESS_PAGES, AccessChips, AccessLegend } from "./access-chips";
+import { AddUserModal } from "./add-user-modal";
 import { DeleteUserDialog } from "./delete-user-dialog";
 import { EditUserDrawer } from "./edit-user-drawer";
 
@@ -58,6 +59,7 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
   const [page, setPage] = useState(1);
   const [deleting, setDeleting] = useState<UserRow | null>(null);
   const [editing, setEditing] = useState<UserRow | null>(null);
+  const [adding, setAdding] = useState(false);
 
   const apply = (next: Criteria) => {
     setApplied(next);
@@ -92,8 +94,7 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
           <h1 className="text-h1 font-bold text-fg">User &amp; Permissions</h1>
           <p className="text-body text-fg-2">จัดการบัญชีผู้ใช้และสิทธิ์การเข้าถึงแต่ละหน้า · เฉพาะ Superadmin</p>
         </div>
-        {/* Add is wired in Task 4 of ui/users-dialogs. */}
-        <Button icon={UserPlus} className="ml-auto">
+        <Button icon={UserPlus} onClick={() => setAdding(true)} className="ml-auto">
           เพิ่มผู้ใช้
         </Button>
       </div>
@@ -281,6 +282,15 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
 
       <DeleteUserDialog user={deleting} onClose={() => setDeleting(null)} />
       <EditUserDrawer user={editing} onClose={() => setEditing(null)} />
+      <AddUserModal
+        isOpen={adding}
+        onClose={() => setAdding(false)}
+        onCreate={(created) => {
+          setAdding(false);
+          // Spec Q1: a new Admin goes straight on to permissions. Nothing is stored either way.
+          if (created.role === "admin") setEditing(created);
+        }}
+      />
     </div>
   );
 }
