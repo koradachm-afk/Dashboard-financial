@@ -34,8 +34,8 @@ export const NO_ACCESS: Readonly<Record<PageKey, Access>> = Object.freeze(
   >,
 );
 
-// Figma 07.4 has no label for the close X; this matches the one core/sheet.tsx already uses.
-const CLOSE_LABEL = "Close";
+// Figma 07.4 has no label for the close X; "ปิด" was approved in chat, same as the toast and dialogs.
+const CLOSE_LABEL = "ปิด";
 
 const TAB_LABEL: Partial<Record<PageKey, string>> = {
   "settings.branch": "ข้อมูลสาขา",

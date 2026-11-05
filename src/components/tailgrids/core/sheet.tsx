@@ -132,7 +132,7 @@ export function SheetContent({
             {showCloseButton && (
               <AriaButton
                 onPress={close}
-                aria-label="Close"
+                aria-label="ปิด"
                 className={cn(
                   "absolute top-4 right-4 flex size-7 items-center justify-center rounded-md text-fg-2 opacity-70 outline-none transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-focus disabled:pointer-events-none [&>svg]:size-5",
                   side === "right" && "sm:right-0"
