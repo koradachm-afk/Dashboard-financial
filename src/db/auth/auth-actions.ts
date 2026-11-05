@@ -143,6 +143,35 @@ export async function setPassword(input: {
   return { ok: true, source, audit };
 }
 
+/**
+ * Changes the password of the signed-in user (resolved from the session cookie, never the
+ * client's word). No session → "expired"; malformed or over-long input, or a new password that
+ * breaks a rule → "invalid"; a wrong current password → "wrong-current", not counted as a failed
+ * login. Nothing changes on failure; the session cookie is never touched.
+ */
+export async function changePassword(input: {
+  current: string;
+  password: string;
+  confirm: string;
+}): Promise<{ ok: true; audit: AuditInfo } | { ok: false; reason: "expired" | "wrong-current" | "invalid" }> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false, reason: "expired" };
+
+  // A Server Action is a public endpoint: never trust the input's shape. Over-long is rejected, not cut.
+  const fields = [input?.current, input?.password, input?.confirm];
+  if (!fields.every((f): f is string => typeof f === "string" && f.length <= MAX_IDENTIFIER)) {
+    return { ok: false, reason: "invalid" };
+  }
+  const [current, password, confirm] = fields;
+  if (!passwordMatches(user, current)) return { ok: false, reason: "wrong-current" };
+  if (!passwordRulesMet(password, confirm)) return { ok: false, reason: "invalid" };
+
+  // Read the request before changing anything, so a failed read stores nothing.
+  const audit = await auditFor(user, user.username);
+  recordPasswordSet(user.id, password);
+  return { ok: true, audit };
+}
+
 /** Ends the session and returns the audit info of who left (null without a valid session). The caller writes the "ออกจากระบบ" entry. */
 export async function logout(): Promise<AuditInfo | null> {
   // Read the user before the cookie is deleted.
