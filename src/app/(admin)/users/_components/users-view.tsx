@@ -144,6 +144,7 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
                 <button
                   key={id}
                   type="button"
+                  aria-label={`นำ ${item.label} ออกจากตัวกรอง`}
                   onClick={() => removePage(id)}
                   className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft py-0.75 pr-2 pl-2.5 text-label font-medium text-primary transition-colors hover:text-primary-hover"
                 >
