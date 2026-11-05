@@ -265,6 +265,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 - ☐ ลบผู้ใช้ (ยืนยัน → ลบถาวร → แสดง toast)
 - ☐ Admin ที่เข้าหน้านี้ต้องไปหน้า 403
 - ☐ ทุกการเปลี่ยนแปลงบันทึกลง Audit Logs
+- mock: การเพิ่ม / แก้ไข / ลบผู้ใช้เก็บในหน่วยความจำของ server · restart server แล้วรายชื่อและสิทธิ์กลับเป็นค่าใน `user.json`
 
 ### 6.5 Audit Logs — อ๊อด
 

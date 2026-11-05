@@ -26,6 +26,9 @@ export type User = {
   permissions: Record<PageKey, Access>;
 };
 
+/** What the User & Permissions page shows of a user (and what the user actions return). */
+export type UserRow = Pick<User, "id" | "username" | "email" | "role" | "createdAt" | "permissions">;
+
 // Reads go through the in-memory store (user-store.ts), so changes made at runtime are seen
 // everywhere: login, session, page guards and the sidebar. Values are frozen.
 

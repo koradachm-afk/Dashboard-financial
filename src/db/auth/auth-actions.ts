@@ -1,12 +1,12 @@
 "use server";
 // Every export here is a client-callable Server Action: async functions and types only.
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
+import { type AuditInfo, auditFor } from "@/db/auth/audit-info";
 import { getCurrentUser, getPasswordSetter, RESET_COOKIE, SESSION_COOKIE } from "@/db/auth/auth";
 import { clearFailures, lockedUntil, MAX_FAILURES, recordFailure } from "@/db/auth/login-attempts";
 import { passwordRulesMet } from "@/db/auth/password-rules";
 import { mustSetPasswordFor, passwordOverride, recordPasswordSet } from "@/db/auth/password-store";
 import { findUserByIdentifier, type User } from "@/db/user/users";
-import { describeUserAgent } from "@/utils/user-agent";
 // Mock demo passwords, plaintext by decision. Only this server module may import the file:
 // anything a client component imports ships to the browser.
 import credentials from "../user/credentials.json";
@@ -20,15 +20,8 @@ function passwordMatches(user: User, password: string): boolean {
   return expected !== undefined && expected === password;
 }
 
-export type AuditInfo = {
-  actor: string;
-  role: "Superadmin" | "Admin" | null;
-  target: string;
-  ip: string;
-  device: string;
-  browser: string;
-  os: string;
-};
+// Re-exported (type only) so existing importers keep importing it from here.
+export type { AuditInfo };
 
 export type LoginResult =
   | { ok: true; redirectTo: "/dashboard" | "/set-password"; audit: AuditInfo }
@@ -36,8 +29,6 @@ export type LoginResult =
   | { ok: false; reason: "locked"; lockedUntil: number; audit: AuditInfo | null };
 
 const MAX_IDENTIFIER = 254;
-
-const ROLE_LABEL ={ superadmin: "Superadmin", admin: "Admin" } as const;
 
 // Not exported: every export of this file is a public Server Action.
 async function startSession(userId: string): Promise<void> {
@@ -48,15 +39,6 @@ async function startSession(userId: string): Promise<void> {
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 12,
   });
-}
-
-async function auditFor(user: User | undefined, identifier: string): Promise<AuditInfo> {
-  const h = await headers();
-  const ip = h.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
-  const { browser, os, label } = describeUserAgent(h.get("user-agent") ?? "");
-  const actor = user ? user.username : identifier;
-  const role = user ? ROLE_LABEL[user.role] : null;
-  return { actor, role, target: `บัญชี ${actor}`, ip, device: label, browser, os };
 }
 
 export async function login(input: { identifier: string; password: string }): Promise<LoginResult> {
