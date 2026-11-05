@@ -28,7 +28,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - **ชื่อแบรนด์:** AUTO PARKING (อ่านจาก config ห้าม hard-code) · โดเมนใน mock: `autoparking.co`
 - **ขอบเขตตอนนี้: frontend อย่างเดียว** ไม่มี backend · seed อยู่ใน `src/db/<โดเมน>/*.json` · ข้อมูลที่เกิดระหว่างใช้งานเก็บ localStorage ผ่าน `src/db/store.ts` เท่านั้น · ห้ามเพิ่ม API route, ฐานข้อมูล หรือ auth จริงถ้าไม่ได้สั่ง
-- **ขอบเขตของ localStorage:** เก็บข้อมูลธุรกรรม (session รถ, การชำระเงิน, สถานะช่องจอดที่ผู้ดูแลตั้ง, audit log) และค่าที่ผู้ดูแลแก้ (Settings: ข้อมูลสาขา / ค่าจอด, ประเภทช่องจอด, ผังที่จอดที่กดบันทึก) · **user และสิทธิ์ยังเป็น seed คงที่** ไม่เก็บใน localStorage เพื่อให้การเช็กสิทธิ์ใน `page.tsx` ฝั่ง server ทำงานต่อได้
+- **ขอบเขตของ localStorage:** เก็บข้อมูลธุรกรรม (session รถ, การชำระเงิน, สถานะช่องจอดที่ผู้ดูแลตั้ง, audit log) และค่าที่ผู้ดูแลแก้ (Settings: ข้อมูลสาขา / ค่าจอด, ประเภทช่องจอด, ผังที่จอดที่กดบันทึก) และค่าที่ผู้ใช้เลือก (โดเมน `prefs`: ธีมของ Admin ผูกกับบัญชี) · **user และสิทธิ์ยังเป็น seed คงที่** ไม่เก็บใน localStorage เพื่อให้การเช็กสิทธิ์ใน `page.tsx` ฝั่ง server ทำงานต่อได้
 - **localStorage ผูกกับ browser และโดเมนเดียว:** การ demo 3 ฝั่ง (Admin / Customer / Kiosk) ต้องเปิดใน browser เดียวกัน
 - **3 ฝั่ง:** Admin Web (Desktop 1440) · Customer Web (มือถือ 390, `/pay`) · Kiosk ทางเข้า / ทางออก (1920×1080)
 - **Stack:** Next.js (App Router) + TypeScript · Tailwind CSS v4 · TailGrids (`src/components/tailgrids/`) · next-themes · Recharts · Fabric.js · SheetJS (Export Excel)
@@ -80,7 +80,7 @@ src/
 5. หาข้อมูลไม่เจอใน route แบบ `[id]` → เรียก `notFound()` จาก `next/navigation` ไม่เขียนหน้า "ไม่พบ" เอง
 6. component ที่ใช้หน้าเดียว → `app/(admin)/<page>/_components/` · ใช้ตั้งแต่ 2 หน้า → ย้ายไป `src/components/tailgrids/`
 7. หน้าห้าม import JSON ใน `src/db/` ตรง ๆ ให้เรียกผ่านฟังก์ชันกลาง (วันที่มี backend จะแก้ที่ฟังก์ชันเดียว) · import JSON ได้เฉพาะไฟล์ใน `src/db/` (`store.ts` และฟังก์ชันอ่าน seed)
-   - **ห้ามเรียก `localStorage` / `sessionStorage` ตรง ๆ นอก `src/db/store.ts`** หน้าและ component เรียกผ่านฟังก์ชันกลาง เช่น `getSessions()`, `addSession()`, `updateSlot()` เท่านั้น
+   - **ห้ามเรียก `localStorage` / `sessionStorage` ตรง ๆ นอก `src/db/store.ts`** หน้าและ component เรียกผ่านฟังก์ชันกลาง เช่น `getSessions()`, `addSession()`, `updateSlot()` เท่านั้น · **ข้อยกเว้นเดียว:** `next-themes` ใน `AdminThemeProvider` เขียน key `autoparking:v1:theme` เอง (ห้ามอ่านหรือเขียน key นี้จากที่อื่น ค่าธีมของบัญชีจริงอยู่ในโดเมน `prefs` ผ่าน `store.ts`)
    - 1 โดเมน = 1 โฟลเดอร์ `src/db/<โดเมน>/` (ฟังก์ชันกลาง `<โดเมน>.ts` + seed JSON) · import ผ่าน `@/db/<โดเมน>/<ไฟล์>` · `store.ts` อยู่ที่ `src/db/` ที่เดียว
    - **`src/db/user/credentials.json` import ได้เฉพาะ `src/db/auth/auth-actions.ts`** (ฝั่ง server) ห้าม client component หรือไฟล์ที่ client import ดึงไปใช้ เพราะรหัสผ่านจะหลุดไปอยู่ใน bundle ของ browser · ตรวจหลัง build ว่า `.next/static` ไม่มีเนื้อหาของไฟล์นี้
 8. mock ใช้ตัวเลขชุดเดียวกับ Figma (เช่น ทะเบียน `ผบ 9370`, ช่อง `B-07`, รายรับ `฿10,080`) · ห้ามใส่ข้อมูลจริงของคน
@@ -223,7 +223,7 @@ Release: PR `dev` → `main` → ทดสอบผ่าน → merge → `git 
 - [ ] ไม่มีคำว่า Traffic Activity หรือ ParkPlan หลงเหลือบน UI
 - [ ] เปิดหน้า Admin ทั้งธีมสว่างและมืดแล้วอ่านได้ทุกจุด
 - [ ] เทียบกับเฟรม Figma ที่มีเลขเดียวกันครบทุก state
-- [ ] ไม่มีการเรียก `localStorage` / `sessionStorage` นอก `src/db/store.ts`
+- [ ] ไม่มีการเรียก `localStorage` / `sessionStorage` นอก `src/db/store.ts` (ยกเว้น key `autoparking:v1:theme` ที่ `next-themes` เขียนเอง)
 - [ ] `sessionId` ใหม่สร้างผ่าน `newSessionId()` เท่านั้น ไม่ได้สร้างใน render
 - [ ] เปิดหน้าแล้วไม่มี hydration warning ใน console
 - [ ] ทดสอบหลังกด `resetStore()` แล้วข้อมูลกลับเป็น seed ตรงกับเฟรม Figma
