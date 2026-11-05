@@ -179,8 +179,9 @@ function ThemeSubmenu({ user }: { user: SidebarUser }) {
 
   const choose = (key: string) => {
     const next = key as Theme; // keys are the THEMES ids below
-    setTheme(next);
+    // Prefs first: other tabs must see the new pref before the theme key, or they write the old one back.
     setThemeFor(user.id, next);
+    setTheme(next);
   };
 
   return (
