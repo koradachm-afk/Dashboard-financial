@@ -1,8 +1,9 @@
 "use server";
 // Every export here is a client-callable Server Action: async functions and types only.
 import { cookies, headers } from "next/headers";
-import { getCurrentUser, SESSION_COOKIE } from "@/db/auth/auth";
+import { getCurrentUser, RESET_COOKIE, SESSION_COOKIE } from "@/db/auth/auth";
 import { clearFailures, lockedUntil, MAX_FAILURES, recordFailure } from "@/db/auth/login-attempts";
+import { mustSetPasswordFor, passwordOverride } from "@/db/auth/password-store";
 import { findUserByIdentifier, type User } from "@/db/user/users";
 import { describeUserAgent } from "@/utils/user-agent";
 // Mock demo passwords, plaintext by decision. Only this server module may import the file:
@@ -11,8 +12,11 @@ import credentials from "../user/credentials.json";
 
 const CREDENTIALS: Readonly<Record<string, string>> = credentials;
 
+// A password set in memory replaces the stored credential.
 function passwordMatches(user: User, password: string): boolean {
-  return Object.hasOwn(CREDENTIALS, user.id) && CREDENTIALS[user.id] === password;
+  const stored = Object.hasOwn(CREDENTIALS, user.id) ? CREDENTIALS[user.id] : undefined;
+  const expected = passwordOverride(user.id) ?? stored;
+  return expected !== undefined && expected === password;
 }
 
 export type AuditInfo = {
@@ -33,6 +37,17 @@ export type LoginResult =
 const MAX_IDENTIFIER = 254;
 
 const ROLE_LABEL ={ superadmin: "Superadmin", admin: "Admin" } as const;
+
+// Not exported: every export of this file is a public Server Action.
+async function startSession(userId: string): Promise<void> {
+  (await cookies()).set(SESSION_COOKIE, userId, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 60 * 12,
+  });
+}
 
 async function auditFor(user: User | undefined, identifier: string): Promise<AuditInfo> {
   const h = await headers();
@@ -70,14 +85,27 @@ export async function login(input: { identifier: string; password: string }): Pr
   }
 
   clearFailures(key);
-  (await cookies()).set(SESSION_COOKIE, user.id, {
+  await startSession(user.id);
+  return { ok: true, redirectTo: mustSetPasswordFor(user) ? "/set-password" : "/dashboard", audit };
+}
+
+/** Matches the email only (not the username), trimmed and case-insensitive; a match sets the reset cookie. */
+export async function requestPasswordReset(input: {
+  email: string;
+}): Promise<{ ok: true } | { ok: false; reason: "not-found" }> {
+  // A Server Action is a public endpoint: never trust the input's shape.
+  const email = typeof input?.email === "string" ? input.email.trim().slice(0, MAX_IDENTIFIER) : "";
+  const user = findUserByIdentifier(email);
+  if (!user || user.email.toLowerCase() !== email.toLowerCase()) return { ok: false, reason: "not-found" };
+
+  (await cookies()).set(RESET_COOKIE, user.id, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 12,
+    maxAge: 60 * 60 * 24,
   });
-  return { ok: true, redirectTo: user.mustSetPassword ? "/set-password" : "/dashboard", audit };
+  return { ok: true };
 }
 
 /** Ends the session and returns the audit info of who left (null without a valid session). The caller writes the "ออกจากระบบ" entry. */
