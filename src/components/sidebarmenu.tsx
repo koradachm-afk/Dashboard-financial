@@ -48,7 +48,8 @@ import { logout } from "@/db/auth/auth-actions";
 import { accessFor } from "@/db/user/access";
 import { setThemeFor, usePrefs, type Theme } from "@/db/prefs/prefs";
 import type { User as UserRecord } from "@/db/user/users";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { reloadTo } from "@/utils/reload-to";
 import { useTheme } from "next-themes";
 
 /** Display fields only: the server passes these as props, so the user seed never reaches the client bundle. */
@@ -184,7 +185,6 @@ function ThemeSubmenu({ user }: { user: SidebarUser }) {
 }
 
 function SidebarFooterSection({ user }: { user: SidebarUser }) {
-  const router = useRouter();
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [pending, startTransition] = React.useTransition();
 
@@ -209,7 +209,8 @@ function SidebarFooterSection({ user }: { user: SidebarUser }) {
           device: info.device,
         });
       }
-      router.replace("/login");
+      // Full page load: a client navigation would keep this dialog and the old login form alive.
+      reloadTo("/login");
     });
 
   return (
