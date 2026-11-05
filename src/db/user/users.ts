@@ -48,6 +48,4 @@ export function getUserById(id: string): User | undefined {
   return USERS.find((u) => u.id === id);
 }
 
-export function accessFor(user: User, page: PageKey): Access {
-  return user.role === "superadmin" ? "edit" : user.permissions[page];
-}
+export { accessFor } from "./access";
