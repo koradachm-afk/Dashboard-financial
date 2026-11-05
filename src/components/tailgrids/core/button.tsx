@@ -12,6 +12,7 @@ const buttonVariants = cva(
         ghost: "text-fg-2 hover:bg-subtle hover:text-fg",
         danger:
           "bg-surface text-danger border border-danger hover:bg-danger-soft",
+        "danger-solid": "bg-danger text-on-primary hover:bg-danger/90",
       },
       size: {
         sm: "h-8 px-3 rounded-md text-body",
@@ -24,7 +25,7 @@ const buttonVariants = cva(
 );
 
 export type ButtonProps = React.ComponentProps<"button"> & {
-  variant?: "primary" | "secondary" | "ghost" | "danger";
+  variant?: "primary" | "secondary" | "ghost" | "danger" | "danger-solid";
   size?: "sm" | "md" | "lg";
   icon?: LucideIcon;
 };

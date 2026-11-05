@@ -354,7 +354,7 @@ class ในตารางเป็นสูตรตั้งต้น ถ้�
 
 ### 8.1 พื้นฐาน (หน้า Design System)
 
-#### Button — `Variant: Primary | Secondary | Ghost | Danger` · `Size: sm | md | lg` · `icon?`
+#### Button — `Variant: Primary | Secondary | Ghost | Danger | Danger Solid` · `Size: sm | md | lg` · `icon?`
 
 | Size | ความสูง | padding X | radius | ตัวอักษร | ไอคอน |
 |---|---|---|---|---|---|
@@ -369,7 +369,9 @@ Primary:   bg-primary text-on-primary hover:bg-primary-hover
 Secondary: bg-surface text-fg border border-line hover:bg-subtle
 Ghost:     text-fg-2 hover:bg-subtle hover:text-fg
 Danger:    bg-surface text-danger border border-danger hover:bg-danger-soft
+Danger Solid: bg-danger text-on-primary hover:bg-danger/90
 ```
+> Danger (ขอบแดง) ใช้กับปุ่มลบทั่วไป · Danger Solid (`variant="danger-solid"` พื้นแดงทึบ) ใช้กับปุ่มยืนยันลบถาวรใน Confirm dialog เช่น "ลบถาวร" (เฟรม 07.7) · ยังไม่มี token สี hover ของ danger จึงใช้ `bg-danger/90`
 > Figma มีแค่สถานะ default ส่วน hover / disabled ในสูตรด้านบนกำหนดเพิ่มในโค้ด (ดูข้อ 16)
 > ใช้ lg เฉพาะหน้าลูกค้าและ Kiosk ส่วน Admin ใช้ md เป็นหลัก
 

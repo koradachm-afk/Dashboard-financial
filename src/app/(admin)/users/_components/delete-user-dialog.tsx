@@ -23,8 +23,10 @@ export function DeleteUserDialog({
       title={`ลบผู้ใช้ ${user?.username ?? ""}?`}
       description="บัญชีนี้จะถูกลบถาวรและเข้าสู่ระบบไม่ได้อีก การลบย้อนกลับไม่ได้"
       confirmLabel="ลบถาวร"
-      confirmVariant="danger"
+      confirmVariant="danger-solid"
       onConfirm={onClose}
+      showCloseButton
+      className="w-112"
       footerNote={
         <span className="flex items-center gap-1.5 text-label text-fg-3">
           <History size={14} aria-hidden />

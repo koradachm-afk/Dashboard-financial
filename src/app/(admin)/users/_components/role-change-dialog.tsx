@@ -32,8 +32,9 @@ export function RoleChangeDialog({
       description="ผู้ใช้นี้จะได้รับสิทธิ์ต่อไปนี้ทันทีหลังบันทึก"
       confirmLabel="ยืนยันเปลี่ยนเป็น Superadmin"
       onConfirm={onConfirm}
+      layout="stacked"
     >
-      <ul className="mt-2.5 flex flex-col gap-2 rounded-lg bg-subtle p-3">
+      <ul className="flex flex-col gap-2 rounded-lg bg-subtle p-3">
         {GRANTS.map((text) => (
           <li key={text} className="flex items-center gap-2 text-body text-fg">
             <Check size={14} className="shrink-0 text-primary" aria-hidden />
