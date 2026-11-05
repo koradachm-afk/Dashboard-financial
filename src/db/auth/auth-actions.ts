@@ -1,8 +1,10 @@
 "use server";
 // Every export here is a client-callable Server Action: async functions and types only.
 import { cookies, headers } from "next/headers";
-import { getCurrentUser, SESSION_COOKIE } from "@/db/auth/auth";
+import { getCurrentUser, getPasswordSetter, RESET_COOKIE, SESSION_COOKIE } from "@/db/auth/auth";
 import { clearFailures, lockedUntil, MAX_FAILURES, recordFailure } from "@/db/auth/login-attempts";
+import { passwordRulesMet } from "@/db/auth/password-rules";
+import { mustSetPasswordFor, passwordOverride, recordPasswordSet } from "@/db/auth/password-store";
 import { findUserByIdentifier, type User } from "@/db/user/users";
 import { describeUserAgent } from "@/utils/user-agent";
 // Mock demo passwords, plaintext by decision. Only this server module may import the file:
@@ -11,8 +13,11 @@ import credentials from "../user/credentials.json";
 
 const CREDENTIALS: Readonly<Record<string, string>> = credentials;
 
+// A password set in memory replaces the stored credential.
 function passwordMatches(user: User, password: string): boolean {
-  return Object.hasOwn(CREDENTIALS, user.id) && CREDENTIALS[user.id] === password;
+  const stored = Object.hasOwn(CREDENTIALS, user.id) ? CREDENTIALS[user.id] : undefined;
+  const expected = passwordOverride(user.id) ?? stored;
+  return expected !== undefined && expected === password;
 }
 
 export type AuditInfo = {
@@ -33,6 +38,17 @@ export type LoginResult =
 const MAX_IDENTIFIER = 254;
 
 const ROLE_LABEL ={ superadmin: "Superadmin", admin: "Admin" } as const;
+
+// Not exported: every export of this file is a public Server Action.
+async function startSession(userId: string): Promise<void> {
+  (await cookies()).set(SESSION_COOKIE, userId, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 60 * 12,
+  });
+}
 
 async function auditFor(user: User | undefined, identifier: string): Promise<AuditInfo> {
   const h = await headers();
@@ -70,14 +86,61 @@ export async function login(input: { identifier: string; password: string }): Pr
   }
 
   clearFailures(key);
-  (await cookies()).set(SESSION_COOKIE, user.id, {
+  await startSession(user.id);
+  // A reset abandoned on this browser would otherwise win over this user's invite on /set-password.
+  (await cookies()).delete(RESET_COOKIE);
+  return { ok: true, redirectTo: mustSetPasswordFor(user) ? "/set-password" : "/dashboard", audit };
+}
+
+/** Matches the email only (not the username), trimmed and case-insensitive; a match sets the reset cookie. */
+export async function requestPasswordReset(input: {
+  email: string;
+}): Promise<{ ok: true } | { ok: false; reason: "not-found" }> {
+  // A Server Action is a public endpoint: never trust the input's shape.
+  const email = typeof input?.email === "string" ? input.email.trim().slice(0, MAX_IDENTIFIER) : "";
+  const user = findUserByIdentifier(email);
+  if (!user || user.email.toLowerCase() !== email.toLowerCase()) return { ok: false, reason: "not-found" };
+
+  (await cookies()).set(RESET_COOKIE, user.id, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 12,
+    maxAge: 60 * 60 * 24,
   });
-  return { ok: true, redirectTo: user.mustSetPassword ? "/set-password" : "/dashboard", audit };
+  return { ok: true };
+}
+
+/**
+ * Sets the password of whoever the request's cookies allow (reset cookie, else an invited session;
+ * never the client's word), unlocks the account and signs in. No such user → "expired";
+ * malformed input or a password that breaks a rule → "invalid", with nothing changed.
+ */
+export async function setPassword(input: {
+  password: string;
+  confirm: string;
+}): Promise<{ ok: true; source: "reset" | "invite"; audit: AuditInfo } | { ok: false; reason: "expired" | "invalid" }> {
+  const setter = await getPasswordSetter();
+  if (!setter) return { ok: false, reason: "expired" };
+
+  // A Server Action is a public endpoint: never trust the input's shape. Over-long is rejected, not cut.
+  const password = input?.password;
+  const confirm = input?.confirm;
+  if (typeof password !== "string" || typeof confirm !== "string" || password.length > MAX_IDENTIFIER) {
+    return { ok: false, reason: "invalid" };
+  }
+  if (!passwordRulesMet(password, confirm)) return { ok: false, reason: "invalid" };
+
+  const { user, source } = setter;
+  // Every request read happens before any change, so a failed read cannot leave half a reset.
+  const audit = await auditFor(user, user.username);
+  const jar = await cookies();
+
+  recordPasswordSet(user.id, password);
+  clearFailures(user.username);
+  jar.delete(RESET_COOKIE);
+  await startSession(user.id);
+  return { ok: true, source, audit };
 }
 
 /** Ends the session and returns the audit info of who left (null without a valid session). The caller writes the "ออกจากระบบ" entry. */

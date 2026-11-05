@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
+import { FormAlert } from "@/app/(auth)/_components/form-alert";
 import { Button } from "@/components/tailgrids/core/button";
 import { Input } from "@/components/tailgrids/core/input";
 import { audit } from "@/db/audit/audit";
@@ -163,24 +164,13 @@ export function LoginForm() {
       </div>
 
       {notice && (
-        <div
-          id={MESSAGE_ID}
-          role="alert"
-          className="flex items-start gap-2 rounded-lg border border-danger bg-danger-soft px-3 py-2.5 text-body text-danger"
-        >
-          {locked ? (
-            <Lock size={16} className="shrink-0" aria-hidden="true" />
-          ) : (
-            <TriangleAlert size={16} className="shrink-0" aria-hidden="true" />
-          )}
-          <p className="min-w-0 flex-1">
-            {notice.kind === "invalid"
-              ? `${INVALID_MESSAGE} · เหลืออีก ${notice.attemptsLeft} ครั้ง`
-              : notice.kind === "error"
-                ? ERROR_MESSAGE
-                : LOCKED_MESSAGE}
-          </p>
-        </div>
+        <FormAlert id={MESSAGE_ID} icon={locked ? Lock : TriangleAlert}>
+          {notice.kind === "invalid"
+            ? `${INVALID_MESSAGE} · เหลืออีก ${notice.attemptsLeft} ครั้ง`
+            : notice.kind === "error"
+              ? ERROR_MESSAGE
+              : LOCKED_MESSAGE}
+        </FormAlert>
       )}
 
       <Button type="submit" className="h-11 w-full" disabled={pending || locked}>

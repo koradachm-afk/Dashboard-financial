@@ -210,16 +210,19 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 
 ### 6.1 Login / ลืมรหัสผ่าน / ตั้งรหัสใหม่ — อ๊อด
 
-เฟรม: [09.7 Login](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=58-12887) · [09.8 ลืมรหัสผ่าน](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=58-13040) · [09.9 ตั้งรหัสผ่านใหม่](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=58-13189)
+เฟรม: [09.7 Login](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=58-12887) · [09.8 ลืมรหัสผ่าน](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=58-13040) · [09.9 ตั้งรหัสผ่านใหม่](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=58-13189) · [09.16 ก่อนส่ง](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=492-51025) · [09.17 เงื่อนไขยังไม่ผ่าน](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=492-51331) · [09.18 ไม่พบ email](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=492-51178)
 
 - ☐ Login ด้วย Username **หรือ** Email + รหัสผ่าน
 - ☐ ลืมรหัสผ่าน: กรอก email → แสดง "ส่งลิงก์แล้ว" (ซ่อนบางส่วนของ email) + ปุ่มส่งอีกครั้ง · ลิงก์อายุ 24 ชม.
+  - mock ไม่ส่งอีเมล: ถ้า email ตรงกับบัญชีจะไปหน้า `/set-password` ทันที · ใครรู้ email ของบัญชีก็ตั้งรหัสใหม่ให้บัญชีนั้นได้ **ใช้สำหรับ demo เท่านั้น**
+  - ยังไม่ทำ state "ส่งลิงก์แล้ว" (09.8) · เก็บไว้ใน Figma สำหรับตอนมีระบบส่งอีเมลจริง
 - ☐ ตั้งรหัสใหม่: ใช้ทั้งจากอีเมลเชิญและลืมรหัสผ่าน · เช็กเงื่อนไขทีละข้อแบบ real-time:
   - อย่างน้อย 10 ตัวอักษร
   - มีตัวพิมพ์ใหญ่และตัวพิมพ์เล็ก
   - มีตัวเลขอย่างน้อย 1 ตัว
   - มีอักขระพิเศษ
   - รหัสผ่านทั้งสองช่องตรงกัน
+- mock: รหัสผ่านที่ตั้งใหม่เก็บในหน่วยความจำของ server · restart server แล้วรหัสกลับเป็น `pass`
 - ☐ ผู้ใช้ใหม่ต้องตั้งรหัสใหม่ก่อนเข้าระบบครั้งแรก
 - ☐ บันทึกลง Audit Logs ทั้งกรณีเข้าสู่ระบบสำเร็จและไม่สำเร็จ
 
