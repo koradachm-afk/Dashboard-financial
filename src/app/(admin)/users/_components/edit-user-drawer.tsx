@@ -20,6 +20,7 @@ import {
   SheetTitle,
 } from "@/components/tailgrids/core/sheet";
 import type { Access, PageKey, Role } from "@/db/user/users";
+import { isValidEmail } from "@/db/user/validation";
 import { cn } from "@/utils/cn";
 
 import { ACCESS_PAGES } from "./access-chips";
@@ -57,8 +58,6 @@ const LEVELS: SegmentedControlOption<Access>[] = [
   { value: "edit", label: "แก้ไขได้", tone: "primary" },
 ];
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 const SECTION_TITLE = "text-control font-semibold text-fg";
 const FIELD_LABEL = "flex gap-0.5 text-body font-medium text-fg";
 const HELPER = "text-caption text-fg-3";
@@ -94,7 +93,7 @@ function EditUserForm({ user, onClose }: { user: UserRow; onClose: () => void })
   const [confirming, setConfirming] = useState(false);
   const id = useId();
 
-  const emailOk = EMAIL.test(email);
+  const emailOk = isValidEmail(email);
   const locked = role === "superadmin";
 
   const changeRole = (next: Role) => {
