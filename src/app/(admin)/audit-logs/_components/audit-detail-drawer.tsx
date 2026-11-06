@@ -48,7 +48,7 @@ export function AuditDetailDrawer({
   return (
     <Sheet isOpen={entry !== null} onOpenChange={(open) => !open && onClose()}>
       <SheetOverlay>
-        <SheetContent showCloseButton={false} className="gap-0 p-0 sm:max-w-130">
+        <SheetContent showCloseButton={false} className="w-130 max-w-full gap-0 p-0 sm:max-w-130">
           {shown && <Detail entry={shown} onClose={onClose} onCopyLink={onCopyLink} />}
         </SheetContent>
       </SheetOverlay>
@@ -86,7 +86,7 @@ function Detail({
       <SheetBody className="mx-0 flex flex-col gap-4 p-6">
         <div className="flex items-center gap-2">
           <ActionBadge action={entry.action} />
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-page px-2.5 py-0.75 text-label font-medium text-fg-2">
+          <span className="inline-flex items-center gap-1.5 rounded-md bg-page px-2 py-0.75 text-label font-medium text-fg-2">
             {icon && createElement(icon, { size: 14, "aria-hidden": true, className: "shrink-0" })}
             {entry.page}
           </span>
@@ -133,7 +133,7 @@ function Detail({
                     <tr key={c.field} className="border-b border-line last:border-b-0">
                       <td className={TD}>{c.field}</td>
                       <td className={TD}>
-                        <span className={cn(CHIP, "bg-page text-fg-2", entry.action === "ลบ" && "line-through")}>
+                        <span className={cn(CHIP, "bg-page text-fg-2 line-through")}>
                           {c.before}
                         </span>
                       </td>
@@ -148,13 +148,13 @@ function Detail({
           </section>
         )}
 
-        <p className="inline-flex items-center gap-1.5 self-start rounded-full bg-page px-3 py-1.5 text-label text-fg-2">
+        <p className="flex items-center gap-1.5 rounded-lg bg-subtle px-3.5 py-2.5 text-label text-fg-3">
           <Lock size={14} aria-hidden className="shrink-0" />
           log นี้สร้างอัตโนมัติ แก้ไขหรือลบไม่ได้
         </p>
       </SheetBody>
 
-      <SheetFooter className="flex-row items-center justify-between gap-2 border-t border-line px-6 py-4">
+      <SheetFooter className="flex-row items-center justify-between gap-2 sm:justify-between border-t border-line px-6 py-4">
         <Button variant="secondary" icon={Copy} onClick={() => onCopyLink(entry)}>
           คัดลอกลิงก์
         </Button>
