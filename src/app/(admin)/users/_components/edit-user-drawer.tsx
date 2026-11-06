@@ -1,11 +1,13 @@
 "use client";
 
-import { Info, Lock, ShieldCheck, User as UserIcon, X, type LucideIcon } from "lucide-react";
-import { Fragment, useId, useState } from "react";
+import { Info, Loader2, Lock, ShieldCheck, User as UserIcon, X, type LucideIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Fragment, useId, useState, useTransition } from "react";
 
 import { NAV } from "@/components/admin-nav";
 import { Avatar } from "@/components/tailgrids/core/avatar";
 import { Button } from "@/components/tailgrids/core/button";
+import { FormAlert } from "@/components/tailgrids/core/form-alert";
 import { Input } from "@/components/tailgrids/core/input";
 import { SegmentedControl, type SegmentedControlOption } from "@/components/tailgrids/core/segmented-control";
 import {
@@ -19,13 +21,14 @@ import {
   SheetOverlay,
   SheetTitle,
 } from "@/components/tailgrids/core/sheet";
-import type { Access, PageKey, Role } from "@/db/user/users";
+import { audit } from "@/db/audit/audit";
+import { updateUser } from "@/db/user/user-actions";
+import type { Access, PageKey, Role, UserRow } from "@/db/user/users";
 import { isValidEmail } from "@/db/user/validation";
 import { cn } from "@/utils/cn";
 
 import { ACCESS_PAGES } from "./access-chips";
 import { RoleChangeDialog } from "./role-change-dialog";
-import type { UserRow } from "./users-view";
 
 /** Every page key at "ไม่มีสิทธิ์": the starting permissions for a user that does not exist yet (07.6 → 07.4). */
 export const NO_ACCESS: Readonly<Record<PageKey, Access>> = Object.freeze(
@@ -34,6 +37,9 @@ export const NO_ACCESS: Readonly<Record<PageKey, Access>> = Object.freeze(
     Access
   >,
 );
+
+const ERROR_MESSAGE = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+const EMAIL_TAKEN = "Email นี้ถูกใช้แล้ว";
 
 // Figma 07.4 has no label for the close X; "ปิด" was approved in chat, same as the toast and dialogs.
 const CLOSE_LABEL = "ปิด";
@@ -67,9 +73,20 @@ const rowLabel = (muted: boolean) => cn("text-body font-medium", muted ? "text-f
 
 /**
  * 07.4 edit drawer. Open while `user` is set; each open starts from that user's data.
- * UI only: "บันทึก" closes without changing anything.
+ * "บันทึก" saves on the server, writes the audit entry and reports the toast title via `onDone`.
+ * On the signed-in user's own row the Role control is locked (the server refuses it too).
  */
-export function EditUserDrawer({ user, onClose }: { user: UserRow | null; onClose: () => void }) {
+export function EditUserDrawer({
+  user,
+  currentUserId,
+  onClose,
+  onDone,
+}: {
+  user: UserRow | null;
+  currentUserId: string;
+  onClose: () => void;
+  onDone: (toastTitle: string) => void;
+}) {
   // Keep the last user so the content stays put while the drawer slides out.
   const [shown, setShown] = useState(user);
   if (user && user !== shown) setShown(user);
@@ -79,14 +96,34 @@ export function EditUserDrawer({ user, onClose }: { user: UserRow | null; onClos
       <SheetOverlay>
         <SheetContent showCloseButton={false} className="gap-0 p-0 sm:max-w-130">
           {/* Keyed so switching users remounts with fresh state (Review Focus 5). */}
-          {shown && <EditUserForm key={shown.id} user={shown} onClose={onClose} />}
+          {shown && <EditUserForm
+              key={shown.id}
+              user={shown}
+              isSelf={shown.id === currentUserId}
+              onClose={onClose}
+              onDone={onDone}
+            />}
         </SheetContent>
       </SheetOverlay>
     </Sheet>
   );
 }
 
-function EditUserForm({ user, onClose }: { user: UserRow; onClose: () => void }) {
+function EditUserForm({
+  user,
+  isSelf,
+  onClose,
+  onDone,
+}: {
+  user: UserRow;
+  isSelf: boolean;
+  onClose: () => void;
+  onDone: (toastTitle: string) => void;
+}) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [emailTaken, setEmailTaken] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [email, setEmail] = useState(user.email);
   const [role, setRole] = useState(user.role);
   const [permissions, setPermissions] = useState(user.permissions);
@@ -94,6 +131,7 @@ function EditUserForm({ user, onClose }: { user: UserRow; onClose: () => void })
   const id = useId();
 
   const emailOk = isValidEmail(email);
+  const emailError = !emailOk || emailTaken;
   const locked = role === "superadmin";
 
   const changeRole = (next: Role) => {
@@ -103,6 +141,40 @@ function EditUserForm({ user, onClose }: { user: UserRow; onClose: () => void })
   const setLevel = (page: PageKey, access: Access) => setPermissions((p) => ({ ...p, [page]: access }));
   const setAll = (access: Access) =>
     setPermissions((p) => ({ ...p, ...Object.fromEntries(MATRIX_PAGES.map((page) => [page, access])) }));
+
+  const save = () => {
+    if (pending || !emailOk) return;
+    setFailed(false);
+    setEmailTaken(false);
+    start(async () => {
+      let r: Awaited<ReturnType<typeof updateUser>>;
+      try {
+        r = await updateUser({ id: user.id, email: email.trim(), role, permissions });
+      } catch {
+        setFailed(true);
+        return;
+      }
+      if (!r.ok) {
+        if (r.reason === "duplicate-email") setEmailTaken(true);
+        else setFailed(true);
+        return;
+      }
+      const { username, email: savedEmail } = r.user;
+      if (r.changed !== "none") {
+        audit({
+          ...r.audit,
+          action: "แก้ไข",
+          page: "User & Permissions",
+          detail: r.changed === "role" ? `เปลี่ยน Role ของ ${username}` : `แก้ไขผู้ใช้ ${username}`,
+          target: `${username} · ${savedEmail}`,
+          result: "สำเร็จ",
+        });
+      }
+      onClose();
+      router.refresh();
+      if (r.changed !== "none") onDone(`บันทึกการเปลี่ยนแปลงของ ${username} แล้ว`);
+    });
+  };
 
   return (
     <>
@@ -152,10 +224,18 @@ function EditUserForm({ user, onClose }: { user: UserRow; onClose: () => void })
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                error={!emailOk}
-                aria-describedby={`${id}-email-help`}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailTaken(false);
+                }}
+                error={emailError}
+                aria-describedby={emailTaken ? `${id}-email-help ${id}-email-taken` : `${id}-email-help`}
               />
+              {emailTaken && (
+                <p id={`${id}-email-taken`} className="text-caption text-danger">
+                  {EMAIL_TAKEN}
+                </p>
+              )}
               <p id={`${id}-email-help`} className={HELPER}>
                 ใช้รับอีเมลแจ้งเตือนและรีเซ็ตรหัสผ่าน
               </p>
@@ -165,7 +245,14 @@ function EditUserForm({ user, onClose }: { user: UserRow; onClose: () => void })
 
         <section className="flex flex-col gap-2.5">
           <h3 className={SECTION_TITLE}>Role</h3>
-          <SegmentedControl aria-label="Role" size="md" options={ROLES} value={role} onChange={changeRole} />
+          <SegmentedControl
+            aria-label="Role"
+            size="md"
+            options={ROLES}
+            value={role}
+            onChange={changeRole}
+            isDisabled={isSelf}
+          />
           <p className={HELPER}>Superadmin เข้าถึงทุกหน้าและจัดการผู้ใช้ได้ (มีการยืนยันก่อนเปลี่ยน)</p>
         </section>
 
@@ -214,6 +301,8 @@ function EditUserForm({ user, onClose }: { user: UserRow; onClose: () => void })
             )}
           </div>
         </section>
+
+        {failed && <FormAlert id={`${id}-error`}>{ERROR_MESSAGE}</FormAlert>}
       </SheetBody>
 
       <SheetFooter className="flex-row items-center gap-2 border-t border-line px-6 py-4">
@@ -224,7 +313,8 @@ function EditUserForm({ user, onClose }: { user: UserRow; onClose: () => void })
         <Button variant="secondary" onClick={onClose}>
           ยกเลิก
         </Button>
-        <Button disabled={!emailOk} onClick={onClose}>
+        <Button disabled={!emailOk || pending} onClick={save}>
+          {pending && <Loader2 size={16} className="shrink-0 animate-spin" aria-hidden />}
           บันทึก
         </Button>
       </SheetFooter>

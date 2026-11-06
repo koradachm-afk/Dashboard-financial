@@ -28,7 +28,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - **ชื่อแบรนด์:** AUTO PARKING (อ่านจาก config ห้าม hard-code) · โดเมนใน mock: `autoparking.co`
 - **ขอบเขตตอนนี้: frontend อย่างเดียว** ไม่มี backend · seed อยู่ใน `src/db/<โดเมน>/*.json` · ข้อมูลที่เกิดระหว่างใช้งานเก็บ localStorage ผ่าน `src/db/store.ts` เท่านั้น · ห้ามเพิ่ม API route, ฐานข้อมูล หรือ auth จริงถ้าไม่ได้สั่ง
-- **ขอบเขตของ localStorage:** เก็บข้อมูลธุรกรรม (session รถ, การชำระเงิน, สถานะช่องจอดที่ผู้ดูแลตั้ง, audit log) และค่าที่ผู้ดูแลแก้ (Settings: ข้อมูลสาขา / ค่าจอด, ประเภทช่องจอด, ผังที่จอดที่กดบันทึก) และค่าที่ผู้ใช้เลือก (โดเมน `prefs`: ธีมของ Admin ผูกกับบัญชี) · **user และสิทธิ์ยังเป็น seed คงที่** ไม่เก็บใน localStorage เพื่อให้การเช็กสิทธิ์ใน `page.tsx` ฝั่ง server ทำงานต่อได้
+- **ขอบเขตของ localStorage:** เก็บข้อมูลธุรกรรม (session รถ, การชำระเงิน, สถานะช่องจอดที่ผู้ดูแลตั้ง, audit log) และค่าที่ผู้ดูแลแก้ (Settings: ข้อมูลสาขา / ค่าจอด, ประเภทช่องจอด, ผังที่จอดที่กดบันทึก) และค่าที่ผู้ใช้เลือก (โดเมน `prefs`: ธีมของ Admin ผูกกับบัญชี) · **user และสิทธิ์:** ไฟล์ seed คงที่ไม่ถูกแก้ · การเปลี่ยนแปลงจากหน้า User & Permissions เก็บในหน่วยความจำของ server (ต่อ process, restart แล้วกลับเป็น seed) ไม่เก็บใน localStorage เพื่อให้การเช็กสิทธิ์ใน `page.tsx` ฝั่ง server ทำงานต่อได้
 - **localStorage ผูกกับ browser และโดเมนเดียว:** การ demo 3 ฝั่ง (Admin / Customer / Kiosk) ต้องเปิดใน browser เดียวกัน
 - **3 ฝั่ง:** Admin Web (Desktop 1440) · Customer Web (มือถือ 390, `/pay`) · Kiosk ทางเข้า / ทางออก (1920×1080)
 - **Stack:** Next.js (App Router) + TypeScript · Tailwind CSS v4 · TailGrids (`src/components/tailgrids/`) · next-themes · Recharts · Fabric.js · SheetJS (Export Excel)
@@ -248,4 +248,4 @@ Release: PR `dev` → `main` → ทดสอบผ่าน → merge → `git 
 - งานต้องเพิ่ม dependency, เปลี่ยน token ใน `globals.css` หรือแก้ component กลาง → ถามก่อน
 - Figma ไม่มี state ที่ต้องใช้ → ทำตาม DESIGN-STYLE.md ข้อ 16 ถ้ายังไม่ครอบคลุมให้ถาม
 - งานต้องต่อระบบชำระเงินจริง (payment gateway, deep link แอปธนาคาร, โลโก้ธนาคาร) → หยุดแล้วถาม เพราะขอบเขตตอนนี้เป็น mock
-- งานที่ต้องให้ Superadmin แก้สิทธิ์ / user แล้วมีผลจริง → หยุดแล้วถาม เพราะต้องย้ายการเช็กสิทธิ์ไปฝั่ง client
+- งานที่ต้องให้ Superadmin แก้สิทธิ์ / user แล้วมีผลจริง → ทำแล้วผ่านที่เก็บในหน่วยความจำของ server (`src/db/user/user-store.ts`) · แก้ user ผ่าน Server Action ใน `src/db/user/user-actions.ts` เท่านั้น ห้ามย้ายไปเก็บใน localStorage

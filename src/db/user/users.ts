@@ -1,4 +1,4 @@
-import data from "./user.json";
+import { listUsers } from "./user-store";
 
 export type Role = "superadmin" | "admin";
 export type Access = "none" | "view" | "edit";
@@ -26,26 +26,25 @@ export type User = {
   permissions: Record<PageKey, Access>;
 };
 
-// The only importer of user.json. Frozen so callers cannot mutate the seed.
-// Client code imports this module, so user.json must never hold passwords (see user/credentials.json).
-const USERS: readonly User[] = Object.freeze(
-  (data as User[]).map((u) =>
-    Object.freeze({ ...u, permissions: Object.freeze({ ...u.permissions }) }),
-  ),
-);
+/** What the User & Permissions page shows of a user (and what the user actions return). */
+export type UserRow = Pick<User, "id" | "username" | "email" | "role" | "createdAt" | "permissions">;
 
+// Reads go through the in-memory store (user-store.ts), so changes made at runtime are seen
+// everywhere: login, session, page guards and the sidebar. Values are frozen.
+
+/** The effective user list: the seed plus runtime changes. */
 export function getUsers(): readonly User[] {
-  return USERS;
+  return listUsers();
 }
 
 export function findUserByIdentifier(identifier: string): User | undefined {
   const needle = identifier.trim().toLowerCase();
   if (needle === "") return undefined;
-  return USERS.find((u) => u.username.toLowerCase() === needle || u.email.toLowerCase() === needle);
+  return listUsers().find((u) => u.username.toLowerCase() === needle || u.email.toLowerCase() === needle);
 }
 
 export function getUserById(id: string): User | undefined {
-  return USERS.find((u) => u.id === id);
+  return listUsers().find((u) => u.id === id);
 }
 
 export { accessFor } from "./access";

@@ -1,6 +1,23 @@
 // Client-safe: type-only import, so this module never pulls user.json into a bundle.
 import type { Access, PageKey, User } from "./users";
 
+// A Record, so adding a PageKey without listing it here is a type error.
+const PAGES: Record<PageKey, true> = {
+  dashboard: true,
+  "parking-layout": true,
+  "financial-overview": true,
+  "activity-log": true,
+  "heat-map": true,
+  users: true,
+  "audit-logs": true,
+  "settings.branch": true,
+  "settings.slot-types": true,
+  "settings.fees": true,
+};
+
+/** Every permission key, in the seed's order. */
+export const PAGE_KEYS: readonly PageKey[] = Object.freeze(Object.keys(PAGES) as PageKey[]);
+
 /** The System Settings tabs: the sidebar shows the menu and the page guard lets you in if any one is granted. */
 export const SETTINGS_PAGES: readonly PageKey[] = ["settings.branch", "settings.slot-types", "settings.fees"];
 
