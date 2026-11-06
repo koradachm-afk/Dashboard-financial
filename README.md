@@ -129,7 +129,7 @@ auto_parking/
 │  │
 │  ├─ components/
 │  │  ├─ tailgrids/core/          # component ที่ใช้หลายหน้า ดึงจาก TailGrids แล้วแปลงเป็น token ของเรา
-│  │  ├─ admin-nav.ts             # รายการเมนูของ Admin (ใช้กับ Sidebar, 404 และหน้า Account / Users)
+│  │  ├─ admin-nav.ts             # รายการเมนูของ Admin (ใช้กับ Sidebar, หน้า 403 / 404, Account และ Users)
 │  │  ├─ sidebarmenu.tsx          # เมนูด้านซ้ายของ Admin
 │  │  └─ error-card.tsx           # การ์ดแจ้ง error (403 / 404)
 │  │
