@@ -32,7 +32,6 @@ const HEADER_NOTE: Record<Role, string> = {
 
 const BADGE: Record<Access, { label: string; className: string }> = {
   edit: { label: "แก้ไขได้", className: "bg-primary-soft text-primary" },
-  view: { label: "ดูได้", className: "bg-page text-fg-2" },
   none: { label: "ไม่มีสิทธิ์", className: "border border-line text-fg-3" },
 };
 

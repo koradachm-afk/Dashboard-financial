@@ -1,7 +1,7 @@
 import { listUsers } from "./user-store";
 
 export type Role = "superadmin" | "admin";
-export type Access = "none" | "view" | "edit";
+export type Access = "none" | "edit";
 export type PageKey =
   | "dashboard"
   | "parking-layout"

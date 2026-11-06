@@ -21,8 +21,8 @@ export const PAGE_KEYS: readonly PageKey[] = Object.freeze(Object.keys(PAGES) as
 /** The System Settings tabs: the sidebar shows the menu and the page guard lets you in if any one is granted. */
 export const SETTINGS_PAGES: readonly PageKey[] = ["settings.branch", "settings.slot-types", "settings.fees"];
 
-export const ACCESS_RANK: Record<Access, number> = { none: 0, view: 1, edit: 2 };
-const BY_RANK: readonly Access[] = ["none", "view", "edit"];
+export const ACCESS_RANK: Record<Access, number> = { none: 0, edit: 1 };
+const BY_RANK: readonly Access[] = ["none", "edit"];
 
 export function accessFor(user: Pick<User, "role" | "permissions">, page: PageKey): Access {
   return user.role === "superadmin" ? "edit" : user.permissions[page];

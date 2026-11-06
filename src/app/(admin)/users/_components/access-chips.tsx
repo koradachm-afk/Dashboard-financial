@@ -2,7 +2,7 @@ import { LayoutDashboard } from "lucide-react";
 
 import { NAV, type NavItem } from "@/components/admin-nav";
 import { bestAccess } from "@/db/user/access";
-import type { Access, User } from "@/db/user/users";
+import type { User } from "@/db/user/users";
 import { cn } from "@/utils/cn";
 
 /**
@@ -13,14 +13,11 @@ export const ACCESS_PAGES: readonly NavItem[] = NAV.flatMap((g) => g.items).filt
   (i) => i.href !== "/users",
 );
 
-const WORD: Record<Exclude<Access, "none">, string> = { edit: "แก้ไขได้", view: "ดูได้" };
+const WORD = "แก้ไขได้";
 
 // DESIGN-STYLE §8.2 Page Access Chip.
 const CHIP = "grid size-6.5 shrink-0 place-items-center rounded-md";
-const TONE: Record<Exclude<Access, "none">, string> = {
-  edit: "border border-primary bg-primary-soft text-primary",
-  view: "bg-page text-fg-2",
-};
+const TONE = "border border-primary bg-primary-soft text-primary";
 
 export function AccessChips({ user }: { user: Pick<User, "role" | "permissions"> }) {
   if (user.role === "superadmin") {
@@ -28,8 +25,7 @@ export function AccessChips({ user }: { user: Pick<User, "role" | "permissions">
   }
 
   const granted = ACCESS_PAGES.flatMap((item) => {
-    const access = bestAccess(user, item.pages);
-    return access === "none" ? [] : [{ item, access }];
+    return bestAccess(user, item.pages) === "none" ? [] : [item];
   });
 
   if (granted.length === 0) {
@@ -43,8 +39,8 @@ export function AccessChips({ user }: { user: Pick<User, "role" | "permissions">
 
   return (
     <div className="flex gap-1">
-      {granted.map(({ item: { href, label, icon: Icon }, access }) => (
-        <span key={href} role="img" aria-label={`${label} ${WORD[access]}`} className={cn(CHIP, TONE[access])}>
+      {granted.map(({ href, label, icon: Icon }) => (
+        <span key={href} role="img" aria-label={`${label} ${WORD}`} className={cn(CHIP, TONE)}>
           <Icon size={14} aria-hidden="true" />
         </span>
       ))}
@@ -56,14 +52,12 @@ export function AccessChips({ user }: { user: Pick<User, "role" | "permissions">
 export function AccessLegend() {
   return (
     <div className="flex items-center gap-1.5">
-      {(["edit", "view"] as const).map((access) => (
-        <span key={access} className="flex items-center gap-1.5 pr-2">
-          <span aria-hidden="true" className={cn(CHIP, TONE[access])}>
-            <LayoutDashboard size={14} />
-          </span>
-          <span className="text-label text-fg-2">{WORD[access]}</span>
+      <span className="flex items-center gap-1.5 pr-2">
+        <span aria-hidden="true" className={cn(CHIP, TONE)}>
+          <LayoutDashboard size={14} />
         </span>
-      ))}
+        <span className="text-label text-fg-2">{WORD}</span>
+      </span>
     </div>
   );
 }
