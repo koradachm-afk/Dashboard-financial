@@ -109,6 +109,7 @@ src/
     - sync ข้ามแท็บด้วย event `storage` ได้
     - seed ที่ใช้ตรงกับ Figma ต้องมี `sessionId` ตายตัว (เช่น `sess_...`) ส่วนรายการที่สร้างใหม่ใช้ id สุ่ม
     - มีฟังก์ชัน `resetStore()` สำหรับ dev (ล้าง key `autoparking:v1:*` แล้วโหลด seed ใหม่)
+    - restart server แล้ว browser เรียก `resetStore()` ให้เองในหน้าถัดไป: `BootSync` (ใน root `layout.tsx`) เรียก Server Action `getBootId()` แล้วส่งให้ `syncBootId()` ใน `store.ts` เทียบกับ key `autoparking:v1:boot` · ใช้ได้กับ `next start` process เดียว
     - ห้ามเก็บข้อมูลจริงของคนใน localStorage (ตรงกับกฎข้อ 8)
 
 **ไฟล์ที่ห้ามแก้ถ้าไม่ได้สั่ง:** `layout.tsx` ระดับกลุ่ม, `src/components/`, `globals.css` (เจ้าของคือ PM) · บล็อก `nextjs-agent-rules` ด้านบนของไฟล์นี้ · `package.json` (ห้ามเพิ่ม dependency โดยไม่ถาม)
