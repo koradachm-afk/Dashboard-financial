@@ -31,7 +31,7 @@
 |---|---|---|---|
 | ชื่อเมนู | Traffic Activity | **Activity Log** | 8.1, 8.5 |
 | ธีม | สว่าง / มืด / ตามระบบ | **สว่าง / มืด** เท่านั้น บันทึกผูกกับบัญชี | 13 |
-| ที่เก็บ component | `src/components/ui/` | **`src/components/tailgrids/`** + `src/components/sidebarmenu.tsx` | 1, 8 |
+| ที่เก็บ component | `src/components/ui/` | **`src/components/tailgrids/core/`** + `src/components/sidebarmenu.tsx` | 1, 8 |
 | รวม className | ต่อ string เอง | ใช้ **`cn()`** (clsx + tailwind-merge ที่ตั้งค่าขนาดตัวอักษรของเราแล้ว) | 1.1 |
 | System Settings | เฉพาะ Superadmin | Admin เข้าได้ **ตามสิทธิ์รายแท็บ** (3 แท็บ) | 8.1, 9.5 |
 | Action Badge | 5 แบบ | เพิ่ม **Logout** และ **Export** เป็น 7 แบบ | 8.2 |
@@ -73,8 +73,8 @@
 | ตัว | บทบาท | สรุป |
 |---|---|---|
 | **Tailwind CSS v4** | เครื่องมือหลักในการเขียน style | ใช้ได้เฉพาะ token ที่ประกาศใน `@theme` ของเรา (ข้อ 14) |
-| **Components กลาง** (`src/components/tailgrids/*` และ `src/components/sidebarmenu.tsx`) | หน้าตาทุกอย่างที่มีใน Figma | หน้า (page) ต้องประกอบจาก component เหล่านี้ |
-| **TailGrids** | ต้นแบบโครง markup ที่ดึงมาไว้ใน `src/components/tailgrids/` (ตาม `tailgrids.config.json`) | ดึงมาแล้วต้องแปลง class เป็น token ของเราทุกตัว ไม่ใช้ theme ของ TailGrids |
+| **Components กลาง** (`src/components/tailgrids/core/*` และ `src/components/sidebarmenu.tsx`) | หน้าตาทุกอย่างที่มีใน Figma | หน้า (page) ต้องประกอบจาก component เหล่านี้ |
+| **TailGrids** | ต้นแบบโครง markup ที่ดึงมาไว้ใน `src/components/tailgrids/core/` (ตาม `tailgrids.config.json`) | ดึงมาแล้วต้องแปลง class เป็น token ของเราทุกตัว ไม่ใช้ theme ของ TailGrids |
 
 Figma ใช้ component ของโปรเจกต์เองทั้งหมด ไม่ได้ต่อ library ของ TailGrids
 พาเลตต์สีของเราบังเอิญใกล้ TailGrids (primary `#3758F9`, `#111928`, `#637381`, `#DFE4EA`)
@@ -84,7 +84,7 @@ Figma ใช้ component ของโปรเจกต์เองทั้ง
 
 - ใช้ utility ของ Tailwind ที่อิง token ของเรา เช่น `bg-surface`, `text-fg-2`, `border-line`, `rounded-xl`, `shadow-pop`, `text-body`
 - ใช้ spacing ตามสเกลในข้อ 4 (`gap-3`, `px-5`, `py-4.5` ฯลฯ)
-- ดึง component ของ TailGrids มาไว้ใน `src/components/tailgrids/` แล้ว **แปลง class ทุกตัวเป็น token ของเรา** ตามตารางด้านล่าง และปรับหน้าตาให้ตรงกับ component ชื่อเดียวกันใน Figma
+- ดึง component ของ TailGrids มาไว้ใน `src/components/tailgrids/core/` แล้ว **แปลง class ทุกตัวเป็น token ของเรา** ตามตารางด้านล่าง และปรับหน้าตาให้ตรงกับ component ชื่อเดียวกันใน Figma
 - component ที่ใช้แค่หน้าเดียว ให้เก็บไว้ข้างหน้านั้นใน `app/(admin)/<page>/_components/` ไม่ต้องใส่ใน `src/components/`
 - ใช้ `tabular-nums` กับตัวเลขในตาราง, KPI และเวลา
 
@@ -354,7 +354,11 @@ export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
 ## 8. Components
 
-component ที่ใช้หลายหน้าอยู่ใน `src/components/tailgrids/` (เมนูด้านซ้ายอยู่ที่ `src/components/sidebarmenu.tsx`) และมีชื่อ / props ตรงกับ Figma
+component ที่ใช้หลายหน้าอยู่ใน `src/components/tailgrids/core/` (เมนูด้านซ้ายอยู่ที่ `src/components/sidebarmenu.tsx`) และมีชื่อ / props ตรงกับ Figma
+
+> **ข้อนี้คือสเปก ไม่ใช่รายการของที่ทำแล้ว** · ตอนนี้ใน `src/components/tailgrids/core/` มี: avatar · button · checkbox · date-range-picker · dialog (`ConfirmDialog`) · dropdown · form-alert · input · multi-select-filter · pagination · password-rule-list · role-badge · segmented-control · sheet (Drawer) · sidebar (มี hook `useIsMobile` อยู่ในไฟล์เดียวกัน) · toast · tooltip · และ `src/components/error-card.tsx`
+> ที่มีสเปกแต่ยังไม่ได้ทำ: Select · Radio · Switch · Tab · Icon Button · Badge / Chip (ที่ใช้อยู่ตอนนี้เป็นของเฉพาะหน้าใน `_components/` ของหน้านั้น) · Card · KPI Card · Table · Plate · Detail Row · Step · PromptPay QR · Mobile Header · Entry Snapshot · Plate Match Card · Payment Method Option · Bank Option · Kiosk Top Bar · Heat Cell
+> ถ้าหน้าที่กำลังทำต้องใช้ตัวที่ยังไม่มี ให้สร้างใน `src/components/tailgrids/core/` ตามสเปกในข้อนี้
 ไอคอน import จาก `lucide-react` โดยตรง ไม่ต้องสร้าง component ไอคอนเอง
 class ในตารางเป็นสูตรตั้งต้น ถ้าต้องปรับให้แก้ที่ component ตัวเดียว ห้ามไปแก้ที่หน้า
 
@@ -445,7 +449,7 @@ Active: `bg-primary-soft text-primary font-semibold`
 - หัวกลุ่ม ("เมนูหลัก", "จัดการระบบ"): `text-caption font-semibold text-fg-3`
 - ลำดับเมนู: Dashboard → Parking Layout → Financial Overview → **Activity Log** → Parking Heat Map · *จัดการระบบ:* User & Permissions → System Settings → Audit Logs
 - แสดงเฉพาะเมนูที่ผู้ใช้มีสิทธิ์ (ดูได้หรือแก้ไขได้) · System Settings แสดงเมื่อมีสิทธิ์อย่างน้อย 1 แท็บ · ถ้าหัวกลุ่มไม่เหลือเมนูให้ซ่อนหัวกลุ่มด้วย
-- ไฟล์: `src/components/sidebarmenu.tsx`
+- ไฟล์: `src/components/sidebarmenu.tsx` · รายการเมนูมาจาก `src/components/admin-nav.ts`
 - ล่างสุด: Profile menu (avatar + ชื่อ + Role)
 
 ### 8.2 Badge และ Chip
@@ -1000,7 +1004,7 @@ const thai = Noto_Sans_Thai({ subsets: ["thai"], weight: ["400", "500", "600", "
 - [ ] ไม่มี class ของ TailGrids (`text-dark`, `text-body-color`, `border-stroke`, `shadow-1`, `bg-gray-*`)
 - [ ] ไม่มีค่า arbitrary ของ font-size, radius, shadow หรือ spacing (`[..px]`)
 - [ ] ไม่มี variant `dark:` ใน component
-- [ ] ปุ่ม, input, badge, select, checkbox ใช้ component กลางใน `src/components/tailgrids/` ไม่ได้เขียนซ้ำในหน้า
+- [ ] ปุ่ม, input, checkbox และ component อื่นที่มีใน `src/components/tailgrids/core/` ใช้ตัวกลาง ไม่ได้เขียนซ้ำในหน้า (select, badge ยังไม่มีตัวกลาง ดูหมายเหตุต้นข้อ 8)
 - [ ] รวม class ผ่าน `cn()` (ข้อ 1.1) ไม่ต่อ string เอง
 - [ ] หน้าเช็กสิทธิ์ใน `page.tsx` (ไม่มีสิทธิ์ → `/403`) และซ่อน / ล็อกปุ่มแก้ไขเมื่อมีสิทธิ์แค่ "ดูได้"
 - [ ] ใช้ชื่อ "Activity Log" ไม่มีคำว่า Traffic Activity หลงเหลือ
