@@ -44,6 +44,8 @@ const PRESETS: readonly { id: Preset; label: string }[] = [
   { id: "month", label: "เดือนนี้" },
 ];
 const presetLabel = (id: Preset) => PRESETS.find((p) => p.id === id)?.label ?? "";
+// "ใน" + preset; Figma puts a space only before a digit ("ใน 7 วันล่าสุด", "ในวันนี้").
+const inRange = (label: string) => (/^\d/.test(label) ? `ใน ${label}` : `ใน${label}`);
 
 const ALL_PAGES = "all";
 // Menu order and icons follow Figma 08.9.
@@ -64,7 +66,7 @@ const PAGE_OPTIONS = [
 ];
 const pageIcon = (name: string) => PAGES.find((p) => p.id === name)?.icon;
 
-const ACTION_OPTIONS = AUDIT_ACTIONS.map((a) => ({ id: a, label: a }));
+const ACTION_OPTIONS = AUDIT_ACTIONS.map((a) => ({ id: a, label: a, content: <ActionBadge action={a} /> }));
 
 type Criteria = { query: string; preset: Preset; page: string; actions: readonly string[] };
 const DEFAULTS: Criteria = { query: "", preset: "7d", page: ALL_PAGES, actions: [] };
@@ -201,7 +203,8 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
             onChange={(actions) => setDraft({ ...draft, actions })}
             hint="การกระทำ (เลือกได้หลายแบบ)"
             clearLabel="ล้างที่เลือก"
-            clearHint="กด “ค้นหา” เพื่อกรอง"
+            applyLabel="ใช้ตัวกรอง"
+            onApply={() => apply({ ...draft, query: draft.query.trim() })}
             className="w-47.5"
           />
           <Button variant="ghost" onClick={clear} className="ml-auto">
@@ -215,7 +218,7 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
         {!isDefault(applied) && (
           <div className="flex items-center gap-2.5 px-4 py-2.5">
             <p className="text-body font-semibold text-fg">พบ {total} รายการ</p>
-            <p className="text-body text-fg-2">ใน {range}</p>
+            <p className="text-body text-fg-2">{inRange(range)}</p>
             {applied.actions.map((action) => (
               <button
                 key={action}
@@ -305,7 +308,7 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
                       <span className="grid size-14 place-items-center rounded-full bg-page text-fg-3">
                         <History size={24} aria-hidden="true" />
                       </span>
-                      <p className="text-lead font-semibold text-fg">ไม่พบเหตุการณ์ในช่วง {range}</p>
+                      <p className="text-lead font-semibold text-fg">ไม่พบเหตุการณ์{inRange(range)}</p>
                       <p className="text-body text-fg-2">ลองเปลี่ยนช่วงวันที่ หรือล้างตัวกรองเพื่อดูเหตุการณ์ทั้งหมด</p>
                       <Button variant="secondary" size="sm" onClick={clear}>
                         ล้างตัวกรอง
