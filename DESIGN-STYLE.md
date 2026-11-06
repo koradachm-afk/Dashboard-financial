@@ -7,9 +7,16 @@
 > เอกสารนี้แปลง Figma ออกมาเป็นกติกาสำหรับโค้ด (Next.js + Tailwind CSS v4)
 > ถ้าเอกสารนี้กับ Figma ไม่ตรงกัน **ให้ยึด Figma** แล้วแก้เอกสารนี้ตาม
 >
-> **เวอร์ชัน 2.3 · อัปเดต 6 พ.ย. 2026**
+> **เวอร์ชัน 2.4 · อัปเดต 6 พ.ย. 2026**
 
 ### มีอะไรเปลี่ยน
+
+**v2.4 (6 พ.ย.) · Mobile Banking**
+
+| เรื่อง | เดิม | ตอนนี้ | ข้อ |
+|---|---|---|---|
+| โลโก้ธนาคาร (Bank Option) | วงสีเทา + ไอคอน `Landmark` | วงสีประจำธนาคาร + อักษรย่อ (component property `Initials`) แทนชั่วคราว จนกว่าจะได้ไฟล์โลโก้ทางการ | 8.5 |
+| ผลการชำระผ่านแอป | มีแค่รอยืนยัน (17.11) และสำเร็จ (17.7) | เพิ่ม **17.12** ไม่สำเร็จ / ยกเลิก และ **17.13** หมดเวลารอยืนยัน | 9.3 |
 
 **v2.3 (6 พ.ย.) · สิทธิ์เหลือ 2 ระดับ**
 
@@ -560,7 +567,7 @@ Fabric.js อ่าน CSS variable ไม่ได้เอง ต้องด�
 | **Entry Snapshot** (รูปตอนเข้า) | 128×96 (4:3) · `rounded-pop overflow-hidden` · รูป `object-cover` · แถบไล่เฉดดำด้านล่าง (`bg-linear-to-b from-transparent to-black/70` สูง 28) · ซ้าย: ชื่อกล้อง `text-nano text-white/80` · ขวา: เวลาเข้า `text-caption font-semibold text-white tabular-nums` |
 | **Plate Match Card** `State: Default / Selected` | `flex items-center gap-3 rounded-2xl border border-line bg-surface p-3` · Selected: `border-2 border-primary bg-primary-soft` · ซ้าย Entry Snapshot · กลาง (`flex-1 gap-0.5`): ทะเบียน `text-h3 font-bold` · จังหวัด `text-body text-fg-2` · "เข้า 17 ต.ค. · 18:42 · ประตู 1" `text-label text-fg-3` · ขวา Radio |
 | **Payment Method Option** `State: Default / Selected` | `flex items-center gap-3 rounded-2xl border border-line bg-surface p-4` · Selected: `border-2 border-primary bg-primary-soft` · กล่องไอคอน `size-11 rounded-xl bg-subtle` + ไอคอน 24 `text-fg-2` (Selected: กล่อง `bg-surface` ไอคอน `text-primary`) · ชื่อ `text-title font-semibold` · คำอธิบาย `text-body text-fg-2` · ขวา Radio |
-| **Bank Option** `State: Default / Selected` | กว้าง 106 · `flex flex-col items-center gap-1.5 rounded-xl border border-line bg-surface px-2 pt-3 pb-2.5` · Selected: `border-2 border-primary bg-primary-soft` · วงโลโก้ `size-9 rounded-full bg-subtle` + `Landmark` 20 (แทนโลโก้จริงไปก่อน) · ชื่อธนาคาร `text-label font-medium text-center` · วางเป็น `grid grid-cols-3 gap-x-4 gap-y-2.5` |
+| **Bank Option** `State: Default / Selected` | กว้าง 106 · `flex flex-col items-center gap-1.5 rounded-xl border border-line bg-surface px-2 pt-3 pb-2.5` · Selected: `border-2 border-primary bg-primary-soft` · วงโลโก้ `size-9 rounded-full` สีประจำธนาคาร + อักษรย่อ Inter Bold 11 สีขาว (กรุงศรีใช้ตัวอักษรสีเข้ม) แทนโลโก้จริงไปก่อน · สีใน Figma: กสิกรไทย `#138F2D` K · ไทยพาณิชย์ `#4E2A84` SCB · กรุงเทพ `#1E4598` BBL · กรุงไทย `#1BA5E1` KTB · กรุงศรี `#FEC43B` BAY · ทีทีบี `#0050F0` ttb (ค่าประมาณ ต้องเทียบ brand guideline · ในโค้ดเพิ่มเป็น token เช่น `bank-kbank` ก่อนใช้) · ชื่อธนาคาร `text-label font-medium text-center` · วางเป็น `grid grid-cols-3 gap-x-4 gap-y-2.5` |
 | **Kiosk Top Bar** | สูง 80 · `px-10 py-4.5 bg-surface border-b border-line` · แบรนด์ `text-h2 font-bold` · ไอคอน 28 · ขวาสุดเป็น Badge สถานะระบบ + นาฬิกา |
 | **Calendar Day** `Default/Today/Selected/In range/Disabled/Empty` | 38×34 `rounded-md text-body` · Today: `border border-primary text-primary font-semibold` · Selected: `bg-primary text-on-primary font-semibold` · In range: `bg-primary-soft text-primary font-medium` · Disabled: `text-fg-3` |
 | **Date Range Picker** | 320 กว้าง · `rounded-pop border border-line bg-surface p-3.5 gap-3 shadow-pop` · ใช้ตัวเดียวกันทั้ง Dashboard, Audit Logs, Activity Log |
@@ -610,6 +617,8 @@ Fabric.js อ่าน CSS variable ไม่ได้เอง ต้องด�
   - หมายเหตุ `text-label text-fg-3`
   - ปุ่ม Primary ชิดล่างของเนื้อหา (มี spacer `flex-1` คั่น) + Ghost "ยกเลิก"
 - **หน้ารอยืนยันในแอปธนาคาร (17.11):** โครงเดียวกับหน้า QR (17.5) แต่แทน QR ด้วยวงไอคอน `size-22 rounded-full bg-primary-soft` + `Smartphone` 40 `text-primary` · แถบสถานะเตือนพร้อมนับถอยหลังเหมือนเดิม · ปุ่ม Secondary "เปิดแอป{ธนาคาร}อีกครั้ง" + Ghost "เปลี่ยนวิธีชำระ"
+- **ชำระผ่านแอปไม่สำเร็จ / ยกเลิก (17.12):** โครงเดียวกับ 17.11 · หัวข้อ "ชำระเงินไม่สำเร็จ" · วงไอคอน `bg-danger-soft` + `TriangleAlert` สี danger (แบบเดียวกับ 17.6) · ไม่มีแถบนับถอยหลัง · ปุ่มเหมือน 17.11
+- **หมดเวลารอยืนยัน (17.13):** โครงเดียวกับ 17.11 · หัวข้อ "หมดเวลารอยืนยัน" · วงไอคอน `bg-warning-soft` + `Clock` สี warning · แถบสถานะเหลือแค่ไอคอนและ "00:00" · ปุ่ม Secondary "เริ่มชำระใหม่" (`RotateCw`) + Ghost "เปลี่ยนวิธีชำระ" · ไม่มีหมายเหตุใต้ปุ่ม
 
 ### 9.4 Kiosk ทางเข้า / ทางออก
 

@@ -445,9 +445,9 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 
 เฟรม: [17 ค้นหา](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43072) · [17.1 กรอกแล้ว](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43137) · [17.2 ไม่พบ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43201) · [17.3 รอชำระ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43270) · [17.4 ชำระแล้ว](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43348) · [17.5 สแกนจ่าย](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43424) · [17.6 ไม่สำเร็จ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43485) · [17.7 สำเร็จ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43542)
 
-เพิ่มใหม่ (3 พ.ย.): [17.8 เลือกรถของคุณ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=436-50059) · [17.9 เลือกวิธีชำระ (QR)](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50236) · [17.10 เลือกวิธีชำระ (Mobile Banking)](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50346) · [17.11 รอยืนยันในแอปธนาคาร](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50519)
+เพิ่มใหม่ (3 พ.ย.): [17.8 เลือกรถของคุณ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=436-50059) · [17.9 เลือกวิธีชำระ (QR)](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50236) · [17.10 เลือกวิธีชำระ (Mobile Banking)](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50346) · [17.11 รอยืนยันในแอปธนาคาร](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50519) · เพิ่ม 6 พ.ย.: [17.12 ชำระผ่านแอปไม่สำเร็จ / ยกเลิก](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=581-51214) · [17.13 หมดเวลารอยืนยัน](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=581-51268)
 
-Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 → QR 17.5 หรือ Mobile Banking 17.10 → 17.11 → 17.7
+Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 → QR 17.5 หรือ Mobile Banking 17.10 → 17.11 → สำเร็จ 17.7 / ไม่สำเร็จหรือยกเลิก 17.12 / หมดเวลา 17.13
 
 - ☐ ขั้นตอน ค้นหา → ตรวจสอบ → ชำระ (Step component) · 17.8 ยังอยู่ขั้น "ค้นหา" · 17.9–17.11 อยู่ขั้น "ชำระ"
 - ☐ ค้นทะเบียน (เว้นวรรคหรือไม่ก็ได้) · ไม่พบ → error ใต้ช่อง + กล่องคำแนะนำ
@@ -462,12 +462,14 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 - ☐ **เลือกวิธีชำระ (17.9 / 17.10):** กด "ชำระเงิน" ใน 17.3 แล้วมาที่หน้านี้ · ค่าเริ่มต้น QR PromptPay
   - QR PromptPay → ปุ่ม "ถัดไป · แสดง QR PromptPay" → 17.5
   - Mobile Banking → เลือกธนาคาร 6 แห่ง (กสิกรไทย, ไทยพาณิชย์, กรุงเทพ, กรุงไทย, กรุงศรี, ทีทีบี) → ปุ่ม "เปิดแอป{ธนาคาร} · ชำระ ฿60" → 17.11
-  - โลโก้ธนาคารใช้ไอคอน `Landmark` ไปก่อน
+  - โลโก้ธนาคาร: ใช้วงสีประจำธนาคาร + อักษรย่อแทนชั่วคราว (K · SCB · BBL · KTB · BAY · ttb ตาม Figma 17.10) จนกว่าจะได้ไฟล์โลโก้ทางการ · ในโค้ดสีเหล่านี้ต้องเพิ่มเป็น token ก่อนใช้ ห้ามใส่ hex ตรง ๆ
   - วิธีที่เลือกเก็บใน `?method=qr|bank&bank=<รหัส>` ย้อนกลับมาแล้วยังเลือกไว้เหมือนเดิม
 - ☐ **รอยืนยันในแอปธนาคาร (17.11):**
   - นับถอยหลังแบบเดียวกับหน้า QR · ปุ่ม "เปิดแอป{ธนาคาร}อีกครั้ง" · ปุ่ม "เปลี่ยนวิธีชำระ" กลับ 17.10
   - ช่วงหน้าบ้านล้วนไม่เปิดแอปจริง เรียก `openBankApp()` กลางที่คืนค่า mock · จำลองผลด้วย `?state=success|failed`
   - สำเร็จใช้หน้า 17.7 เดียวกับ QR
+- ☐ **ชำระผ่านแอปไม่สำเร็จ / ยกเลิก (17.12):** "ชำระเงินไม่สำเร็จ" + ไอคอน `triangle-alert` สีแดง · ปุ่ม "เปิดแอป{ธนาคาร}อีกครั้ง" และ "เปลี่ยนวิธีชำระ" · จำลองด้วย `?state=failed`
+- ☐ **หมดเวลารอยืนยัน (17.13):** "หมดเวลารอยืนยัน" + ไอคอน `clock` สีเหลือง · นับถอยหลังเป็น 00:00 · ปุ่ม "เริ่มชำระใหม่" (สร้างเลขอ้างอิงใหม่ ไอคอน `rotate-cw`) และ "เปลี่ยนวิธีชำระ" · จำลองด้วย `?state=expired`
 - ☐ รายละเอียด: ทะเบียน, ประเภทรถ, เวลาเข้า, เวลาจอด, ยอดพร้อมวิธีคิด · ชำระแล้ว → "ไม่มียอดค้างชำระ"
 - ☐ หน้า QR:
   - PromptPay QR
@@ -575,7 +577,7 @@ PM (อ๊อด) เป็นผู้ตัดสิน ระหว่าง�
 | เกินเวลาออก | ประตูไม่เปิดจนกว่าจะจ่ายส่วนที่เกิน · **คิดค่าจอดใหม่นับจากเวลาที่จ่ายครั้งล่าสุด** (เปิด / ปิดได้ใน Settings) |
 | ทะเบียนซ้ำ / คล้ายกัน (ลูกค้า) | แสดงรายการพร้อมรูปตอนเข้า, จังหวัด และเวลาเข้าของทุกคันที่ตรง ให้ลูกค้าเลือกเอง (17.8) ไม่ต้องซ่อนหรือเบลอ |
 | วิธีชำระ (ลูกค้า) | **QR PromptPay** และ **Mobile Banking** · Kiosk ทางออกยังเป็น QR PromptPay อย่างเดียว |
-| โลโก้ธนาคาร | Figma ใช้ไอคอนกลาง · โลโก้จริงต้องขอจากธนาคารหรือผู้ให้บริการชำระเงิน แล้วค่อยใส่ |
+| โลโก้ธนาคาร | Figma ใช้วงสีประจำธนาคาร + อักษรย่อแทนชั่วคราว (6 พ.ย. 2026) · โลโก้จริงต้องใช้ไฟล์ทางการจากธนาคารหรือผู้ให้บริการชำระเงินเท่านั้น ห้ามดึงจากเว็บ · สีในตารางเป็นค่าประมาณ ต้องเทียบกับ brand guideline ของธนาคารก่อนใช้จริง |
 | Mobile Banking | การเปิดแอปธนาคารจากเว็บต้องผ่านผู้ให้บริการชำระเงิน ทีมทำแค่ frontend จึง **ใช้ mock ไปก่อน** |
 | ระดับสิทธิ์ | **2 ระดับ: ไม่มีสิทธิ์ / แก้ไขได้** · เลิกใช้ "ดูได้" เมื่อ 6 พ.ย. 2026 · ใครเปิดหน้าได้ก็ใช้ทุกปุ่มในหน้านั้นได้ · ประวัติใน Audit Logs ที่เขียนว่า "ดูได้" คงไว้ตามเดิมเพราะเป็นเหตุการณ์ที่เกิดแล้ว |
 | ความยาวรหัสผ่าน | **อย่างน้อย 8 ตัวอักษร** (Figma ปรับตามแล้ว ดู DESIGN-STYLE.md v2.2) |
@@ -588,7 +590,7 @@ PM (อ๊อด) เป็นผู้ตัดสิน ระหว่าง�
 
 | เรื่อง | รอ |
 |---|---|
-| ผู้ให้บริการชำระเงิน (payment gateway) สำหรับ Mobile Banking และโลโก้ธนาคารจริง | ช่วงทำ backend |
+| ผู้ให้บริการชำระเงิน (payment gateway) สำหรับ Mobile Banking และไฟล์โลโก้ธนาคารทางการ (ตอนนี้ใช้วงสี + อักษรย่อแทน) | ช่วงทำ backend |
 
 ---
 
