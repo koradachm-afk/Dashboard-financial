@@ -14,7 +14,14 @@ export async function NotFoundView() {
       icon={Search}
       code="404"
       title="ไม่พบหน้าที่ต้องการ"
-      description="ลิงก์อาจพิมพ์ผิด หรือหน้านี้ถูกย้ายไปแล้ว ตรวจสอบ URL อีกครั้ง หรือกลับไปหน้าแรก"
+      description={
+        // Line break as in Figma 07.10: Thai text has no spaces to wrap on.
+        <>
+          ลิงก์อาจพิมพ์ผิด หรือหน้านี้ถูกย้ายไปแล้ว ตรวจสอบ URL อีกครั้ง
+          <br />
+          หรือกลับไปหน้าแรก
+        </>
+      }
       actions={
         <Link href={homePathFor(user)} className={buttonVariants({ variant: "primary" })}>
           กลับไปหน้าแรก

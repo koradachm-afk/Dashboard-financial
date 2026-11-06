@@ -12,7 +12,7 @@ export function ErrorCard({
   icon: LucideIcon;
   code: string;
   title: string;
-  description: string;
+  description: ReactNode;
   actions: ReactNode;
 }) {
   return (
