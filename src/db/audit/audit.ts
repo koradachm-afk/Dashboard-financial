@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 import { createStore } from "../store";
-import { AUDIT_SEED } from "./audit-seed";
+import seed from "./audit-logs.json";
 
 export const AUDIT_ACTIONS = [
   "สร้าง",
@@ -61,6 +61,15 @@ function isAuditEntry(value: unknown): value is AuditEntry {
 export function isAuditLog(value: unknown): value is readonly AuditEntry[] {
   return Array.isArray(value) && value.every(isAuditEntry);
 }
+
+/** Checks the JSON seed, since a JSON import is only loosely typed. Throws so bad seed data fails at load. */
+export function loadAuditSeed(data: unknown): readonly AuditEntry[] {
+  if (!isAuditLog(data)) throw new Error("src/db/audit/audit-logs.json is not a valid audit log");
+  return Object.freeze(data.map((entry) => Object.freeze({ ...entry })));
+}
+
+/** The 20 audit entries shown in the Figma Audit Logs frames (08, 08.19, 08.2, 08.20–08.38), newest first. */
+export const AUDIT_SEED = loadAuditSeed(seed);
 
 const store = createStore<readonly AuditEntry[]>({
   domain: "audit",

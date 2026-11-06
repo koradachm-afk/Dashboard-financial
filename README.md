@@ -485,7 +485,7 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 | `sessions/sessions.json` *(เพิ่ม)* | รถเข้า–ออก + รูปตอนเข้า (`entryImage`) และประตูที่เข้า (`entryGate`) · มีเคสทะเบียนซ้ำ กข 1234 กรุงเทพฯ / นนทบุรี / 1กข 1234 | `sessions` · seed ใช้ `sessionId` ตายตัว (`sess_...`) รายการใหม่ใช้ `newSessionId()` | Activity Log, Dashboard, Customer, Kiosk |
 | `payments/payments.json` *(เพิ่ม)* | รายการชำระ + วิธีชำระ (`method: "qr" \| "bank"`) และธนาคาร (`bank`) | `payments` | Financial, Dashboard, Customer |
 | `banks/banks.json` *(เพิ่ม)* | รายชื่อธนาคารสำหรับ Mobile Banking (รหัส + ชื่อไทย) 6 แห่งตาม 17.10 | ไม่เก็บ (seed คงที่) | Customer |
-| `audit/audit-logs.json` *(เพิ่ม)* | ประวัติการใช้งาน (ตอนนี้ seed เป็น `[]` ใน `audit/audit.ts` · 20 เคสตาม Figma เพิ่มตอนทำหน้า Audit Logs) | `audit` (ทุกครั้งที่เรียก `audit()`) | Audit Logs |
+| `audit/audit-logs.json` | ประวัติการใช้งาน 20 เคสตาม Figma 08 / 08.19 พร้อมข้อมูล drawer 08.2, 08.20–08.38 (`title`, `changes`, `extras`) · `audit.ts` ตรวจด้วย `isAuditLog` ตอนโหลด ถ้าไม่ผ่านจะ throw | `audit` (ทุกครั้งที่เรียก `audit()`) · seed ไม่ถูกเขียนลง store แต่แสดงต่อท้ายรายการที่เก็บไว้ | Audit Logs |
 | `settings/settings.json` | ข้อมูลสาขา (มีแล้ว: `branchName`) · เพิ่มภายหลัง: ราคาต่อชั่วโมง, เวลาออกหลังชำระ, เปิด/ปิดการคิดค่าจอดใหม่ | `settings` | Settings, Customer, Kiosk |
 
 กติกา:
