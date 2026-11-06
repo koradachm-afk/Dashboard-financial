@@ -68,8 +68,34 @@ export function loadAuditSeed(data: unknown): readonly AuditEntry[] {
   return Object.freeze(data.map((entry) => Object.freeze({ ...entry })));
 }
 
-/** The 20 audit entries shown in the Figma Audit Logs frames (08, 08.19, 08.2, 08.20–08.38), newest first. */
-export const AUDIT_SEED = loadAuditSeed(seed);
+/** The 20 audit entries of the Figma Audit Logs frames (08, 08.19, 08.2, 08.20–08.38), newest first, dated as in Figma. */
+export const FIGMA_AUDIT_SEED = loadAuditSeed(seed);
+
+const DAY_MS = 86_400_000;
+const pad2 = (n: number) => String(n).padStart(2, "0");
+const dayNumber = (date: string) => Date.UTC(+date.slice(0, 4), +date.slice(5, 7) - 1, +date.slice(8, 10)) / DAY_MS;
+
+/**
+ * Moves the seed's dates so its newest day is the day before `now`, keeping each entry's time of day.
+ * The seed then always sits in the past and inside the default 7-day filter. Free text that mentions
+ * a date (e.g. "11–17 ต.ค. 2026") is left as in Figma.
+ */
+export function shiftSeedDates(log: readonly AuditEntry[], now: Date): readonly AuditEntry[] {
+  if (log.length === 0) return log;
+  const newest = Math.max(...log.map((e) => dayNumber(e.time)));
+  const yesterday = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() - 1) / DAY_MS;
+  const shift = yesterday - newest;
+  return Object.freeze(
+    log.map((e) => {
+      const d = new Date((dayNumber(e.time) + shift) * DAY_MS);
+      const date = `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`;
+      return Object.freeze({ ...e, time: `${date}${e.time.slice(10)}` });
+    }),
+  );
+}
+
+/** The seed as the app shows it: the Figma entries moved to the real clock once, when the module loads. */
+export const AUDIT_SEED = shiftSeedDates(FIGMA_AUDIT_SEED, new Date());
 
 const store = createStore<readonly AuditEntry[]>({
   domain: "audit",
