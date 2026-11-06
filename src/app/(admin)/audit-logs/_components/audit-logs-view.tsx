@@ -1,25 +1,17 @@
 "use client";
 
 import {
-  Activity,
   ArrowDown,
   ArrowUp,
   Calendar,
   ChevronRight,
   Download,
   Filter,
-  Flame,
   History,
   LayoutDashboard,
   Lock,
-  Map,
   Search,
-  Settings,
-  ShieldCheck,
-  User,
-  Wallet,
   X,
-  type LucideIcon,
 } from "lucide-react";
 import { CalendarDate } from "@internationalized/date";
 import { useRef, useState } from "react";
@@ -40,6 +32,7 @@ import { cn } from "@/utils/cn";
 
 import { ActionBadge } from "./action-badge";
 import { FilterSelect } from "./filter-select";
+import { PAGES, pageIcon } from "./page-icons";
 
 const PAGE_SIZE = 10;
 
@@ -56,23 +49,10 @@ const presetLabel = (id: Preset) => (id === "custom" ? CUSTOM_LABEL : (PRESETS.f
 const inRange = (label: string) => (/^\d/.test(label) ? `ใน ${label}` : `ใน${label}`);
 
 const ALL_PAGES = "all";
-// Menu order and icons follow Figma 08.9.
-const PAGES: readonly { id: string; icon: LucideIcon }[] = [
-  { id: "การเข้าสู่ระบบ", icon: Lock },
-  { id: "บัญชีของฉัน", icon: User },
-  { id: "Parking Layout", icon: Map },
-  { id: "Financial Overview", icon: Wallet },
-  { id: "Activity Log", icon: Activity },
-  { id: "Parking Heat Map", icon: Flame },
-  { id: "User & Permissions", icon: ShieldCheck },
-  { id: "System Settings", icon: Settings },
-  { id: "Audit Logs", icon: History },
-];
 const PAGE_OPTIONS = [
   { id: ALL_PAGES, label: "ทุกหน้า", icon: LayoutDashboard },
   ...PAGES.map(({ id, icon }) => ({ id, label: id, icon })),
 ];
-const pageIcon = (name: string) => PAGES.find((p) => p.id === name)?.icon;
 
 const ACTION_OPTIONS = AUDIT_ACTIONS.map((a) => ({ id: a, label: a, content: <ActionBadge action={a} /> }));
 
