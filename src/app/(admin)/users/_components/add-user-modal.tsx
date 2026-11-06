@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, Loader2, Lock, Mail, RotateCw, ShieldCheck, User as UserIcon, UserPlus, X } from "lucide-react";
+import { Eye, EyeOff, Info, Loader2, Lock, Mail, RotateCw, ShieldCheck, User as UserIcon, UserPlus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useId, useState, useTransition } from "react";
 import { Dialog, Heading, Modal, ModalOverlay } from "react-aria-components";
@@ -9,7 +9,6 @@ import { Button } from "@/components/tailgrids/core/button";
 import { FormAlert } from "@/components/tailgrids/core/form-alert";
 import { Checkbox } from "@/components/tailgrids/core/checkbox";
 import { Input } from "@/components/tailgrids/core/input";
-import { PasswordInput } from "@/components/tailgrids/core/password-input";
 import { SegmentedControl, type SegmentedControlOption } from "@/components/tailgrids/core/segmented-control";
 import { audit } from "@/db/audit/audit";
 import { passwordRulesMet } from "@/db/auth/password-rules";
@@ -81,6 +80,7 @@ function AddUserForm({ onClose, onCreate }: Omit<Props, "isOpen">) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("admin");
+  const [shown, setShown] = useState(false);
   const [touched, setTouched] = useState({ username: false, email: false, password: false });
   const id = useId();
 
@@ -94,6 +94,8 @@ function AddUserForm({ onClose, onCreate }: Omit<Props, "isOpen">) {
   const error = (field: keyof typeof ok, value: string) => !ok[field] && (value !== "" || touched[field]);
   const touch = (field: keyof typeof ok) => () => setTouched((t) => (t[field] ? t : { ...t, [field]: true }));
   const usernameError = error("username", username) || usernameTaken;
+  // Figma 07.6 puts the show/hide button beside the field (next to "สร้างอัตโนมัติ"), not inside it.
+  const EyeIcon = shown ? EyeOff : Eye;
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -210,8 +212,9 @@ function AddUserForm({ onClose, onCreate }: Omit<Props, "isOpen">) {
           <Required />
         </label>
         <div className="flex items-center gap-2">
-          <PasswordInput
+          <Input
             id={`${id}-password`}
+            type={shown ? "text" : "password"}
             required
             autoComplete="new-password"
             icon={Lock}
@@ -222,6 +225,14 @@ function AddUserForm({ onClose, onCreate }: Omit<Props, "isOpen">) {
             aria-describedby={`${id}-password-help`}
             className="min-w-0 flex-1"
           />
+          <button
+            type="button"
+            aria-label={shown ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
+            onClick={() => setShown((v) => !v)}
+            className={ICON_BUTTON}
+          >
+            <EyeIcon size={18} aria-hidden />
+          </button>
           <Button variant="secondary" icon={RotateCw} onClick={() => setPassword(generatePassword())}>
             สร้างอัตโนมัติ
           </Button>
