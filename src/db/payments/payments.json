@@ -1,0 +1,242 @@
+[
+  {
+    "ref": "PP171343",
+    "sessionId": "sess_042",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:48"
+  },
+  {
+    "ref": "PP171257",
+    "sessionId": "sess_045",
+    "amount": 20,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:48"
+  },
+  {
+    "ref": "PP171306",
+    "sessionId": "sess_040",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:47"
+  },
+  {
+    "ref": "PP171276",
+    "sessionId": "sess_039",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:31"
+  },
+  {
+    "ref": "PP171332",
+    "sessionId": "sess_038",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:31"
+  },
+  {
+    "ref": "PP171344",
+    "sessionId": "sess_006",
+    "amount": 180,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:23"
+  },
+  {
+    "ref": "PP171295",
+    "sessionId": "sess_044",
+    "amount": 20,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:21"
+  },
+  {
+    "ref": "PP171352",
+    "sessionId": "sess_030",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:21"
+  },
+  {
+    "ref": "PP171384",
+    "sessionId": "sess_021",
+    "amount": 60,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:19"
+  },
+  {
+    "ref": "PP171297",
+    "sessionId": "sess_003",
+    "amount": 200,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:18"
+  },
+  {
+    "ref": "PP171361",
+    "sessionId": "sess_037",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 21:06"
+  },
+  {
+    "ref": "PP171293",
+    "sessionId": "sess_008",
+    "amount": 100,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:57"
+  },
+  {
+    "ref": "PP171390",
+    "sessionId": "sess_017",
+    "amount": 60,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:49"
+  },
+  {
+    "ref": "PP171385",
+    "sessionId": "sess_029",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:46"
+  },
+  {
+    "ref": "PP171302",
+    "sessionId": "sess_004",
+    "amount": 180,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:41"
+  },
+  {
+    "ref": "PP171307",
+    "sessionId": "sess_009",
+    "amount": 80,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:39"
+  },
+  {
+    "ref": "PP171284",
+    "sessionId": "sess_007",
+    "amount": 80,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:36"
+  },
+  {
+    "ref": "PP171345",
+    "sessionId": "sess_014",
+    "amount": 60,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:31"
+  },
+  {
+    "ref": "PP171373",
+    "sessionId": "sess_027",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:27"
+  },
+  {
+    "ref": "PP171346",
+    "sessionId": "sess_013",
+    "amount": 60,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:27"
+  },
+  {
+    "ref": "PP171322",
+    "sessionId": "sess_026",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:25"
+  },
+  {
+    "ref": "PP171353",
+    "sessionId": "sess_005",
+    "amount": 160,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:23"
+  },
+  {
+    "ref": "PP171325",
+    "sessionId": "sess_010",
+    "amount": 80,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:17"
+  },
+  {
+    "ref": "PP171371",
+    "sessionId": "sess_002",
+    "amount": 200,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 20:03"
+  },
+  {
+    "ref": "PP171277",
+    "sessionId": "sess_001",
+    "amount": 200,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 19:59"
+  },
+  {
+    "ref": "PP171272",
+    "sessionId": "sess_018",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 19:50"
+  },
+  {
+    "ref": "PP171376",
+    "sessionId": "sess_015",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 19:36"
+  },
+  {
+    "ref": "PP171369",
+    "sessionId": "sess_023",
+    "amount": 20,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 19:27"
+  },
+  {
+    "ref": "PP171288",
+    "sessionId": "sess_012",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 19:16"
+  },
+  {
+    "ref": "PP171358",
+    "sessionId": "sess_011",
+    "amount": 40,
+    "method": "qr",
+    "bank": null,
+    "paidAt": "2026-10-17 19:16"
+  }
+]
