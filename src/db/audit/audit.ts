@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 import { createStore } from "../store";
+import { AUDIT_SEED } from "./audit-seed";
 
 export const AUDIT_ACTIONS = [
   "สร้าง",
@@ -50,12 +51,26 @@ const store = createStore<readonly AuditEntry[]>({
   validate: isAuditLog,
 });
 
+// Stored entries come first, then the Figma seed. Memoised per stored snapshot so
+// useSyncExternalStore sees the same array until the stored entries change.
+let lastStored: readonly AuditEntry[] | undefined;
+let lastCombined: readonly AuditEntry[] = AUDIT_SEED;
+
+function combined(): readonly AuditEntry[] {
+  const stored = store.get();
+  if (stored !== lastStored) {
+    lastStored = stored;
+    lastCombined = stored.length === 0 ? AUDIT_SEED : Object.freeze([...stored, ...AUDIT_SEED]);
+  }
+  return lastCombined;
+}
+
 export function getAuditLog(): readonly AuditEntry[] {
-  return store.get();
+  return combined();
 }
 
 export function useAuditLog(): readonly AuditEntry[] {
-  return useSyncExternalStore(store.subscribe, store.get, store.getServerSnapshot);
+  return useSyncExternalStore(store.subscribe, combined, () => AUDIT_SEED);
 }
 
 const pad = (n: number, width = 2) => String(n).padStart(width, "0");

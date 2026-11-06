@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, type LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import {
   Button,
   CheckboxGroup,
@@ -15,6 +16,8 @@ export type MultiSelectFilterOption = {
   id: string;
   label: string;
   icon?: LucideIcon;
+  /** Rendered instead of the plain label (e.g. a badge). The checkbox keeps `label` as its accessible name. */
+  content?: ReactNode;
 };
 
 export type MultiSelectFilterProps = {
@@ -31,6 +34,9 @@ export type MultiSelectFilterProps = {
   clearLabel: string;
   /** Muted text on the right of the footer. */
   clearHint?: string;
+  /** With `onApply`: a primary button on the right of the footer that calls `onApply` and closes the popover. Replaces `clearHint`. */
+  applyLabel?: string;
+  onApply?: () => void;
   /** Applied to the trigger (set its width here). */
   className?: string;
 };
@@ -45,6 +51,8 @@ export function MultiSelectFilter({
   hint,
   clearLabel,
   clearHint,
+  applyLabel,
+  onApply,
   className,
 }: MultiSelectFilterProps) {
   return (
@@ -69,6 +77,8 @@ export function MultiSelectFilter({
           aria-label={label}
           className="flex flex-col gap-0.5 px-2 pt-2.5 pb-2 outline-none"
         >
+        {({ close }) => (
+        <>
           {hint && <p className="px-2 pb-1.5 text-caption text-fg-3">{hint}</p>}
           <CheckboxGroup
             aria-label={label}
@@ -76,10 +86,11 @@ export function MultiSelectFilter({
             onChange={onChange}
             className="flex flex-col gap-0.5"
           >
-            {options.map(({ id, label: optionLabel, icon: OptionIcon }) => (
+            {options.map(({ id, label: optionLabel, icon: OptionIcon, content }) => (
               <Checkbox
                 key={id}
                 value={id}
+                aria-label={content ? optionLabel : undefined}
                 className="h-9 gap-2.5 rounded-md px-2 data-hovered:bg-subtle data-selected:bg-primary-soft data-selected:font-semibold data-selected:text-primary"
               >
                 {OptionIcon && (
@@ -89,7 +100,7 @@ export function MultiSelectFilter({
                     aria-hidden
                   />
                 )}
-                <span className="truncate">{optionLabel}</span>
+                {content ?? <span className="truncate">{optionLabel}</span>}
               </Checkbox>
             ))}
           </CheckboxGroup>
@@ -101,10 +112,24 @@ export function MultiSelectFilter({
             >
               {clearLabel}
             </Button>
-            {clearHint && (
-              <span className="ml-auto text-caption text-fg-3">{clearHint}</span>
+            {applyLabel && onApply ? (
+              <Button
+                onPress={() => {
+                  onApply();
+                  close();
+                }}
+                className="ml-auto h-8 cursor-default rounded-md bg-primary px-3 text-body font-medium text-on-primary outline-none data-focus-visible:ring-2 data-focus-visible:ring-focus data-focus-visible:ring-offset-1 data-focus-visible:ring-offset-surface data-hovered:bg-primary-hover"
+              >
+                {applyLabel}
+              </Button>
+            ) : (
+              clearHint && (
+                <span className="ml-auto text-caption text-fg-3">{clearHint}</span>
+              )
             )}
           </div>
+        </>
+      )}
         </Dialog>
       </Popover>
     </DialogTrigger>
