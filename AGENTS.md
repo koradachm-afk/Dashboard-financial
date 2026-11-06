@@ -30,7 +30,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **ขอบเขตตอนนี้: frontend อย่างเดียว** ไม่มี backend · seed อยู่ใน `src/db/<โดเมน>/*.json` · ข้อมูลที่เกิดระหว่างใช้งานเก็บ localStorage ผ่าน `src/db/store.ts` เท่านั้น · ห้ามเพิ่ม API route, ฐานข้อมูล หรือ auth จริงถ้าไม่ได้สั่ง
 - **ขอบเขตของ localStorage:** เก็บข้อมูลธุรกรรม (session รถ, การชำระเงิน, สถานะช่องจอดที่ผู้ดูแลตั้ง, audit log) และค่าที่ผู้ดูแลแก้ (Settings: ข้อมูลสาขา / ค่าจอด, ประเภทช่องจอด, ผังที่จอดที่กดบันทึก) และค่าที่ผู้ใช้เลือก (โดเมน `prefs`: ธีมของ Admin ผูกกับบัญชี) · **user และสิทธิ์:** ไฟล์ seed คงที่ไม่ถูกแก้ · การเปลี่ยนแปลงจากหน้า User & Permissions เก็บในหน่วยความจำของ server (ต่อ process, restart แล้วกลับเป็น seed) ไม่เก็บใน localStorage เพื่อให้การเช็กสิทธิ์ใน `page.tsx` ฝั่ง server ทำงานต่อได้
 - **localStorage ผูกกับ browser และโดเมนเดียว:** การ demo 3 ฝั่ง (Admin / Customer / Kiosk) ต้องเปิดใน browser เดียวกัน
-- **3 ฝั่ง:** Admin Web (Desktop 1440) · Customer Web (มือถือ 390, `/pay`) · Kiosk ทางเข้า / ทางออก (1920×1080)
+- **3 ฝั่ง:** Admin Web (Desktop 1440) · Customer Web (มือถือ 390, `/pay`) · Kiosk ทางเข้า / ทางออก (3 ขนาด: แนวนอน 1920×1080 · แนวตั้ง 1080×1920 · 5:4 1280×1024)
 - **Stack:** Next.js (App Router) + TypeScript · Tailwind CSS v4 · TailGrids (`src/components/tailgrids/core/`) · next-themes · Recharts · Fabric.js · SheetJS (Export Excel)
 - **Role:** มีแค่ `Superadmin` และ `Admin` · Admin เห็นหน้าตามสิทธิ์ที่ Superadmin ตั้ง: `ไม่มีสิทธิ์ / แก้ไขได้` (2 ระดับ ไม่มี "ดูได้")
 - **System Settings** แยกสิทธิ์ 3 แท็บ: ข้อมูลสาขา · ประเภทช่องจอด · ค่าจอดและการชำระเงิน · หน้า User & Permissions เป็นของ Superadmin เท่านั้น
