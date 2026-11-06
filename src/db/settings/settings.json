@@ -1,1 +1,6 @@
-{ "branchName": "สาขาสยาม" }
+{
+  "branchName": "สาขาสยาม",
+  "pricePerHour": 20,
+  "exitGraceMinutes": 15,
+  "recalcOvertime": true
+}
