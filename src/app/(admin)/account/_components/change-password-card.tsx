@@ -5,7 +5,8 @@ import { useState, useTransition } from "react";
 
 import { Button } from "@/components/tailgrids/core/button";
 import { FormAlert } from "@/components/tailgrids/core/form-alert";
-import { Input, type InputProps } from "@/components/tailgrids/core/input";
+import type { InputProps } from "@/components/tailgrids/core/input";
+import { PasswordInput } from "@/components/tailgrids/core/password-input";
 import { PasswordRuleList } from "@/components/tailgrids/core/password-rule-list";
 import { Toast } from "@/components/tailgrids/core/toast";
 import { audit } from "@/db/audit/audit";
@@ -39,7 +40,7 @@ function PasswordField({
           *
         </span>
       </div>
-      <Input id={id} type="password" icon={Lock} required aria-required="true" {...props} />
+      <PasswordInput id={id} icon={Lock} required aria-required="true" {...props} />
       {errorText && (
         <p id={CURRENT_ERROR_ID} className="text-label text-danger">
           {errorText}
