@@ -13,13 +13,20 @@
 >
 > อัปเดตล่าสุด **6 พ.ย. 2026** · กำหนดส่ง **15 พ.ย. 2026** · แผนงานอยู่ใน ClickUp (space **Auto_Parking**)
 
-**อัปเดตรอบนี้ (3 พ.ย.) · Customer Web**
+**อัปเดตรอบนี้ (6 พ.ย.)**
+- **สิทธิ์เหลือ 2 ระดับ:** ไม่มีสิทธิ์ / แก้ไขได้ (เลิกใช้ "ดูได้" · ลบเฟรม 08.3 และ 10.25)
+- **รหัสผ่าน:** อย่างน้อย 8 ตัวอักษร (Figma แก้ตามแล้ว) · ทุกช่องรหัสผ่านมีปุ่มแสดง / ซ่อน (`PasswordInput`)
+- **Audit Logs:** ปฏิทินกำหนดช่วงเอง · drawer รายละเอียด · Export Excel · seed แสดงใน 7 วันล่าสุดเสมอ
+- **Mobile Banking (Figma):** เพิ่ม 17.12 ไม่สำเร็จ / ยกเลิก และ 17.13 หมดเวลา · ไอคอนธนาคารจริง 4 แห่ง (กสิกรไทยและกรุงศรียังเป็นวงสี + อักษรย่อ)
+- **ข้อมูล:** seed ทุกหน้าเป็น JSON ใน `src/db/` (ข้อ 8) · restart server แล้ว localStorage ของ browser กลับเป็น seed ด้วย
+
+**รอบก่อน (3 พ.ย.) · Customer Web**
 - **ทะเบียนซ้ำ / คล้ายกัน:** ค้นแล้วเจอหลายคัน (เช่น กข 1234 กรุงเทพฯ, กข 1234 นนทบุรี, 1กข 1234) แสดงรายการพร้อม **รูปตอนเข้า** ให้ลูกค้าเลือกคันของตัวเอง (เฟรม 17.8)
 - **วิธีชำระ:** เพิ่มหน้าเลือก **QR PromptPay / Mobile Banking** และหน้ารอยืนยันในแอปธนาคาร (17.9–17.11)
 - Design System เพิ่ม component: Plate Match Card · Entry Snapshot · Payment Method Option · Bank Option · Radio
 - ตัดสินแล้ว: แสดงรูป จังหวัด และเวลาเข้าของทุกคันที่ตรง · โลโก้ธนาคารใช้ไอคอนกลางไปก่อน · Mobile Banking ใช้ mock (ข้อ 10)
 
-**รอบก่อน (2 พ.ย.)**
+**รอบก่อนหน้านั้น (2 พ.ย.)**
 - ธีมเหลือ **สว่าง / มืด** (ไม่มี "ตามระบบ")
 - System Settings ให้ Admin เข้าได้ **ตามสิทธิ์รายแท็บ** (ไม่ได้เป็นของ Superadmin อย่างเดียวแล้ว)
 - Dashboard: ตารางความเคลื่อนไหวล่าสุดแยก **เวลาเข้า / เวลาออก** มีกรณี "ยังไม่ออก" และแบ่งหน้าละ 10 แถว
@@ -208,7 +215,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 | `/activity-log` | Activity Log | [14](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=103-16043) | ฟ่า |
 | `/heat-map` | Parking Heat Map | [15](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=140-22253) · [15.9 Export](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=350-46134) | ฟ่า |
 | `/settings/*` | System Settings (สิทธิ์รายแท็บ) | [10](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13184) · [10.26 มุมมอง Admin](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-50004) | ต้น |
-| `/pay/*` | Customer Web | [17](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43072) · [17.8 เลือกรถ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=436-50059) · [17.9–17.11 วิธีชำระ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50236) | ต้น |
+| `/pay/*` | Customer Web | [17](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43072) · [17.8 เลือกรถ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=436-50059) · [17.9–17.13 วิธีชำระ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50236) | ต้น |
 | `/kiosk/entry` | Kiosk ทางเข้า | [18](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-44453) | ต้น |
 | `/kiosk/exit` | Kiosk ทางออก | [16](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43291) | ต้น |
 
@@ -449,7 +456,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 
 Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 → QR 17.5 หรือ Mobile Banking 17.10 → 17.11 → สำเร็จ 17.7 / ไม่สำเร็จหรือยกเลิก 17.12 / หมดเวลา 17.13
 
-- ☐ ขั้นตอน ค้นหา → ตรวจสอบ → ชำระ (Step component) · 17.8 ยังอยู่ขั้น "ค้นหา" · 17.9–17.11 อยู่ขั้น "ชำระ"
+- ☐ ขั้นตอน ค้นหา → ตรวจสอบ → ชำระ (Step component) · 17.8 ยังอยู่ขั้น "ค้นหา" · 17.9–17.13 อยู่ขั้น "ชำระ"
 - ☐ ค้นทะเบียน (เว้นวรรคหรือไม่ก็ได้) · ไม่พบ → error ใต้ช่อง + กล่องคำแนะนำ
 - ☐ **ผลการค้นหา:** เจอ 1 คัน → ไป 17.3 ทันที · เจอตั้งแต่ 2 คัน → แสดงรายการ 17.8
   - เคสที่ต้องรองรับ: ทะเบียนเดียวกันต่างจังหวัด (กข 1234 กรุงเทพฯ / นนทบุรี) และต่างหมวด (กข 1234 / 1กข 1234)
