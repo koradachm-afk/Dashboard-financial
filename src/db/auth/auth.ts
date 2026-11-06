@@ -28,7 +28,7 @@ export async function getPasswordSetter(): Promise<{ user: User; source: "reset"
 }
 
 /**
- * Guard for a server page: no session → /login; best access across `page` below `need` → /403.
+ * Guard for a server page: no session → /login; best access across `page` below `need` → /403?from=<first page key>.
  * A list passes if any one listed page grants `need`; an empty list grants nothing.
  */
 export async function requirePage(
@@ -38,6 +38,8 @@ export async function requirePage(
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   const pages: readonly PageKey[] = typeof page === "string" ? [page] : page;
-  if (ACCESS_RANK[bestAccess(user, pages)] < ACCESS_RANK[need]) redirect("/403");
+  if (ACCESS_RANK[bestAccess(user, pages)] < ACCESS_RANK[need]) {
+    redirect(pages.length ? `/403?from=${pages[0]}` : "/403");
+  }
   return user;
 }
