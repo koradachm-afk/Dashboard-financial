@@ -32,7 +32,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **localStorage ผูกกับ browser และโดเมนเดียว:** การ demo 3 ฝั่ง (Admin / Customer / Kiosk) ต้องเปิดใน browser เดียวกัน
 - **3 ฝั่ง:** Admin Web (Desktop 1440) · Customer Web (มือถือ 390, `/pay`) · Kiosk ทางเข้า / ทางออก (1920×1080)
 - **Stack:** Next.js (App Router) + TypeScript · Tailwind CSS v4 · TailGrids (`src/components/tailgrids/core/`) · next-themes · Recharts · Fabric.js · SheetJS (Export Excel)
-- **Role:** มีแค่ `Superadmin` และ `Admin` · Admin เห็นหน้าตามสิทธิ์ที่ Superadmin ตั้ง: `ไม่มีสิทธิ์ / ดูได้ / แก้ไขได้`
+- **Role:** มีแค่ `Superadmin` และ `Admin` · Admin เห็นหน้าตามสิทธิ์ที่ Superadmin ตั้ง: `ไม่มีสิทธิ์ / แก้ไขได้` (2 ระดับ ไม่มี "ดูได้")
 - **System Settings** แยกสิทธิ์ 3 แท็บ: ข้อมูลสาขา · ประเภทช่องจอด · ค่าจอดและการชำระเงิน · หน้า User & Permissions เป็นของ Superadmin เท่านั้น
 - **สถานะรถ (session):** มีแค่ `จอดอยู่` และ `ออกแล้ว` ห้ามเพิ่ม "เกินเวลาออก" หรือ "ชำระซ้ำ"
 - **สถานะช่องจอด:** ว่าง / ไม่ว่าง มาจากเซนเซอร์เท่านั้น · ปิดใช้งาน / ซ่อมบำรุง ผู้ดูแลตั้งเองได้ · ไม่มีระบบจอง
@@ -151,7 +151,7 @@ src/
 
 **สิทธิ์บนหน้าจอ**
 - ไม่มีสิทธิ์: ซ่อนเมนูใน Sidebar · เข้า URL ตรง → `/403`
-- ดูได้: ซ่อนหรือ disable ปุ่มเพิ่ม / แก้ไข / ลบ / บันทึก / Export แล้วแสดงป้าย "สิทธิ์ดูอย่างเดียว · …" (เฟรม 08.3, 10.25)
+- แก้ไขได้: ใช้ทุกปุ่มในหน้านั้นได้ครบ (ไม่มีโหมดดูอย่างเดียว ไม่มีป้าย "สิทธิ์ดูอย่างเดียว")
 - Settings: ซ่อนแท็บที่ไม่มีสิทธิ์ และเปิดมาที่แท็บแรกที่มีสิทธิ์ (10.26)
 
 ---
@@ -229,7 +229,7 @@ Release: PR `dev` → `main` → ทดสอบผ่าน → merge → `git 
   - ไฟล์ `*.test.ts(x)` อยู่ใน `.gitignore` ไม่ขึ้น repo (ต่างคนต่างเก็บในเครื่อง ห้าม commit) · ส่วน `vitest.config.mts` กับ `vitest.setup.ts` อยู่ใน repo
 - [ ] ไม่มีสี hex / rgb, ค่า arbitrary, `dark:` หรือ class ของ TailGrids ในไฟล์ `.tsx`
 - [ ] ใช้ component กลางและ `cn()` · ตัวเลขใส่ `tabular-nums` · รูปแบบข้อมูลตามข้อ 3
-- [ ] เช็กสิทธิ์ใน `page.tsx` · โหมด "ดูได้" ซ่อน / ล็อกปุ่มแก้ไข
+- [ ] เช็กสิทธิ์ใน `page.tsx` ด้วย `requirePage(page)` (ไม่มีสิทธิ์ → `/403`)
 - [ ] ไม่มีคำว่า Traffic Activity หรือ ParkPlan หลงเหลือบน UI
 - [ ] เปิดหน้า Admin ทั้งธีมสว่างและมืดแล้วอ่านได้ทุกจุด
 - [ ] เทียบกับเฟรม Figma ที่มีเลขเดียวกันครบทุก state

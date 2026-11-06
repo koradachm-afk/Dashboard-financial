@@ -43,7 +43,7 @@ export const NAV: readonly { group: string; items: readonly NavItem[] }[] = [
   },
 ];
 
-/** Where "back to home" goes: the first nav page the user can view, /account if none, /login if signed out. */
+/** Where "back to home" goes: the first nav page the user can open, /account if none, /login if signed out. */
 export function homePathFor(user: Pick<User, "role" | "permissions"> | null): string {
   if (!user) return "/login";
   const first = NAV.flatMap((g) => g.items).find((i) => bestAccess(user, i.pages) !== "none");
