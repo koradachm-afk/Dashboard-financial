@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, Loader, Lock, TriangleAlert, User } from "lucide-react";
+import { Loader, Lock, TriangleAlert, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -8,6 +8,7 @@ import { useState, useTransition } from "react";
 import { FormAlert } from "@/components/tailgrids/core/form-alert";
 import { Button } from "@/components/tailgrids/core/button";
 import { Input } from "@/components/tailgrids/core/input";
+import { PasswordInput } from "@/components/tailgrids/core/password-input";
 import { audit } from "@/db/audit/audit";
 import { type AuditInfo, login } from "@/db/auth/auth-actions";
 
@@ -34,8 +35,6 @@ function writeFailure(info: AuditInfo, attempt: number) {
 
 // Mirrors Figma 09.7 login form (58:13006) and 09.12 (password shown).
 export function LoginForm() {
-  const [shown, setShown] = useState(false);
-  const EyeIcon = shown ? EyeOff : Eye;
   const router = useRouter();
   const [pending, start] = useTransition();
   const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
@@ -132,11 +131,10 @@ export function LoginForm() {
             ลืมรหัสผ่าน?
           </Link>
         </div>
-        <Input
+        <PasswordInput
           id="login-password"
           name="password"
           autoComplete="current-password"
-          type={shown ? "text" : "password"}
           icon={Lock}
           className="h-11"
           error={!!errors.password || notice?.kind === "invalid"}
@@ -145,16 +143,6 @@ export function LoginForm() {
             undefined
           }
           onChange={clear("password")}
-          trailing={
-            <button
-              type="button"
-              aria-label={shown ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
-              onClick={() => setShown((v) => !v)}
-              className="shrink-0 text-fg-3 hover:text-fg-2"
-            >
-              <EyeIcon size={16} aria-hidden="true" />
-            </button>
-          }
         />
         {errors.password && (
           <p id="login-password-error" className="text-label text-danger">

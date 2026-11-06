@@ -6,7 +6,7 @@ import { useState, useTransition } from "react";
 
 import { FormAlert } from "@/components/tailgrids/core/form-alert";
 import { Button } from "@/components/tailgrids/core/button";
-import { Input } from "@/components/tailgrids/core/input";
+import { PasswordInput } from "@/components/tailgrids/core/password-input";
 import { PasswordRuleList } from "@/components/tailgrids/core/password-rule-list";
 import { audit } from "@/db/audit/audit";
 import { setPassword } from "@/db/auth/auth-actions";
@@ -73,10 +73,9 @@ export function SetPasswordForm({ username }: { username: string }) {
         <label htmlFor="set-password-new" className="text-body font-medium text-fg">
           รหัสผ่านใหม่
         </label>
-        <Input
+        <PasswordInput
           id="set-password-new"
           name="password"
-          type="password"
           autoComplete="new-password"
           icon={Lock}
           className="h-11"
@@ -90,10 +89,9 @@ export function SetPasswordForm({ username }: { username: string }) {
         <label htmlFor="set-password-confirm" className="text-body font-medium text-fg">
           ยืนยันรหัสผ่านใหม่
         </label>
-        <Input
+        <PasswordInput
           id="set-password-confirm"
           name="confirm"
-          type="password"
           autoComplete="new-password"
           icon={Lock}
           className="h-11"

@@ -94,6 +94,7 @@ function AddUserForm({ onClose, onCreate }: Omit<Props, "isOpen">) {
   const error = (field: keyof typeof ok, value: string) => !ok[field] && (value !== "" || touched[field]);
   const touch = (field: keyof typeof ok) => () => setTouched((t) => (t[field] ? t : { ...t, [field]: true }));
   const usernameError = error("username", username) || usernameTaken;
+  // Figma 07.6 puts the show/hide button beside the field (next to "สร้างอัตโนมัติ"), not inside it.
   const EyeIcon = shown ? EyeOff : Eye;
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
