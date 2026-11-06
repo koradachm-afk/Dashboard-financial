@@ -1,4 +1,5 @@
 import { getFloors } from "@/db/floors/floors";
+import activityData from "./activity.json";
 import heatMapData from "./heat-map.json";
 
 // Pre-aggregated numbers for the report pages, exactly as Figma shows them.
@@ -194,4 +195,104 @@ export function getSlotRate(slotId: string): { pct: number; exact: boolean } | n
   if (exact !== undefined) return { pct: exact, exact: true };
   const rate = data.slots[slotId]?.rate;
   return rate === undefined ? null : { pct: rate, exact: false };
+}
+
+// ---------------------------------------------------------------------------
+// Activity Log (Figma 14, 14.9): the default 7-day range only.
+// ---------------------------------------------------------------------------
+
+export const ACTIVITY_VEHICLE_TYPES = ["sedan", "suv", "pickup", "hatchback", "van", "ev"] as const;
+export type ActivityVehicleType = (typeof ACTIVITY_VEHICLE_TYPES)[number];
+export const ACTIVITY_DAYS = ["จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส.", "อา."] as const;
+
+type TypeCounts = Readonly<Record<ActivityVehicleType, number>>;
+
+export type ActivityData = {
+  period: { from: string; to: string; label: string };
+  kpis: {
+    entries: number;
+    entriesPerDay: number;
+    exits: number;
+    parkedNow: number;
+    /** Minutes. */
+    avgStayMin: number;
+    /** "จาก 1,367 คันที่ออกแล้ว" */
+    avgStayBasis: number;
+    /** "1,395 รายการ" */
+    rows: number;
+  };
+  /** The "สรุปตามประเภทรถ" table. Share is a percent; stay is in minutes. */
+  types: readonly { id: ActivityVehicleType; label: string; vehicles: number; sharePct: number; avgStayMin: number }[];
+  total: { vehicles: number; sharePct: number; avgStayMin: number };
+  /** Average entries per hour: `values[day][hour]`, days จ.–อา., hours 00–23. */
+  heatGrid: { days: readonly string[]; values: readonly (readonly number[])[] };
+  /** Stacked bars "ตามชั่วโมง": values are the node names of the Figma bars (exact). */
+  hourlyByType: readonly ({ hour: number } & TypeCounts)[];
+  /** Stacked bars "ตามวัน" (14.9). */
+  dailyByType: readonly ({ date: string } & TypeCounts)[];
+};
+
+const isTypeCounts = (v: Record<string, unknown>) => ACTIVITY_VEHICLE_TYPES.every((t) => isInt(v[t]));
+
+function isActivityData(v: unknown): v is ActivityData {
+  if (!rec(v)) return false;
+  const { period, kpis, types, total, heatGrid, hourlyByType, dailyByType } = v;
+  return (
+    rec(period) &&
+    isText(period.from) &&
+    isText(period.to) &&
+    isText(period.label) &&
+    rec(kpis) &&
+    ["entries", "entriesPerDay", "exits", "parkedNow", "avgStayMin", "avgStayBasis", "rows"].every((k) => isInt(kpis[k])) &&
+    Array.isArray(types) &&
+    types.length === ACTIVITY_VEHICLE_TYPES.length &&
+    types.every(
+      (t, i) =>
+        rec(t) &&
+        t.id === ACTIVITY_VEHICLE_TYPES[i] &&
+        isText(t.label) &&
+        isInt(t.vehicles) &&
+        isNum(t.sharePct) &&
+        isInt(t.avgStayMin),
+    ) &&
+    rec(total) &&
+    isInt(total.vehicles) &&
+    isNum(total.sharePct) &&
+    isInt(total.avgStayMin) &&
+    rec(heatGrid) &&
+    Array.isArray(heatGrid.days) &&
+    heatGrid.days.length === ACTIVITY_DAYS.length &&
+    heatGrid.days.every((d, i) => d === ACTIVITY_DAYS[i]) &&
+    Array.isArray(heatGrid.values) &&
+    heatGrid.values.length === ACTIVITY_DAYS.length &&
+    heatGrid.values.every((row) => Array.isArray(row) && row.length === 24 && row.every(isInt)) &&
+    Array.isArray(hourlyByType) &&
+    hourlyByType.length === 24 &&
+    hourlyByType.every((h, i) => rec(h) && h.hour === i && isTypeCounts(h)) &&
+    Array.isArray(dailyByType) &&
+    dailyByType.length === 7 &&
+    dailyByType.every((d) => rec(d) && isText(d.date) && isTypeCounts(d))
+  );
+}
+
+export function loadActivity(input: unknown): ActivityData {
+  return load("activity.json", input, isActivityData);
+}
+
+const ACTIVITY = loadActivity(activityData);
+
+/** Defaults to the stored 11–17 Oct range; any other range returns `null`. */
+export function getActivity(from: string = ACTIVITY.period.from, to: string = ACTIVITY.period.to): ActivityData | null {
+  return from === ACTIVITY.period.from && to === ACTIVITY.period.to ? ACTIVITY : null;
+}
+
+/** The busiest cell of the heat grid ("หนาแน่นที่สุด พ. 08:00–08:59 เฉลี่ย 31.0 คัน/ชม."). First one wins a tie. */
+export function getActivityPeak(): { day: string; hour: number; value: number } {
+  let best = { day: ACTIVITY.heatGrid.days[0], hour: 0, value: -1 };
+  ACTIVITY.heatGrid.values.forEach((row, d) =>
+    row.forEach((value, hour) => {
+      if (value > best.value) best = { day: ACTIVITY.heatGrid.days[d], hour, value };
+    }),
+  );
+  return best;
 }
