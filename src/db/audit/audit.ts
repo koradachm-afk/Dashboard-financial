@@ -15,6 +15,9 @@ export const AUDIT_ACTIONS = [
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 
+export type AuditChange = { field: string; before: string; after: string };
+export type AuditExtra = { label: string; value: string };
+
 export type AuditEntry = {
   id: string;
   time: string;
@@ -27,9 +30,20 @@ export type AuditEntry = {
   target: string;
   device: string;
   result: string;
+  /** Drawer heading; callers fall back to `detail`. */
+  title?: string;
+  /** Before/after rows shown in the detail drawer. */
+  changes?: readonly AuditChange[];
+  /** Extra meta rows shown after the result row. */
+  extras?: readonly AuditExtra[];
 };
 
 const STRING_FIELDS = ["id", "time", "ip", "actor", "page", "detail", "target", "device", "result"] as const;
+
+const isStringRecord = (keys: readonly string[]) => (v: unknown) =>
+  typeof v === "object" && v !== null && keys.every((k) => typeof (v as Record<string, unknown>)[k] === "string");
+const isChange = isStringRecord(["field", "before", "after"]);
+const isExtra = isStringRecord(["label", "value"]);
 
 function isAuditEntry(value: unknown): value is AuditEntry {
   if (typeof value !== "object" || value === null) return false;
@@ -37,7 +51,10 @@ function isAuditEntry(value: unknown): value is AuditEntry {
   return (
     STRING_FIELDS.every((k) => typeof e[k] === "string") &&
     (e.role === null || e.role === "Superadmin" || e.role === "Admin") &&
-    AUDIT_ACTIONS.includes(e.action as AuditAction)
+    AUDIT_ACTIONS.includes(e.action as AuditAction) &&
+    (e.title === undefined || typeof e.title === "string") &&
+    (e.changes === undefined || (Array.isArray(e.changes) && e.changes.every(isChange))) &&
+    (e.extras === undefined || (Array.isArray(e.extras) && e.extras.every(isExtra)))
   );
 }
 
