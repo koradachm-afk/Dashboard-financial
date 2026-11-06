@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { CalendarDate } from "@internationalized/date";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dialog, Popover } from "react-aria-components";
 
 import { Avatar } from "@/components/tailgrids/core/avatar";
@@ -25,12 +25,14 @@ import {
   type DateRange,
 } from "@/components/tailgrids/core/date-range-picker";
 import { Input } from "@/components/tailgrids/core/input";
+import { Toast } from "@/components/tailgrids/core/toast";
 import { MultiSelectFilter } from "@/components/tailgrids/core/multi-select-filter";
 import { Pagination } from "@/components/tailgrids/core/pagination";
 import { AUDIT_ACTIONS, useAuditLog, type AuditEntry } from "@/db/audit/audit";
 import { cn } from "@/utils/cn";
 
 import { ActionBadge } from "./action-badge";
+import { AuditDetailDrawer } from "./audit-detail-drawer";
 import { FilterSelect } from "./filter-select";
 import { PAGES, pageIcon } from "./page-icons";
 
@@ -98,10 +100,21 @@ const actionSummary = (actions: readonly string[]) =>
 const isDefault = (c: Criteria) =>
   c.query === "" && c.preset === DEFAULTS.preset && c.page === ALL_PAGES && c.actions.length === 0;
 
+const bare = (id: string) => id.replace(/^#/, "");
+
 const TH = "h-11 px-4 text-left text-label font-semibold text-fg-2";
 const TD = "h-14 px-4";
 
-export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Date }) {
+export function AuditLogsView({
+  canExport,
+  now,
+  initialId,
+}: {
+  canExport: boolean;
+  now?: Date;
+  /** From `?id=`: opens that entry's drawer, even when the filters hide its row. */
+  initialId?: string;
+}) {
   const entries = useAuditLog();
   const clock = () => now ?? new Date();
 
@@ -113,6 +126,33 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
   const [page, setPage] = useState(1);
   const [pickerOpen, setPickerOpen] = useState(false);
   const dateRef = useRef<HTMLDivElement>(null);
+  // The open entry is kept as an id and looked up in the full log on every render, so a stored entry that
+  // arrives after hydration still opens for ?id=. Closing clears the id, so it never reopens.
+  const [openId, setOpenId] = useState<string | null>(() => (initialId ? bare(initialId) : null));
+  const chevrons = useRef(new Map<string, HTMLButtonElement>());
+  const restoreId = useRef<string | null>(null);
+  const [toast, setToast] = useState({ title: "", id: 0, open: false });
+  const opened = openId === null ? null : (entries.find((e) => bare(e.id) === openId) ?? null);
+
+  const closeDetail = () => {
+    restoreId.current = openId;
+    setOpenId(null);
+  };
+  // Focus goes back to the row's chevron once the drawer has released it; a ?id= entry with no visible row is skipped.
+  useEffect(() => {
+    if (openId !== null || restoreId.current === null) return;
+    const btn = chevrons.current.get(restoreId.current);
+    restoreId.current = null;
+    if (!btn) return;
+    const t = setTimeout(() => btn.focus(), 0);
+    return () => clearTimeout(t);
+  }, [openId]);
+  const copyLink = (e: AuditEntry) => {
+    navigator.clipboard
+      ?.writeText(`${window.location.origin}/audit-logs?id=${bare(e.id)}`)
+      .then(() => setToast((t) => ({ title: "คัดลอกลิงก์แล้ว", id: t.id + 1, open: true })))
+      .catch(() => {});
+  };
 
   const apply = (next: Criteria) => {
     setApplied(next);
@@ -345,7 +385,14 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
               {visible.map((e) => {
                 const PageIcon = pageIcon(e.page);
                 return (
-                  <tr key={e.id} className="border-b border-line">
+                  <tr
+                    key={e.id}
+                    onClick={() => setOpenId(bare(e.id))}
+                    className={cn(
+                      "cursor-pointer border-b border-line transition-colors",
+                      opened?.id === e.id && "bg-primary-soft",
+                    )}
+                  >
                     <td className={TD}>
                       <div className="flex flex-col gap-0.5">
                         <span className="text-body whitespace-nowrap text-fg tabular-nums">{e.time}</span>
@@ -378,8 +425,21 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
                     </td>
                     <td className={cn(TD, "truncate text-body text-fg")}>{e.detail}</td>
                     <td className={TD}>
-                      {/* The detail drawer comes in ui/audit-logs-detail; no click handler yet. */}
-                      <ChevronRight size={18} aria-hidden="true" className="ml-auto text-fg-2" />
+                      <button
+                        type="button"
+                        ref={(el) => {
+                          if (el) chevrons.current.set(bare(e.id), el);
+                          else chevrons.current.delete(bare(e.id));
+                        }}
+                        aria-label={`ดูรายละเอียด ${e.id}`}
+                        onClick={(ev) => {
+                          ev.stopPropagation();
+                          setOpenId(bare(e.id));
+                        }}
+                        className="ml-auto flex rounded-xs text-fg-2 outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                      >
+                        <ChevronRight size={18} aria-hidden="true" />
+                      </button>
                     </td>
                   </tr>
                 );
@@ -424,6 +484,13 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
           )}
         </footer>
       </section>
+      <AuditDetailDrawer entry={opened} onClose={closeDetail} onCopyLink={copyLink} />
+      <Toast
+        open={toast.open}
+        messageId={toast.id}
+        title={toast.title}
+        onClose={() => setToast((t) => ({ ...t, open: false }))}
+      />
     </div>
   );
 }

@@ -8,7 +8,13 @@ import { AuditLogsView } from "./_components/audit-logs-view";
 // an HTTP 307 before any bytes would need a proxy.ts check.
 export const instant = false;
 
-export default async function Page() {
+export default async function Page({ searchParams }: { searchParams: Promise<{ id?: string | string[] }> }) {
+  const { id } = await searchParams;
   const me = await requirePage("audit-logs");
-  return <AuditLogsView canExport={accessFor(me, "audit-logs") === "edit"} />;
+  return (
+    <AuditLogsView
+      canExport={accessFor(me, "audit-logs") === "edit"}
+      initialId={Array.isArray(id) ? id[0] : id}
+    />
+  );
 }
