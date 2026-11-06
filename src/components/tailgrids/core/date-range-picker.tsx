@@ -150,7 +150,7 @@ export function DateRangePicker({
 
   return (
     <I18nProvider locale={LOCALE}>
-      <div className={cn("flex w-76.5 flex-col gap-3 p-3.5", className)}>
+      <div className={cn("flex w-79.5 flex-col gap-3 p-3.5", className)}>
         <div className="flex items-center gap-2">
           <Input
             aria-label={startLabel}
@@ -158,7 +158,7 @@ export function DateRangePicker({
             value={startText}
             onChange={type(setStartText)}
             error={startError}
-            className="h-8.5 flex-1 text-control"
+            className="h-8.5 min-w-0 flex-1 text-control"
             inputMode="numeric"
           />
           <span aria-hidden className="text-body text-fg-3">
@@ -170,7 +170,7 @@ export function DateRangePicker({
             value={endText}
             onChange={type(setEndText)}
             error={endError}
-            className="h-8.5 flex-1 text-control"
+            className="h-8.5 min-w-0 flex-1 text-control"
             inputMode="numeric"
           />
         </div>
