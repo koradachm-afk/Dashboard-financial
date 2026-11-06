@@ -31,7 +31,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **ขอบเขตของ localStorage:** เก็บข้อมูลธุรกรรม (session รถ, การชำระเงิน, สถานะช่องจอดที่ผู้ดูแลตั้ง, audit log) และค่าที่ผู้ดูแลแก้ (Settings: ข้อมูลสาขา / ค่าจอด, ประเภทช่องจอด, ผังที่จอดที่กดบันทึก) และค่าที่ผู้ใช้เลือก (โดเมน `prefs`: ธีมของ Admin ผูกกับบัญชี) · **user และสิทธิ์:** ไฟล์ seed คงที่ไม่ถูกแก้ · การเปลี่ยนแปลงจากหน้า User & Permissions เก็บในหน่วยความจำของ server (ต่อ process, restart แล้วกลับเป็น seed) ไม่เก็บใน localStorage เพื่อให้การเช็กสิทธิ์ใน `page.tsx` ฝั่ง server ทำงานต่อได้
 - **localStorage ผูกกับ browser และโดเมนเดียว:** การ demo 3 ฝั่ง (Admin / Customer / Kiosk) ต้องเปิดใน browser เดียวกัน
 - **3 ฝั่ง:** Admin Web (Desktop 1440) · Customer Web (มือถือ 390, `/pay`) · Kiosk ทางเข้า / ทางออก (1920×1080)
-- **Stack:** Next.js (App Router) + TypeScript · Tailwind CSS v4 · TailGrids (`src/components/tailgrids/`) · next-themes · Recharts · Fabric.js · SheetJS (Export Excel)
+- **Stack:** Next.js (App Router) + TypeScript · Tailwind CSS v4 · TailGrids (`src/components/tailgrids/core/`) · next-themes · Recharts · Fabric.js · SheetJS (Export Excel)
 - **Role:** มีแค่ `Superadmin` และ `Admin` · Admin เห็นหน้าตามสิทธิ์ที่ Superadmin ตั้ง: `ไม่มีสิทธิ์ / ดูได้ / แก้ไขได้`
 - **System Settings** แยกสิทธิ์ 3 แท็บ: ข้อมูลสาขา · ประเภทช่องจอด · ค่าจอดและการชำระเงิน · หน้า User & Permissions เป็นของ Superadmin เท่านั้น
 - **สถานะรถ (session):** มีแค่ `จอดอยู่` และ `ออกแล้ว` ห้ามเพิ่ม "เกินเวลาออก" หรือ "ชำระซ้ำ"
@@ -54,33 +54,41 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ```
 src/
 ├─ app/
-│  ├─ layout.tsx · page.tsx · not-found.tsx · globals.css
-│  ├─ (admin)/   layout.tsx + 403 · account · activity-log · audit-logs · dashboard ·
+│  ├─ layout.tsx · page.tsx · not-found.tsx · globals.css · _components/ (not-found-view)
+│  ├─ (admin)/   layout.tsx + _components/ + 403 · account · activity-log · audit-logs · dashboard ·
 │  │             financial-overview · heat-map · parking-layout · settings · users
-│  ├─ (auth)/    login · forgot-password · set-password
-│  ├─ (customer)/pay/   ค้นหา + เลือกรถ (17–17.2, 17.8) · [sessionId]/ → รายละเอียด · method · qr · bank · success
-│  └─ kiosk/     entry · exit
+│  ├─ (auth)/    layout.tsx + _components/ + login · forgot-password · set-password
+│  ├─ (customer)/pay/   layout.tsx · page.tsx (ยังเป็นหน้าเปล่า)
+│  │                    ค้นหา + เลือกรถ (17–17.2, 17.8) · [sessionId]/ → รายละเอียด · method · qr · bank · success (ยังไม่ได้ทำ)
+│  └─ kiosk/     layout.tsx · entry · exit (ยังเป็นหน้าเปล่า)
 ├─ components/
-│  ├─ tailgrids/        component ที่ใช้หลายหน้า (ดึงจาก TailGrids แล้วแปลงเป็น token ของเรา)
-│  └─ sidebarmenu.tsx   เมนูด้านซ้ายของ Admin
+│  ├─ tailgrids/core/   component ที่ใช้หลายหน้า (ดึงจาก TailGrids แล้วแปลงเป็น token ของเรา)
+│  ├─ admin-nav.ts      รายการเมนูของ Admin
+│  ├─ sidebarmenu.tsx   เมนูด้านซ้ายของ Admin
+│  └─ error-card.tsx    การ์ดแจ้ง error (403 / 404)
+├─ config/site.ts       ชื่อแบรนด์ (siteConfig.brandName)
 ├─ db/                  store.ts (ชั้นกลางของ localStorage) · 1 โดเมน = 1 โฟลเดอร์ (ฟังก์ชันกลาง + seed JSON)
-│                       settings/ · user/ · audit/ · auth/
-└─ utils/               cn.ts · id.ts (newSessionId) · user-agent.ts · format วันที่ / เงิน / ระยะเวลา / ทะเบียน
+│                       settings/ · prefs/ · audit/ · user/ · auth/ · floors/ · slot-types/ · sessions/ · payments/ · banks/ · reports/
+│                       (ตอนนี้ store.ts ใช้โดย settings · prefs · audit เท่านั้น)
+└─ utils/               cn.ts · id.ts (newSessionId) · user-agent.ts · generate-password.ts · reload-to.ts
+                        (ยังไม่มีตัว format วันที่ / เงิน / ระยะเวลา / ทะเบียน ให้เพิ่มเมื่อหน้าที่ต้องใช้ถูกสร้าง)
 ```
 
 **กฎ**
-1. ใน `app/` มีได้แค่ไฟล์ของ Next.js: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`
+1. ใน `app/` มีได้แค่ไฟล์ของ Next.js: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx` และโฟลเดอร์ `_components/` (ขึ้นต้นด้วย `_` เป็น private ไม่กลายเป็น route)
 2. `page.tsx` ทำแค่ 3 อย่าง: **เช็กสิทธิ์ของหน้า → อ่าน `searchParams` → render component**
    - หน้าที่ต้องอ่านข้อมูลจาก localStorage: `page.tsx` (Server Component) เช็กสิทธิ์ + อ่าน `searchParams` แล้วส่งต่อให้ Client Component (`"use client"`) ใน `_components/` เป็นคนอ่านข้อมูล
 3. **ห้ามเช็กสิทธิ์ราย page ใน `layout.tsx`** (layout ไม่ทำงานซ้ำเมื่อเปลี่ยนหน้า) · ไม่มีสิทธิ์ → redirect `/403`
    - เช็กด้วย `await requirePage("<page-key>")` จาก `@/db/auth/auth` ใน `page.tsx` (Server Component, ไม่มี `"use client"`) · ต้องการสิทธิ์แก้ไขใส่ `requirePage("<page-key>", "edit")` · ไม่มี session → `/login` · สิทธิ์ไม่พอ → `/403`
+   - `requirePage` รับ array ได้ด้วย (ผ่านถ้ามีสิทธิ์ถึงระดับที่ขอในหน้าใดหน้าหนึ่ง) เช่น `requirePage(SETTINGS_PAGES)` ของหน้า Settings ที่เข้าได้เมื่อมีสิทธิ์อย่างน้อย 1 แท็บ
+   - `/account` ไม่มี page-key: ผู้ใช้ที่ login แล้วเปิดได้ทุกคน (`AccountView` อ่าน session แล้ว redirect ไป `/login` เองถ้าไม่มี)
    - page-key: `dashboard` · `parking-layout` · `financial-overview` · `activity-log` · `heat-map` · `users` · `audit-logs` · `settings.branch` · `settings.slot-types` · `settings.fees`
    - ต้องการข้อมูลผู้ใช้ที่ login อยู่ (ชื่อ, Role) ใช้ค่าที่ `requirePage` คืนมา หรือ `getCurrentUser()`
 4. ตัวกรอง, ช่วงวัน, เลขหน้า, โหมดดู / แก้ไข เก็บใน URL (`?floor=B1&mode=edit`)
 5. หาข้อมูลไม่เจอใน route แบบ `[id]` → เรียก `notFound()` จาก `next/navigation` ไม่เขียนหน้า "ไม่พบ" เอง
-6. component ที่ใช้หน้าเดียว → `app/(admin)/<page>/_components/` · ใช้ตั้งแต่ 2 หน้า → ย้ายไป `src/components/tailgrids/`
+6. component ที่ใช้หน้าเดียว → `app/(admin)/<page>/_components/` · ใช้ตั้งแต่ 2 หน้า → ย้ายไป `src/components/tailgrids/core/`
 7. หน้าห้าม import JSON ใน `src/db/` ตรง ๆ ให้เรียกผ่านฟังก์ชันกลาง (วันที่มี backend จะแก้ที่ฟังก์ชันเดียว) · import JSON ได้เฉพาะไฟล์ใน `src/db/` (`store.ts` และฟังก์ชันอ่าน seed)
-   - **ห้ามเรียก `localStorage` / `sessionStorage` ตรง ๆ นอก `src/db/store.ts`** หน้าและ component เรียกผ่านฟังก์ชันกลาง เช่น `getSessions()`, `addSession()`, `updateSlot()` เท่านั้น · **ข้อยกเว้นเดียว:** `next-themes` ใน `AdminThemeProvider` เขียน key `autoparking:v1:theme` เอง (ห้ามอ่านหรือเขียน key นี้จากที่อื่น ค่าธีมของบัญชีจริงอยู่ในโดเมน `prefs` ผ่าน `store.ts`)
+   - **ห้ามเรียก `localStorage` / `sessionStorage` ตรง ๆ นอก `src/db/store.ts`** หน้าและ component เรียกผ่านฟังก์ชันกลาง เช่น `getSessions()`, `getAuditLog()`, `getSettings()` / `setSettings()` เท่านั้น (ฟังก์ชันเขียน เช่น add / update จะเพิ่มเมื่อสร้างหน้าที่ต้องใช้) · **ข้อยกเว้นเดียว:** `next-themes` ใน `AdminThemeProvider` เขียน key `autoparking:v1:theme` เอง (ห้ามอ่านหรือเขียน key นี้จากที่อื่น ค่าธีมของบัญชีจริงอยู่ในโดเมน `prefs` ผ่าน `store.ts`)
    - 1 โดเมน = 1 โฟลเดอร์ `src/db/<โดเมน>/` (ฟังก์ชันกลาง `<โดเมน>.ts` + seed JSON) · import ผ่าน `@/db/<โดเมน>/<ไฟล์>` · `store.ts` อยู่ที่ `src/db/` ที่เดียว
    - **`src/db/user/credentials.json` import ได้เฉพาะ `src/db/auth/auth-actions.ts`** (ฝั่ง server) ห้าม client component หรือไฟล์ที่ client import ดึงไปใช้ เพราะรหัสผ่านจะหลุดไปอยู่ใน bundle ของ browser · ตรวจหลัง build ว่า `.next/static` ไม่มีเนื้อหาของไฟล์นี้
 8. mock ใช้ตัวเลขชุดเดียวกับ Figma (เช่น ทะเบียน `ผบ 9370`, ช่อง `B-07`, รายรับ `฿10,080`) · ห้ามใส่ข้อมูลจริงของคน
@@ -90,7 +98,8 @@ src/
    - การเปิดแอปธนาคารและผลการชำระเรียกผ่านฟังก์ชันกลางที่คืนค่า mock เท่านั้น
 10. ทุกการเปลี่ยนแปลงสำคัญ, การเข้า / ออกจากระบบ และการ Export ต้องเรียก `audit()` กลาง · การแก้ผังที่ยังไม่บันทึกไม่ต้องลง log
 11. **กฎของ store** (`src/db/store.ts`)
-    - key ขึ้นต้น `autoparking:v1:<โดเมน>` (เช่น `sessions`, `payments`, `slots`, `audit`, `settings`, `prefs`) เพื่อ reset / migrate ได้
+    - key ขึ้นต้น `autoparking:v1:<โดเมน>` เพื่อ reset / migrate ได้
+      - ตอนนี้มี store แค่ `audit`, `settings` และ `prefs` · `sessions`, `payments`, `floors` (ช่องจอดอยู่ในชั้น) จะมี store เมื่อหน้าที่ต้องเขียนข้อมูลชุดนั้นถูกสร้าง
     - อ่านครั้งแรกถ้ายังไม่มี key ให้ใช้ seed แล้วเขียนกลับ
     - ครอบทุกการอ่าน / เขียนด้วย `try/catch` และ fallback เป็น in-memory เมื่อ storage เต็มหรือถูกปิด
     - parse แล้วต้องตรวจรูปแบบข้อมูลก่อนใช้ (ผู้ใช้แก้ใน DevTools ได้) ถ้าไม่ผ่านให้ใช้ seed
@@ -113,7 +122,7 @@ src/
 - ขนาดตัวอักษรใช้สเกลของเรา: `text-nano · micro · caption · label · body · control · title · lead · h3 · h2 · h1 · kpi · kiosk-md · kiosk-lg · kiosk-xl` (ข้อความมาตรฐาน Admin = `text-body` 13px)
 - spacing ใช้เฉพาะค่าในตาราง DESIGN-STYLE.md ข้อ 4
 - รวม className ด้วย `cn()` จาก `@/utils/cn` เสมอ วาง `className` จากภายนอกไว้ท้ายสุด
-- ใช้ component กลางใน `src/components/tailgrids/` ทุกครั้งที่มี ไม่สร้างปุ่ม / input / badge / select ใหม่ในหน้า
+- ใช้ component กลางใน `src/components/tailgrids/core/` ทุกครั้งที่มี ไม่สร้างปุ่ม / input / badge / select ใหม่ในหน้า (ตัวไหนมีแล้วและตัวไหนยังไม่มี ดู DESIGN-STYLE.md ต้นข้อ 8)
 - ข้อความบน UI ใช้ **ตาม Figma ทุกตัวอักษร** (หัวข้อ, ปุ่ม, placeholder, error)
 - ตัวเลข, เงิน, เวลา ใส่ `tabular-nums` · ข้อความไทย line-height ≥ 1.4
 - ห้ามแยกความหมายด้วยสีอย่างเดียว ต้องมีจุด ไอคอน หรือข้อความประกอบ
@@ -216,7 +225,8 @@ Release: PR `dev` → `main` → ทดสอบผ่าน → merge → `git 
 ## 6. Definition of Done (ตรวจก่อนบอกว่าเสร็จ)
 
 **โค้ด**
-- [ ] `npm run lint` และ `npm run build` ผ่าน
+- [ ] `npm run lint`, `npm run build` และ `npm test` ผ่าน
+  - ไฟล์ `*.test.ts(x)` อยู่ใน `.gitignore` ไม่ขึ้น repo (ต่างคนต่างเก็บในเครื่อง ห้าม commit) · ส่วน `vitest.config.mts` กับ `vitest.setup.ts` อยู่ใน repo
 - [ ] ไม่มีสี hex / rgb, ค่า arbitrary, `dark:` หรือ class ของ TailGrids ในไฟล์ `.tsx`
 - [ ] ใช้ component กลางและ `cn()` · ตัวเลขใส่ `tabular-nums` · รูปแบบข้อมูลตามข้อ 3
 - [ ] เช็กสิทธิ์ใน `page.tsx` · โหมด "ดูได้" ซ่อน / ล็อกปุ่มแก้ไข
