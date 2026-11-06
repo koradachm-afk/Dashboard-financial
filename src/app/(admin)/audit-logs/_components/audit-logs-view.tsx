@@ -11,7 +11,6 @@ import {
   History,
   LayoutDashboard,
   LoaderCircle,
-  Lock,
   Search,
   X,
 } from "lucide-react";
@@ -110,11 +109,9 @@ const TH = "h-11 px-4 text-left text-label font-semibold text-fg-2";
 const TD = "h-14 px-4";
 
 export function AuditLogsView({
-  canExport,
   now,
   initialId,
 }: {
-  canExport: boolean;
   now?: Date;
   /** From `?id=`: opens that entry's drawer, even when the filters hide its row. */
   initialId?: string;
@@ -260,26 +257,19 @@ export function AuditLogsView({
           <h1 className="text-h1 font-bold text-fg">Audit Logs</h1>
           <p className="text-body text-fg-2">ประวัติการเปลี่ยนแปลงทั้งหมดในระบบ · บันทึกอัตโนมัติ แก้ไขหรือลบไม่ได้</p>
         </div>
-        {canExport ? (
-          // aria-disabled while busy (not `disabled`) so a keyboard user keeps focus; exportExcel ignores the click.
-          <Button
-            variant="secondary"
-            icon={exporting ? undefined : Download}
-            disabled={total === 0}
-            aria-busy={exporting}
-            aria-disabled={exporting || undefined}
-            onClick={exportExcel}
-            className="ml-auto"
-          >
-            {exporting && <LoaderCircle size={16} className="shrink-0 animate-spin" aria-hidden />}
-            Export Excel
-          </Button>
-        ) : (
-          <p className="ml-auto inline-flex h-8 items-center gap-1.5 rounded-full border border-line bg-subtle px-2.5 text-label text-fg-2">
-            <Lock size={14} aria-hidden="true" className="shrink-0" />
-            สิทธิ์ดูอย่างเดียว · Export ต้องมีสิทธิ์แก้ไข
-          </p>
-        )}
+        {/* aria-disabled while busy (not `disabled`) so a keyboard user keeps focus; exportExcel ignores the click. */}
+        <Button
+          variant="secondary"
+          icon={exporting ? undefined : Download}
+          disabled={total === 0}
+          aria-busy={exporting}
+          aria-disabled={exporting || undefined}
+          onClick={exportExcel}
+          className="ml-auto"
+        >
+          {exporting && <LoaderCircle size={16} className="shrink-0 animate-spin" aria-hidden />}
+          Export Excel
+        </Button>
       </div>
 
       <section className="flex flex-1 flex-col overflow-hidden rounded-xl border border-line bg-surface">

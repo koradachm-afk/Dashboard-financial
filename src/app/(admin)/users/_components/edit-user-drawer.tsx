@@ -60,7 +60,6 @@ const ROLES: SegmentedControlOption<Role>[] = [
 
 const LEVELS: SegmentedControlOption<Access>[] = [
   { value: "none", label: "ไม่มีสิทธิ์" },
-  { value: "view", label: "ดูได้" },
   { value: "edit", label: "แก้ไขได้", tone: "primary" },
 ];
 
@@ -262,8 +261,8 @@ function EditUserForm({
             <h3 id={`${id}-access`} className={cn(SECTION_TITLE, "mr-auto")}>
               สิทธิ์การเข้าถึงแต่ละหน้า
             </h3>
-            <button type="button" disabled={locked} onClick={() => setAll("view")} className={SHORTCUT}>
-              ดูได้ทุกหน้า
+            <button type="button" disabled={locked} onClick={() => setAll("edit")} className={SHORTCUT}>
+              แก้ไขได้ทุกหน้า
             </button>
             <span aria-hidden className="text-label text-fg-3">
               ·

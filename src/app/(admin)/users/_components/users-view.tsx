@@ -125,7 +125,7 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
             options={OPTIONS}
             selected={draftPages}
             onChange={setDraftPages}
-            hint="แสดงผู้ใช้ที่มีสิทธิ์ ดูได้ หรือ แก้ไขได้ อย่างน้อย 1 หน้าที่เลือก"
+            hint="แสดงผู้ใช้ที่มีสิทธิ์ แก้ไขได้ อย่างน้อย 1 หน้าที่เลือก"
             clearLabel="ล้างที่เลือก"
             clearHint="กด “ค้นหา” เพื่อกรอง"
             className="w-75"
