@@ -1,5 +1,6 @@
 import { getFloors } from "@/db/floors/floors";
 import activityData from "./activity.json";
+import financialData from "./financial.json";
 import heatMapData from "./heat-map.json";
 
 // Pre-aggregated numbers for the report pages, exactly as Figma shows them.
@@ -295,4 +296,106 @@ export function getActivityPeak(): { day: string; hour: number; value: number } 
     }),
   );
   return best;
+}
+
+// ---------------------------------------------------------------------------
+// Financial Overview (Figma 13 – 13.12): one entry per period Figma has a frame for.
+// ---------------------------------------------------------------------------
+
+export type FinancialPeriod =
+  | { kind: "day"; date: string }
+  | { kind: "month"; month: string }
+  | { kind: "year"; year: number };
+
+export const FINANCIAL_PERIODS: readonly FinancialPeriod[] = [
+  { kind: "day", date: "2026-10-17" },
+  { kind: "day", date: "2026-10-16" },
+  { kind: "day", date: "2026-10-15" },
+  { kind: "month", month: "2026-10" },
+  { kind: "month", month: "2026-09" },
+  { kind: "year", year: 2026 },
+  { kind: "year", year: 2025 },
+];
+
+/** `text` is Figma's wording; `pct` is absent when Figma has no previous period to compare with. */
+export type FinancialDelta = { pct?: number; text: string };
+
+export const FINANCIAL_SERIES_UNITS = ["hour", "day", "month"] as const;
+export type FinancialSeriesUnit = (typeof FINANCIAL_SERIES_UNITS)[number];
+
+/** Keys are slot-type ids from slot-types.json. Values are baht. */
+export const FINANCIAL_SLOT_TYPES = ["car", "ev", "accessible", "vip"] as const;
+export type FinancialSlotType = (typeof FINANCIAL_SLOT_TYPES)[number];
+
+export const FINANCIAL_DURATIONS = ["le1h", "1to3h", "3to6h", "gt6h"] as const;
+export type FinancialDurationId = (typeof FINANCIAL_DURATIONS)[number];
+
+export type FinancialData = {
+  period: FinancialPeriod;
+  /** The period label printed in the header, e.g. "ส. 17 ต.ค. 2026". */
+  label: string;
+  kpis: {
+    /** Baht. */
+    revenue: number;
+    payments: number;
+    /** Baht per payment. */
+    avgFee: number;
+    /** The "ช่วงรายรับสูงสุด" card: the slice label as printed, its baht and its share of revenue in percent. */
+    peak: { label: string; revenue: number; sharePct: number };
+    comparison: { revenue: FinancialDelta; payments: FinancialDelta; avgFee: FinancialDelta };
+  };
+  /**
+   * The revenue chart: hours 0–23 for a day (up to the last full hour), days 1–31 for a month,
+   * months 1–12 for a year. Only the slices Figma shows are stored (2025 has Oct–Dec only).
+   */
+  series: { unit: FinancialSeriesUnit; points: readonly { x: number; revenue: number }[] };
+  bySlotType: Readonly<Record<FinancialSlotType, number>>;
+  byDuration: readonly { id: FinancialDurationId; label: string; revenue: number; count: number }[];
+};
+
+type FinancialFile = { periods: readonly FinancialData[] };
+
+const isDelta = (v: unknown): v is FinancialDelta =>
+  rec(v) && isText(v.text) && (v.pct === undefined ? Object.keys(v).length === 1 : typeof v.pct === "number" && Number.isFinite(v.pct) && Object.keys(v).length === 2);
+
+function isFinancialPeriod(v: unknown): v is FinancialPeriod {
+  if (!rec(v) || Object.keys(v).length !== 2) return false;
+  if (v.kind === "day") return isText(v.date);
+  if (v.kind === "month") return isText(v.month);
+  return v.kind === "year" && isInt(v.year);
+}
+
+const samePeriod = (a: FinancialPeriod, b: FinancialPeriod) => JSON.stringify(a) === JSON.stringify(b);
+
+function isFinancialData(v: unknown): v is FinancialData {
+  if (!rec(v) || !isFinancialPeriod(v.period) || !isText(v.label)) return false;
+  const { kpis, series, bySlotType, byDuration } = v;
+  if (!rec(kpis) || !isInt(kpis.revenue) || !isInt(kpis.payments) || !isInt(kpis.avgFee)) return false;
+  const { peak, comparison } = kpis;
+  if (!rec(peak) || !isText(peak.label) || !isInt(peak.revenue) || !isNum(peak.sharePct)) return false;
+  if (!rec(comparison) || !sameKeys(comparison, ["revenue", "payments", "avgFee"]) || !Object.values(comparison).every(isDelta)) return false;
+  if (!rec(series) || !(FINANCIAL_SERIES_UNITS as readonly unknown[]).includes(series.unit)) return false;
+  if (!Array.isArray(series.points) || !series.points.every((p) => rec(p) && isInt(p.x) && isInt(p.revenue) && Object.keys(p).length === 2)) return false;
+  if (!rec(bySlotType) || !sameKeys(bySlotType, FINANCIAL_SLOT_TYPES) || !Object.values(bySlotType).every(isInt)) return false;
+  return (
+    Array.isArray(byDuration) &&
+    byDuration.length === FINANCIAL_DURATIONS.length &&
+    byDuration.every((d, i) => rec(d) && d.id === FINANCIAL_DURATIONS[i] && isText(d.label) && isInt(d.revenue) && isInt(d.count))
+  );
+}
+
+function isFinancialFile(v: unknown): v is FinancialFile {
+  if (!rec(v) || !Array.isArray(v.periods) || v.periods.length !== FINANCIAL_PERIODS.length) return false;
+  return FINANCIAL_PERIODS.every((p, i) => isFinancialData(v.periods[i]) && samePeriod(v.periods[i].period, p));
+}
+
+export function loadFinancial(input: unknown): FinancialFile {
+  return load("financial.json", input, isFinancialFile);
+}
+
+const FINANCIAL = loadFinancial(financialData);
+
+/** `null` for any period Figma has no frame for. */
+export function getFinancial(period: FinancialPeriod): FinancialData | null {
+  return FINANCIAL.periods.find((d) => samePeriod(d.period, period)) ?? null;
 }

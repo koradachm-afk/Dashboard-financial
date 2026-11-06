@@ -1,0 +1,994 @@
+{
+  "periods": [
+    {
+      "period": {
+        "kind": "day",
+        "date": "2026-10-17"
+      },
+      "label": "ส. 17 ต.ค. 2026",
+      "kpis": {
+        "revenue": 10080,
+        "payments": 161,
+        "avgFee": 63,
+        "peak": {
+          "label": "16:00",
+          "revenue": 1460,
+          "sharePct": 14.5
+        },
+        "comparison": {
+          "revenue": {
+            "pct": -23.3,
+            "text": "-23.3% เทียบวันก่อนหน้า"
+          },
+          "payments": {
+            "pct": -24.1,
+            "text": "-24.1% เทียบวันก่อนหน้า"
+          },
+          "avgFee": {
+            "pct": 1,
+            "text": "+1.0% เทียบวันก่อนหน้า"
+          }
+        }
+      },
+      "series": {
+        "unit": "hour",
+        "points": [
+          {
+            "x": 0,
+            "revenue": 680
+          },
+          {
+            "x": 1,
+            "revenue": 540
+          },
+          {
+            "x": 2,
+            "revenue": 0
+          },
+          {
+            "x": 3,
+            "revenue": 40
+          },
+          {
+            "x": 4,
+            "revenue": 120
+          },
+          {
+            "x": 5,
+            "revenue": 0
+          },
+          {
+            "x": 6,
+            "revenue": 0
+          },
+          {
+            "x": 7,
+            "revenue": 80
+          },
+          {
+            "x": 8,
+            "revenue": 0
+          },
+          {
+            "x": 9,
+            "revenue": 340
+          },
+          {
+            "x": 10,
+            "revenue": 240
+          },
+          {
+            "x": 11,
+            "revenue": 200
+          },
+          {
+            "x": 12,
+            "revenue": 500
+          },
+          {
+            "x": 13,
+            "revenue": 700
+          },
+          {
+            "x": 14,
+            "revenue": 360
+          },
+          {
+            "x": 15,
+            "revenue": 640
+          },
+          {
+            "x": 16,
+            "revenue": 1460
+          },
+          {
+            "x": 17,
+            "revenue": 640
+          },
+          {
+            "x": 18,
+            "revenue": 960
+          },
+          {
+            "x": 19,
+            "revenue": 680
+          },
+          {
+            "x": 20,
+            "revenue": 1180
+          },
+          {
+            "x": 21,
+            "revenue": 720
+          }
+        ]
+      },
+      "bySlotType": {
+        "car": 8340,
+        "ev": 800,
+        "accessible": 280,
+        "vip": 660
+      },
+      "byDuration": [
+        {
+          "id": "le1h",
+          "label": "ไม่เกิน 1 ชม.",
+          "revenue": 960,
+          "count": 48
+        },
+        {
+          "id": "1to3h",
+          "label": "1–3 ชม.",
+          "revenue": 2860,
+          "count": 60
+        },
+        {
+          "id": "3to6h",
+          "label": "3–6 ชม.",
+          "revenue": 3280,
+          "count": 36
+        },
+        {
+          "id": "gt6h",
+          "label": "มากกว่า 6 ชม.",
+          "revenue": 2980,
+          "count": 17
+        }
+      ]
+    },
+    {
+      "period": {
+        "kind": "day",
+        "date": "2026-10-16"
+      },
+      "label": "ศ. 16 ต.ค. 2026",
+      "kpis": {
+        "revenue": 14460,
+        "payments": 232,
+        "avgFee": 62,
+        "peak": {
+          "label": "17:00",
+          "revenue": 1600,
+          "sharePct": 11.1
+        },
+        "comparison": {
+          "revenue": {
+            "pct": 3,
+            "text": "+3.0% เทียบวันก่อนหน้า"
+          },
+          "payments": {
+            "pct": 9.4,
+            "text": "+9.4% เทียบวันก่อนหน้า"
+          },
+          "avgFee": {
+            "pct": -5.9,
+            "text": "-5.9% เทียบวันก่อนหน้า"
+          }
+        }
+      },
+      "series": {
+        "unit": "hour",
+        "points": [
+          {
+            "x": 0,
+            "revenue": 240
+          },
+          {
+            "x": 1,
+            "revenue": 640
+          },
+          {
+            "x": 2,
+            "revenue": 420
+          },
+          {
+            "x": 3,
+            "revenue": 0
+          },
+          {
+            "x": 4,
+            "revenue": 60
+          },
+          {
+            "x": 5,
+            "revenue": 20
+          },
+          {
+            "x": 6,
+            "revenue": 0
+          },
+          {
+            "x": 7,
+            "revenue": 280
+          },
+          {
+            "x": 8,
+            "revenue": 40
+          },
+          {
+            "x": 9,
+            "revenue": 520
+          },
+          {
+            "x": 10,
+            "revenue": 280
+          },
+          {
+            "x": 11,
+            "revenue": 880
+          },
+          {
+            "x": 12,
+            "revenue": 820
+          },
+          {
+            "x": 13,
+            "revenue": 1020
+          },
+          {
+            "x": 14,
+            "revenue": 500
+          },
+          {
+            "x": 15,
+            "revenue": 1180
+          },
+          {
+            "x": 16,
+            "revenue": 580
+          },
+          {
+            "x": 17,
+            "revenue": 1600
+          },
+          {
+            "x": 18,
+            "revenue": 860
+          },
+          {
+            "x": 19,
+            "revenue": 1020
+          },
+          {
+            "x": 20,
+            "revenue": 820
+          },
+          {
+            "x": 21,
+            "revenue": 1360
+          },
+          {
+            "x": 22,
+            "revenue": 840
+          },
+          {
+            "x": 23,
+            "revenue": 480
+          }
+        ]
+      },
+      "bySlotType": {
+        "car": 12140,
+        "ev": 1600,
+        "accessible": 340,
+        "vip": 380
+      },
+      "byDuration": [
+        {
+          "id": "le1h",
+          "label": "ไม่เกิน 1 ชม.",
+          "revenue": 1360,
+          "count": 68
+        },
+        {
+          "id": "1to3h",
+          "label": "1–3 ชม.",
+          "revenue": 4360,
+          "count": 89
+        },
+        {
+          "id": "3to6h",
+          "label": "3–6 ชม.",
+          "revenue": 4360,
+          "count": 49
+        },
+        {
+          "id": "gt6h",
+          "label": "มากกว่า 6 ชม.",
+          "revenue": 4380,
+          "count": 26
+        }
+      ]
+    },
+    {
+      "period": {
+        "kind": "day",
+        "date": "2026-10-15"
+      },
+      "label": "พฤ. 15 ต.ค. 2026",
+      "kpis": {
+        "revenue": 14040,
+        "payments": 212,
+        "avgFee": 66,
+        "peak": {
+          "label": "14:00",
+          "revenue": 1540,
+          "sharePct": 11
+        },
+        "comparison": {
+          "revenue": {
+            "pct": 8.2,
+            "text": "+8.2% เทียบวันก่อนหน้า"
+          },
+          "payments": {
+            "pct": -5.8,
+            "text": "-5.8% เทียบวันก่อนหน้า"
+          },
+          "avgFee": {
+            "pct": 14.8,
+            "text": "+14.8% เทียบวันก่อนหน้า"
+          }
+        }
+      },
+      "series": {
+        "unit": "hour",
+        "points": [
+          {
+            "x": 0,
+            "revenue": 660
+          },
+          {
+            "x": 1,
+            "revenue": 40
+          },
+          {
+            "x": 2,
+            "revenue": 0
+          },
+          {
+            "x": 3,
+            "revenue": 0
+          },
+          {
+            "x": 4,
+            "revenue": 180
+          },
+          {
+            "x": 5,
+            "revenue": 160
+          },
+          {
+            "x": 6,
+            "revenue": 0
+          },
+          {
+            "x": 7,
+            "revenue": 40
+          },
+          {
+            "x": 8,
+            "revenue": 140
+          },
+          {
+            "x": 9,
+            "revenue": 720
+          },
+          {
+            "x": 10,
+            "revenue": 700
+          },
+          {
+            "x": 11,
+            "revenue": 860
+          },
+          {
+            "x": 12,
+            "revenue": 1160
+          },
+          {
+            "x": 13,
+            "revenue": 720
+          },
+          {
+            "x": 14,
+            "revenue": 1540
+          },
+          {
+            "x": 15,
+            "revenue": 800
+          },
+          {
+            "x": 16,
+            "revenue": 1000
+          },
+          {
+            "x": 17,
+            "revenue": 660
+          },
+          {
+            "x": 18,
+            "revenue": 960
+          },
+          {
+            "x": 19,
+            "revenue": 800
+          },
+          {
+            "x": 20,
+            "revenue": 1060
+          },
+          {
+            "x": 21,
+            "revenue": 740
+          },
+          {
+            "x": 22,
+            "revenue": 480
+          },
+          {
+            "x": 23,
+            "revenue": 620
+          }
+        ]
+      },
+      "bySlotType": {
+        "car": 12180,
+        "ev": 1160,
+        "accessible": 220,
+        "vip": 480
+      },
+      "byDuration": [
+        {
+          "id": "le1h",
+          "label": "ไม่เกิน 1 ชม.",
+          "revenue": 980,
+          "count": 49
+        },
+        {
+          "id": "1to3h",
+          "label": "1–3 ชม.",
+          "revenue": 4420,
+          "count": 90
+        },
+        {
+          "id": "3to6h",
+          "label": "3–6 ชม.",
+          "revenue": 4320,
+          "count": 47
+        },
+        {
+          "id": "gt6h",
+          "label": "มากกว่า 6 ชม.",
+          "revenue": 4320,
+          "count": 26
+        }
+      ]
+    },
+    {
+      "period": {
+        "kind": "month",
+        "month": "2026-10"
+      },
+      "label": "ต.ค. 2026",
+      "kpis": {
+        "revenue": 212880,
+        "payments": 3352,
+        "avgFee": 64,
+        "peak": {
+          "label": "7 ต.ค.",
+          "revenue": 15260,
+          "sharePct": 7.2
+        },
+        "comparison": {
+          "revenue": {
+            "pct": 4.9,
+            "text": "+4.9% เทียบเดือนก่อนหน้า"
+          },
+          "payments": {
+            "pct": 5.4,
+            "text": "+5.4% เทียบเดือนก่อนหน้า"
+          },
+          "avgFee": {
+            "pct": -0.4,
+            "text": "-0.4% เทียบเดือนก่อนหน้า"
+          }
+        }
+      },
+      "series": {
+        "unit": "day",
+        "points": [
+          {
+            "x": 1,
+            "revenue": 13800
+          },
+          {
+            "x": 2,
+            "revenue": 13580
+          },
+          {
+            "x": 3,
+            "revenue": 9960
+          },
+          {
+            "x": 4,
+            "revenue": 9240
+          },
+          {
+            "x": 5,
+            "revenue": 13060
+          },
+          {
+            "x": 6,
+            "revenue": 13260
+          },
+          {
+            "x": 7,
+            "revenue": 15260
+          },
+          {
+            "x": 8,
+            "revenue": 13960
+          },
+          {
+            "x": 9,
+            "revenue": 12200
+          },
+          {
+            "x": 10,
+            "revenue": 11540
+          },
+          {
+            "x": 11,
+            "revenue": 7800
+          },
+          {
+            "x": 12,
+            "revenue": 14220
+          },
+          {
+            "x": 13,
+            "revenue": 13440
+          },
+          {
+            "x": 14,
+            "revenue": 12980
+          },
+          {
+            "x": 15,
+            "revenue": 14040
+          },
+          {
+            "x": 16,
+            "revenue": 14460
+          },
+          {
+            "x": 17,
+            "revenue": 10080
+          }
+        ]
+      },
+      "bySlotType": {
+        "car": 181760,
+        "ev": 16160,
+        "accessible": 4360,
+        "vip": 10600
+      },
+      "byDuration": [
+        {
+          "id": "le1h",
+          "label": "ไม่เกิน 1 ชม.",
+          "revenue": 17180,
+          "count": 859
+        },
+        {
+          "id": "1to3h",
+          "label": "1–3 ชม.",
+          "revenue": 65900,
+          "count": 1357
+        },
+        {
+          "id": "3to6h",
+          "label": "3–6 ชม.",
+          "revenue": 69960,
+          "count": 779
+        },
+        {
+          "id": "gt6h",
+          "label": "มากกว่า 6 ชม.",
+          "revenue": 59840,
+          "count": 357
+        }
+      ]
+    },
+    {
+      "period": {
+        "kind": "month",
+        "month": "2026-09"
+      },
+      "label": "ก.ย. 2026",
+      "kpis": {
+        "revenue": 361060,
+        "payments": 5629,
+        "avgFee": 64,
+        "peak": {
+          "label": "4 ก.ย.",
+          "revenue": 15440,
+          "sharePct": 4.3
+        },
+        "comparison": {
+          "revenue": {
+            "pct": 8.9,
+            "text": "+8.9% เทียบเดือนก่อนหน้า"
+          },
+          "payments": {
+            "pct": 8.3,
+            "text": "+8.3% เทียบเดือนก่อนหน้า"
+          },
+          "avgFee": {
+            "pct": 0.6,
+            "text": "+0.6% เทียบเดือนก่อนหน้า"
+          }
+        }
+      },
+      "series": {
+        "unit": "day",
+        "points": [
+          {
+            "x": 1,
+            "revenue": 13520
+          },
+          {
+            "x": 2,
+            "revenue": 13220
+          },
+          {
+            "x": 3,
+            "revenue": 11680
+          },
+          {
+            "x": 4,
+            "revenue": 15440
+          },
+          {
+            "x": 5,
+            "revenue": 8820
+          },
+          {
+            "x": 6,
+            "revenue": 7600
+          },
+          {
+            "x": 7,
+            "revenue": 12940
+          },
+          {
+            "x": 8,
+            "revenue": 12840
+          },
+          {
+            "x": 9,
+            "revenue": 13240
+          },
+          {
+            "x": 10,
+            "revenue": 13840
+          },
+          {
+            "x": 11,
+            "revenue": 12460
+          },
+          {
+            "x": 12,
+            "revenue": 10160
+          },
+          {
+            "x": 13,
+            "revenue": 8280
+          },
+          {
+            "x": 14,
+            "revenue": 12400
+          },
+          {
+            "x": 15,
+            "revenue": 12680
+          },
+          {
+            "x": 16,
+            "revenue": 12480
+          },
+          {
+            "x": 17,
+            "revenue": 12600
+          },
+          {
+            "x": 18,
+            "revenue": 13600
+          },
+          {
+            "x": 19,
+            "revenue": 10120
+          },
+          {
+            "x": 20,
+            "revenue": 8000
+          },
+          {
+            "x": 21,
+            "revenue": 11820
+          },
+          {
+            "x": 22,
+            "revenue": 12180
+          },
+          {
+            "x": 23,
+            "revenue": 13080
+          },
+          {
+            "x": 24,
+            "revenue": 13080
+          },
+          {
+            "x": 25,
+            "revenue": 13520
+          },
+          {
+            "x": 26,
+            "revenue": 8720
+          },
+          {
+            "x": 27,
+            "revenue": 10220
+          },
+          {
+            "x": 28,
+            "revenue": 15020
+          },
+          {
+            "x": 29,
+            "revenue": 14080
+          },
+          {
+            "x": 30,
+            "revenue": 13420
+          }
+        ]
+      },
+      "bySlotType": {
+        "car": 310640,
+        "ev": 27720,
+        "accessible": 6140,
+        "vip": 16560
+      },
+      "byDuration": [
+        {
+          "id": "le1h",
+          "label": "ไม่เกิน 1 ชม.",
+          "revenue": 30060,
+          "count": 1503
+        },
+        {
+          "id": "1to3h",
+          "label": "1–3 ชม.",
+          "revenue": 108500,
+          "count": 2223
+        },
+        {
+          "id": "3to6h",
+          "label": "3–6 ชม.",
+          "revenue": 114060,
+          "count": 1264
+        },
+        {
+          "id": "gt6h",
+          "label": "มากกว่า 6 ชม.",
+          "revenue": 108440,
+          "count": 639
+        }
+      ]
+    },
+    {
+      "period": {
+        "kind": "year",
+        "year": 2026
+      },
+      "label": "ปี 2026",
+      "kpis": {
+        "revenue": 3437980,
+        "payments": 53701,
+        "avgFee": 64,
+        "peak": {
+          "label": "ม.ค.",
+          "revenue": 386920,
+          "sharePct": 11.3
+        },
+        "comparison": {
+          "revenue": {
+            "text": "ไม่มีข้อมูลช่วงก่อนหน้าให้เทียบ"
+          },
+          "payments": {
+            "text": "ไม่มีข้อมูลช่วงก่อนหน้าให้เทียบ"
+          },
+          "avgFee": {
+            "text": "ไม่มีข้อมูลช่วงก่อนหน้าให้เทียบ"
+          }
+        }
+      },
+      "series": {
+        "unit": "month",
+        "points": [
+          {
+            "x": 1,
+            "revenue": 386920
+          },
+          {
+            "x": 2,
+            "revenue": 348940
+          },
+          {
+            "x": 3,
+            "revenue": 384840
+          },
+          {
+            "x": 4,
+            "revenue": 366540
+          },
+          {
+            "x": 5,
+            "revenue": 351420
+          },
+          {
+            "x": 6,
+            "revenue": 344200
+          },
+          {
+            "x": 7,
+            "revenue": 337660
+          },
+          {
+            "x": 8,
+            "revenue": 343520
+          },
+          {
+            "x": 9,
+            "revenue": 361060
+          },
+          {
+            "x": 10,
+            "revenue": 212880
+          }
+        ]
+      },
+      "bySlotType": {
+        "car": 2942520,
+        "ev": 275700,
+        "accessible": 56560,
+        "vip": 163200
+      },
+      "byDuration": [
+        {
+          "id": "le1h",
+          "label": "ไม่เกิน 1 ชม.",
+          "revenue": 286340,
+          "count": 14317
+        },
+        {
+          "id": "1to3h",
+          "label": "1–3 ชม.",
+          "revenue": 1040220,
+          "count": 21345
+        },
+        {
+          "id": "3to6h",
+          "label": "3–6 ชม.",
+          "revenue": 1078220,
+          "count": 11967
+        },
+        {
+          "id": "gt6h",
+          "label": "มากกว่า 6 ชม.",
+          "revenue": 1033200,
+          "count": 6072
+        }
+      ]
+    },
+    {
+      "period": {
+        "kind": "year",
+        "year": 2025
+      },
+      "label": "ปี 2025",
+      "kpis": {
+        "revenue": 870380,
+        "payments": 13696,
+        "avgFee": 64,
+        "peak": {
+          "label": "ธ.ค.",
+          "revenue": 378580,
+          "sharePct": 43.5
+        },
+        "comparison": {
+          "revenue": {
+            "text": "ไม่มีข้อมูลช่วงก่อนหน้าให้เทียบ"
+          },
+          "payments": {
+            "text": "ไม่มีข้อมูลช่วงก่อนหน้าให้เทียบ"
+          },
+          "avgFee": {
+            "text": "ไม่มีข้อมูลช่วงก่อนหน้าให้เทียบ"
+          }
+        }
+      },
+      "series": {
+        "unit": "month",
+        "points": [
+          {
+            "x": 10,
+            "revenue": 151820
+          },
+          {
+            "x": 11,
+            "revenue": 339980
+          },
+          {
+            "x": 12,
+            "revenue": 378580
+          }
+        ]
+      },
+      "bySlotType": {
+        "car": 746980,
+        "ev": 69000,
+        "accessible": 15200,
+        "vip": 39200
+      },
+      "byDuration": [
+        {
+          "id": "le1h",
+          "label": "ไม่เกิน 1 ชม.",
+          "revenue": 73680,
+          "count": 3684
+        },
+        {
+          "id": "1to3h",
+          "label": "1–3 ชม.",
+          "revenue": 264600,
+          "count": 5437
+        },
+        {
+          "id": "3to6h",
+          "label": "3–6 ชม.",
+          "revenue": 274480,
+          "count": 3058
+        },
+        {
+          "id": "gt6h",
+          "label": "มากกว่า 6 ชม.",
+          "revenue": 257620,
+          "count": 1517
+        }
+      ]
+    }
+  ]
+}
