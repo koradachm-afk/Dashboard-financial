@@ -11,7 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { ACCESS_RANK, bestAccess, SETTINGS_PAGES } from "@/db/user/access";
+import { bestAccess, SETTINGS_PAGES } from "@/db/user/access";
 import type { PageKey, User } from "@/db/user/users";
 
 // An item shows when the user can reach any of its pages (README §6.2).
@@ -43,9 +43,9 @@ export const NAV: readonly { group: string; items: readonly NavItem[] }[] = [
   },
 ];
 
-/** Where "back to home" goes: the first nav page the user can view, /account if none, /login if signed out. */
+/** Where "back to home" goes: the first nav page the user can open, /account if none, /login if signed out. */
 export function homePathFor(user: Pick<User, "role" | "permissions"> | null): string {
   if (!user) return "/login";
-  const first = NAV.flatMap((g) => g.items).find((i) => ACCESS_RANK[bestAccess(user, i.pages)] >= ACCESS_RANK.view);
+  const first = NAV.flatMap((g) => g.items).find((i) => bestAccess(user, i.pages) !== "none");
   return first?.href ?? "/account";
 }

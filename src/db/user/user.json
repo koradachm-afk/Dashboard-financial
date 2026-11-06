@@ -31,16 +31,16 @@
     "theme": "light",
     "createdAt": "2026-09-05 12:00",
     "permissions": {
-      "dashboard": "view",
-      "parking-layout": "view",
-      "financial-overview": "view",
-      "activity-log": "view",
-      "heat-map": "view",
+      "dashboard": "edit",
+      "parking-layout": "edit",
+      "financial-overview": "edit",
+      "activity-log": "edit",
+      "heat-map": "edit",
       "users": "none",
-      "audit-logs": "view",
-      "settings.branch": "view",
-      "settings.slot-types": "view",
-      "settings.fees": "view"
+      "audit-logs": "edit",
+      "settings.branch": "edit",
+      "settings.slot-types": "edit",
+      "settings.fees": "edit"
     }
   }
 ]

@@ -7,9 +7,18 @@
 > เอกสารนี้แปลง Figma ออกมาเป็นกติกาสำหรับโค้ด (Next.js + Tailwind CSS v4)
 > ถ้าเอกสารนี้กับ Figma ไม่ตรงกัน **ให้ยึด Figma** แล้วแก้เอกสารนี้ตาม
 >
-> **เวอร์ชัน 2.2 · อัปเดต 6 พ.ย. 2026**
+> **เวอร์ชัน 2.3 · อัปเดต 6 พ.ย. 2026**
 
 ### มีอะไรเปลี่ยน
+
+**v2.3 (6 พ.ย.) · สิทธิ์เหลือ 2 ระดับ**
+
+| เรื่อง | เดิม | ตอนนี้ | ข้อ |
+|---|---|---|---|
+| ระดับสิทธิ์ | ไม่มีสิทธิ์ / ดูได้ / แก้ไขได้ | **ไม่มีสิทธิ์ / แก้ไขได้** · เลิกโหมดดูอย่างเดียว | 8.2, 9.5 |
+| Access Level Picker | 3 ตัวเลือก | 2 ตัวเลือก · ปุ่มลัด "ดูได้ทุกหน้า" เป็น "แก้ไขได้ทุกหน้า" | 8.2 |
+| Page Access Chip | Edit / View | มีแบบ Edit แบบเดียว | 8.2 |
+| ป้าย "สิทธิ์ดูอย่างเดียว" | Audit Logs (08.3) และ Settings (10.25) | เลิกใช้ · Export Excel แสดงให้ทุกคนที่เปิดหน้าได้ · ลบเฟรม 08.3 และ 10.25 ออกจาก Figma แล้ว | 9.5 |
 
 **v2.2 (6 พ.ย.) · รหัสผ่าน**
 
@@ -39,7 +48,7 @@
 | Export Excel | — | ปุ่ม + Toast "กำลังสร้างไฟล์" (Heat Map, Activity Log, Financial, Audit Logs) | 10.1 |
 | Drawer | Body scroll ได้ | Body ต้อง `overflow-y-auto` (ลิ้นชักผู้ใช้ยาวเกินจอแล้ว) + แบบแผนลิ้นชักรายละเอียด Audit | 10 |
 | หน้า 404 | ยังไม่มี | เฟรม **07.10** (โครงเดียวกับ 403) | 9.5 |
-| Settings สิทธิ์ไม่ครบแท็บ | ยังไม่มี | เฟรม **10.25** (ดูได้) / **10.26** (แก้ไขได้) | 9.5 |
+| Settings สิทธิ์ไม่ครบแท็บ | ยังไม่มี | เฟรม **10.26** (เฟรม 10.25 "ดูได้" ลบออกใน v2.3) | 9.5 |
 | ค่าจอดเกินเวลา | 10.3 กับ 17.7 เขียนไม่ตรงกัน | 15 นาทีตรงกันทุกจอ + สวิตช์ "คิดค่าจอดใหม่เมื่อออกเกินเวลา" (นับจากเวลาจ่ายครั้งล่าสุด) | 9.5 |
 | ชื่อแบรนด์ | ParkPlan (รอตัดสินใจ) | **AUTO PARKING** ทุกหน้าจอ | 12 |
 
@@ -425,7 +434,7 @@ container: inline-flex rounded-lg p-0.75 gap-0.5 bg-subtle (บน page) | bg-pa
 item:      h-8 rounded-md px-3.5 gap-1.5 text-body font-medium text-fg-2
 active:    bg-surface text-fg font-semibold shadow-xs
 ```
-Access Level Picker ใช้ `text-label` ส่วนตัวเลือก Locked ใช้ `text-fg-3`
+Access Level Picker มี 2 ตัวเลือก (ไม่มีสิทธิ์ / แก้ไขได้) ใช้ `text-label` ส่วนตัวเลือก Locked ใช้ `text-fg-3`
 
 **ตารางสิทธิ์รายหน้า (Access matrix ในลิ้นชักแก้ไขผู้ใช้ 07.4 / 07.5):**
 ```
@@ -448,7 +457,7 @@ Active: `bg-primary-soft text-primary font-semibold`
 - แบรนด์: โลโก้ 36 `rounded-lg bg-primary` + ไอคอน square-parking 22 · ชื่อ `text-h3 font-bold` · ชื่อสาขา `text-caption font-medium text-fg-2`
 - หัวกลุ่ม ("เมนูหลัก", "จัดการระบบ"): `text-caption font-semibold text-fg-3`
 - ลำดับเมนู: Dashboard → Parking Layout → Financial Overview → **Activity Log** → Parking Heat Map · *จัดการระบบ:* User & Permissions → System Settings → Audit Logs
-- แสดงเฉพาะเมนูที่ผู้ใช้มีสิทธิ์ (ดูได้หรือแก้ไขได้) · System Settings แสดงเมื่อมีสิทธิ์อย่างน้อย 1 แท็บ · ถ้าหัวกลุ่มไม่เหลือเมนูให้ซ่อนหัวกลุ่มด้วย
+- แสดงเฉพาะเมนูที่ผู้ใช้มีสิทธิ์ (แก้ไขได้) · System Settings แสดงเมื่อมีสิทธิ์อย่างน้อย 1 แท็บ · ถ้าหัวกลุ่มไม่เหลือเมนูให้ซ่อนหัวกลุ่มด้วย
 - ไฟล์: `src/components/sidebarmenu.tsx` · รายการเมนูมาจาก `src/components/admin-nav.ts`
 - ล่างสุด: Profile menu (avatar + ชื่อ + Role)
 
@@ -464,7 +473,7 @@ Active: `bg-primary-soft text-primary font-semibold`
 | **Session Status** | `Status: Parked \| Exited` | `rounded-full px-2.5 py-0.75 text-caption font-semibold` · Parked `bg-primary-soft text-primary` · Exited `bg-subtle text-fg-2` |
 | **Event Badge** | `Event: In \| Out` | แบบเดียวกับ Session Status + ไอคอน 14 · In=primary · Out=warning |
 | **Payment Badge** | — | แบบเดียวกับ Session Status · `bg-success-soft text-success` |
-| **Page Access Chip** | `Level: Edit \| View` | `size-6.5 rounded-md grid place-items-center` · Edit `bg-primary-soft border border-primary text-primary` · View `bg-page text-fg-2` |
+| **Page Access Chip** | `Level: Edit` | `size-6.5 rounded-md grid place-items-center` · `bg-primary-soft border border-primary text-primary` |
 | **Vehicle Chip** | `Remove: Default \| Locked` | `rounded-full border border-line bg-surface pl-0.75 pr-1 py-0.75 gap-0.5 text-body` + ปุ่ม × 12 |
 | **Vehicle Tag** | `Sedan \| SUV \| Pickup \| Hatchback \| Van \| EVcar` | ไอคอนรถ + `text-body text-fg` ไม่มีกรอบ |
 
@@ -613,20 +622,17 @@ Fabric.js อ่าน CSS variable ไม่ได้เอง ต้องด�
 | บทบาท | เห็นอะไร |
 |---|---|
 | **Superadmin** | ทุกหน้า รวม User & Permissions (หน้านี้เป็นของ Superadmin เท่านั้น) |
-| **Admin** | เฉพาะหน้าที่ Superadmin ตั้งให้ แต่ละหน้าเป็น ไม่มีสิทธิ์ / ดูได้ / แก้ไขได้ |
+| **Admin** | เฉพาะหน้าที่ Superadmin ตั้งให้ แต่ละหน้าเป็น ไม่มีสิทธิ์ / แก้ไขได้ |
 
 - **ไม่มีสิทธิ์:** ซ่อนเมนูใน Sidebar · ถ้าเข้า URL ตรงให้ไปหน้า 403 (เฟรม 07.9)
-- **ดูได้:** เปิดหน้าได้ แต่ซ่อนหรือ disable ปุ่มเพิ่ม / แก้ไข / ลบ / บันทึก
-- **แก้ไขได้:** ใช้งานได้ครบ
+- **แก้ไขได้:** เปิดหน้าได้และใช้งานได้ครบ (ไม่มีโหมดดูอย่างเดียว และไม่มีป้าย "สิทธิ์ดูอย่างเดียว")
 - **System Settings** แยกสิทธิ์ 3 แท็บ: ข้อมูลสาขา · ประเภทช่องจอด · ค่าจอดและการชำระเงิน · คำอธิบายใต้ชื่อหน้า: "Admin เห็นเฉพาะแท็บที่ได้รับสิทธิ์ · การเปลี่ยนแปลงทั้งหมดถูกบันทึกลง Audit Logs"
 - **บัญชีของฉัน (09.3)** มีการ์ด "สิทธิ์ของฉัน" แสดงทุกหน้ารวม System Settings
 - เช็กสิทธิ์ใน `page.tsx` ของแต่ละหน้า ห้ามเช็กใน `layout.tsx`
 
-**แท็บที่มีสิทธิ์ "ดูได้" (เฟรม 10.25)**
-- Input: พื้น `bg-subtle` ตัวอักษร `text-fg-3` และกดแก้ไม่ได้
-- Switch: `opacity-50` กดไม่ได้
-- ซ่อนปุ่มยกเลิก / บันทึก แล้ววางป้ายแทนที่ตำแหน่งเดิม: `rounded-full border border-line bg-subtle px-2.5 py-1.5 h-8 gap-1.5 text-label text-fg-2` + ไอคอน `lock` 14 ข้อความ "สิทธิ์ดูอย่างเดียว · แก้ไข<ชื่อแท็บ>ต้องมีสิทธิ์แก้ไขได้" (แบบเดียวกับ Audit Logs 08.3)
-- แท็บที่ไม่มีสิทธิ์ถูกซ่อน และเปิดหน้ามาที่แท็บแรกที่มีสิทธิ์ (10.26)
+**แท็บของ Settings (เฟรม 10.26)**
+- แท็บที่มีสิทธิ์ใช้งานได้ครบ ไม่มีโหมดดูอย่างเดียว (เฟรม 10.25 ลบออกจาก Figma แล้ว)
+- แท็บที่ไม่มีสิทธิ์ถูกซ่อน และเปิดหน้ามาที่แท็บแรกที่มีสิทธิ์
 
 **หน้า 404 (เฟรม 07.10)** ใช้กล่องเดียวกับ 403 (07.9): วงกลม 72 + ไอคอน `search` 32 · รหัส "404" `text-body font-semibold text-fg-3` · หัวข้อ "ไม่พบหน้าที่ต้องการ" `text-h2 font-bold` · คำอธิบาย `text-control text-fg-2` · ปุ่ม Primary "กลับไปหน้าแรก" (ไป Dashboard)
 
@@ -1006,7 +1012,7 @@ const thai = Noto_Sans_Thai({ subsets: ["thai"], weight: ["400", "500", "600", "
 - [ ] ไม่มี variant `dark:` ใน component
 - [ ] ปุ่ม, input, checkbox และ component อื่นที่มีใน `src/components/tailgrids/core/` ใช้ตัวกลาง ไม่ได้เขียนซ้ำในหน้า (select, badge ยังไม่มีตัวกลาง ดูหมายเหตุต้นข้อ 8)
 - [ ] รวม class ผ่าน `cn()` (ข้อ 1.1) ไม่ต่อ string เอง
-- [ ] หน้าเช็กสิทธิ์ใน `page.tsx` (ไม่มีสิทธิ์ → `/403`) และซ่อน / ล็อกปุ่มแก้ไขเมื่อมีสิทธิ์แค่ "ดูได้"
+- [ ] หน้าเช็กสิทธิ์ใน `page.tsx` (ไม่มีสิทธิ์ → `/403`) โดยสิทธิ์มีแค่ 2 ระดับ
 - [ ] ใช้ชื่อ "Activity Log" ไม่มีคำว่า Traffic Activity หลงเหลือ
 - [ ] ตัวเลข, เงิน, เวลา ใส่ `tabular-nums` และใช้รูปแบบตามข้อ 12
 - [ ] ข้อความไทยไม่ถูกตัดสระ (line-height ≥ 1.4)

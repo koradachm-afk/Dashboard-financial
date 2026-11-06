@@ -27,7 +27,7 @@
 - Audit Logs มีการกระทำ **ออกจากระบบ / ส่งออก** และลิ้นชักรายละเอียดครบทุกเคส
 - เพิ่ม `cn()` ใน `src/utils/` ทุก component ต้องใช้ (ดู DESIGN-STYLE.md ข้อ 1.1)
 - ตัดสินแล้ว: สถานะรถมี 2 ค่า · Role มี Superadmin / Admin · ชื่อแบรนด์ AUTO PARKING · เวลาออกหลังจ่าย 15 นาที · เกินเวลาคิดค่าจอดใหม่นับจากเวลาจ่ายครั้งล่าสุด (ข้อ 10)
-- Figma เพิ่มหน้า 404 (07.10), Settings มุมมอง Admin ที่มีสิทธิ์ไม่ครบแท็บ (10.25, 10.26) และสวิตช์คิดค่าจอดใหม่ใน 10.3
+- Figma เพิ่มหน้า 404 (07.10), Settings มุมมอง Admin ที่มีสิทธิ์ไม่ครบแท็บ (10.26 · เฟรม 10.25 "ดูได้" ลบออกแล้ว) และสวิตช์คิดค่าจอดใหม่ใน 10.3
 
 ---
 
@@ -66,7 +66,7 @@ npm test           # รัน test ทั้งหมดครั้งเด�
 
 | URL | หน้า |
 |---|---|
-| `/login` | เข้าสู่ระบบ · บัญชี demo: `superadmin` / `pass` (Superadmin แก้ไขได้ทุกหน้า) · `admin` / `pass` (Admin ดูได้ทุกหน้า ยกเว้น Users) · seed อยู่ใน `src/db/user/` |
+| `/login` | เข้าสู่ระบบ · บัญชี demo: `superadmin` / `pass` (Superadmin แก้ไขได้ทุกหน้า) · `admin` / `pass` (Admin แก้ไขได้ทุกหน้า ยกเว้น Users) · seed อยู่ใน `src/db/user/` |
 | `/dashboard` | หน้าแรกหลัง login |
 | `/pay` | เว็บลูกค้า (เปิดด้วยมือถือหรือ DevTools โหมดมือถือ) |
 | `/kiosk/entry` · `/kiosk/exit` | จอ Kiosk (เปิดเต็มจอ 1920×1080) |
@@ -206,7 +206,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 | `/parking-layout` | Parking Layout | [01](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=16-3034) · [02](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=16-6185) | ริว |
 | `/activity-log` | Activity Log | [14](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=103-16043) | ฟ่า |
 | `/heat-map` | Parking Heat Map | [15](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=140-22253) · [15.9 Export](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=350-46134) | ฟ่า |
-| `/settings/*` | System Settings (สิทธิ์รายแท็บ) | [10](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13184) · [10.25–10.26 มุมมอง Admin](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-49801) | ต้น |
+| `/settings/*` | System Settings (สิทธิ์รายแท็บ) | [10](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13184) · [10.26 มุมมอง Admin](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-50004) | ต้น |
 | `/pay/*` | Customer Web | [17](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43072) · [17.8 เลือกรถ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=436-50059) · [17.9–17.11 วิธีชำระ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50236) | ต้น |
 | `/kiosk/entry` | Kiosk ทางเข้า | [18](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-44453) | ต้น |
 | `/kiosk/exit` | Kiosk ทางออก | [16](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43291) | ต้น |
@@ -290,10 +290,10 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 - ☑ แก้ไข (Drawer):
   - แก้ email
   - เปลี่ยน Role (ต้องยืนยันก่อน)
-  - ตั้งสิทธิ์ราย page เป็น ไม่มีสิทธิ์ / ดูได้ / แก้ไขได้
+  - ตั้งสิทธิ์ราย page เป็น ไม่มีสิทธิ์ / แก้ไขได้
   - **System Settings ตั้งแยก 3 แท็บ:** ข้อมูลสาขา · ประเภทช่องจอด · ค่าจอดและการชำระเงิน (แถวกลุ่มไม่มีตัวเลือก มีแถวย่อยเยื้องเข้า)
   - ส่วนเนื้อหาของ drawer ต้อง scroll ได้ (รายการสิทธิ์ยาวเกินจอแล้ว)
-  - ปุ่มลัด "ดูได้ทุกหน้า" / "ล้างทั้งหมด"
+  - ปุ่มลัด "แก้ไขได้ทุกหน้า" / "ล้างทั้งหมด"
 - ☑ ลบผู้ใช้ (ยืนยัน → ลบถาวร → แสดง toast)
 - ☑ Admin ที่เข้าหน้านี้ต้องไปหน้า 403
 - ☑ ทุกการเปลี่ยนแปลงบันทึกลง Audit Logs
@@ -301,7 +301,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 
 ### 6.5 Audit Logs — อ๊อด
 
-เฟรม: [08 รายการ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=50-9390) · [08.2 รายละเอียด](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=52-10037) · [08.3 มุมมอง Admin](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=52-10478) · [08.4](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=68-14298)–[08.13](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=69-16829) ตัวกรอง · [08.14](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=196-42130)–[08.18](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=196-43094) ปฏิทิน
+เฟรม: [08 รายการ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=50-9390) · [08.2 รายละเอียด](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=52-10037) · [08.4](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=68-14298)–[08.13](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=69-16829) ตัวกรอง · [08.14](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=196-42130)–[08.18](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=196-43094) ปฏิทิน
 
 - ☑ ตัวกรอง: ช่วงวันที่ (ค่าเริ่มต้น 7 วันล่าสุด / กำหนดเอง) · หน้า (9 ตัวเลือก: การเข้าสู่ระบบ, บัญชีของฉัน และ 7 หน้าในเมนู) · การกระทำ (สร้าง / แก้ไข / ลบ / เข้าสู่ระบบ / **ออกจากระบบ** / ล้มเหลว / **ส่งออก**) · ค้นหารายละเอียดหรือ username
 - ☑ ตาราง: เวลา + IP · ผู้กระทำ + Role · การกระทำ · หน้า · รายละเอียด
@@ -311,9 +311,9 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
   - ปุ่มคัดลอกลิงก์ (ใช้ `?id=` ใน URL)
   - มีเฟรมรายละเอียดครบทุกเคส [08.20–08.38](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=366-46007) · แถว "ผลลัพธ์" อยู่ท้ายสุดและมีเส้นคั่นก่อน
 - ☑ ข้อมูลตัวอย่าง 20 เคสไม่ซ้ำกัน แบ่ง 2 หน้า (08, [08.19](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=364-49773)) ใช้ mock ชุดนี้ให้ตรงกับ Figma
-- ☑ Export Excel เฉพาะผู้มีสิทธิ์แก้ไขได้ · สิทธิ์ดูได้เห็นข้อความแจ้งแทนปุ่ม (08.3)
+- ☑ Export Excel แสดงให้ทุกคนที่เปิดหน้า Audit Logs ได้ (ไม่มีป้ายดูอย่างเดียวแล้ว · ลบเฟรม 08.3 ออกจาก Figma แล้ว)
   - ส่งออกทุกแถวที่ผ่านตัวกรอง (ไม่ใช่แค่หน้าที่เห็น) เป็น `.xlsx` พร้อม Toast มุมขวาบน และลงรายการ "ส่งออก" ใน log
-  - Server Action `exportAuditInfo()` เช็กสิทธิ์ `edit` ของ `audit-logs` ก่อน · ไม่มีสิทธิ์ → ไม่ส่งออก
+  - Server Action `exportAuditInfo()` เช็กสิทธิ์ของ `audit-logs` ก่อน (ต้องเปิดหน้านี้ได้ คือ `edit`) · ไม่มีสิทธิ์ → ไม่ส่งออก
 - ☑ log **แก้ไขหรือลบไม่ได้**
 - ☐ มี `audit()` กลางให้ทุกหน้าเรียกใช้ (เขียนลง localStorage ผ่าน `src/db/store.ts` โดเมน `audit` หน้า Audit Logs จึงเห็นรายการจากการใช้งานจริงต่อจาก seed 20 เคส) · การ Export ทุกหน้าต้องเรียก `audit()` ด้วยการกระทำ "ส่งออก"
   - ทำแล้วบางส่วน: `audit()` ใช้งานได้แล้ว (login · logout · Users · เปลี่ยนรหัสผ่าน · Export ของ Audit Logs เรียกใช้อยู่) · ที่ยังขาดคือ Export ของหน้าอื่น (Heat Map · Activity Log · Financial Overview) ยังไม่ได้ต่อ
@@ -418,9 +418,9 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 
 เฟรม: [10 ข้อมูลสาขา](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13184) · [10.1 ประเภทช่องจอด](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13582) · [10.2 แก้ไขประเภท](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-14098) · [10.3 ค่าจอด](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=66-14208) · [10.4–10.6 โลโก้](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=172-29898) · [10.7–10.22 จัดการประเภท](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=172-30204) · [10.23–10.24 บันทึก / error](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=172-34799)
 
-- ☐ **สิทธิ์รายแท็บ** ([10.25](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-49801) ดูได้ · [10.26](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-50004) แก้ไขได้ ตัวอย่างผู้ใช้ ops.mint):
+- ☐ **สิทธิ์รายแท็บ** ([10.26](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-50004) แก้ไขได้ ตัวอย่างผู้ใช้ ops.mint · เฟรม 10.25 "ดูได้" ลบออกแล้ว):
   - แท็บที่ไม่มีสิทธิ์ให้ซ่อน เปิดหน้ามาให้อยู่แท็บแรกที่มีสิทธิ์
-  - แท็บที่ "ดูได้": input เป็นพื้น subtle ตัวอักษรจาง · สวิตช์จาง 50% · ซ่อนปุ่มยกเลิก / บันทึก แล้วแสดงป้าย "สิทธิ์ดูอย่างเดียว · แก้ไขค่าจอดต้องมีสิทธิ์แก้ไขได้" แทน
+  - แท็บที่มีสิทธิ์ใช้งานได้ครบ ไม่มีโหมดดูอย่างเดียว
   - Sidebar แสดงเฉพาะหน้าที่มีสิทธิ์
 - ☐ คำอธิบายใต้ชื่อหน้า: "Admin เห็นเฉพาะแท็บที่ได้รับสิทธิ์ · การเปลี่ยนแปลงทั้งหมดถูกบันทึกลง Audit Logs"
 - ☐ แท็บข้อมูลสาขา: ชื่อสาขา + โลโก้ (PNG / SVG สี่เหลี่ยมจัตุรัส ≥ 256 px ≤ 1 MB) + ตัวอย่างการแสดงผล
@@ -575,6 +575,7 @@ PM (อ๊อด) เป็นผู้ตัดสิน ระหว่าง�
 | วิธีชำระ (ลูกค้า) | **QR PromptPay** และ **Mobile Banking** · Kiosk ทางออกยังเป็น QR PromptPay อย่างเดียว |
 | โลโก้ธนาคาร | Figma ใช้ไอคอนกลาง · โลโก้จริงต้องขอจากธนาคารหรือผู้ให้บริการชำระเงิน แล้วค่อยใส่ |
 | Mobile Banking | การเปิดแอปธนาคารจากเว็บต้องผ่านผู้ให้บริการชำระเงิน ทีมทำแค่ frontend จึง **ใช้ mock ไปก่อน** |
+| ระดับสิทธิ์ | **2 ระดับ: ไม่มีสิทธิ์ / แก้ไขได้** · เลิกใช้ "ดูได้" เมื่อ 6 พ.ย. 2026 · ใครเปิดหน้าได้ก็ใช้ทุกปุ่มในหน้านั้นได้ · ประวัติใน Audit Logs ที่เขียนว่า "ดูได้" คงไว้ตามเดิมเพราะเป็นเหตุการณ์ที่เกิดแล้ว |
 | ความยาวรหัสผ่าน | **อย่างน้อย 8 ตัวอักษร** (Figma ปรับตามแล้ว ดู DESIGN-STYLE.md v2.2) |
 | ล็อกการเข้าสู่ระบบ | ใส่รหัสผิดครบ **5 ครั้ง** ล็อก **15 นาที** (ตัวนับอยู่ในหน่วยความจำของ server) |
 | user และสิทธิ์ | อยู่ในหน่วยความจำของ server ทับ seed `user.json` ที่คงที่ · restart แล้วกลับเป็น seed |
