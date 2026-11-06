@@ -7,7 +7,7 @@
 |---|---|---|
 | **Admin Web** | เจ้าหน้าที่ / ผู้ดูแลระบบ | Desktop (ออกแบบที่ 1440px) |
 | **Customer Web** | ลูกค้าที่มาจอด (สแกน QR → ค้นทะเบียน → เลือกรถจากรูปถ้าเจอหลายคัน → จ่ายด้วย QR PromptPay หรือ Mobile Banking) | มือถือ (ออกแบบที่ 390px) |
-| **Kiosk** | จอที่ทางเข้า / ทางออก | จอ 1920×1080 |
+| **Kiosk** | จอที่ทางเข้า / ทางออก | จอแนวนอน 1920×1080 · แนวตั้ง 1080×1920 · 5:4 1280×1024 |
 
 > **ขอบเขตตอนนี้: หน้าบ้านอย่างเดียว** ยังไม่มี backend ข้อมูลทั้งหมดเป็น mock (JSON ใน `src/db/`)
 >
@@ -76,7 +76,7 @@ npm test           # รัน test ทั้งหมดครั้งเด�
 | `/login` | เข้าสู่ระบบ · บัญชี demo: `superadmin` / `pass` (Superadmin แก้ไขได้ทุกหน้า) · `admin` / `pass` (Admin แก้ไขได้ทุกหน้า ยกเว้น Users) · seed อยู่ใน `src/db/user/` |
 | `/dashboard` | หน้าแรกหลัง login |
 | `/pay` | เว็บลูกค้า (เปิดด้วยมือถือหรือ DevTools โหมดมือถือ) |
-| `/kiosk/entry` · `/kiosk/exit` | จอ Kiosk (เปิดเต็มจอ 1920×1080) |
+| `/kiosk/entry` · `/kiosk/exit` | จอ Kiosk (เปิดเต็มจอ · รองรับ 1920×1080, 1080×1920 และ 1280×1024) |
 
 ---
 
@@ -216,8 +216,8 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 | `/heat-map` | Parking Heat Map | [15](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=140-22253) · [15.9 Export](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=350-46134) | ฟ่า |
 | `/settings/*` | System Settings (สิทธิ์รายแท็บ) | [10](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13184) · [10.26 มุมมอง Admin](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-50004) | ต้น |
 | `/pay/*` | Customer Web | [17](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=233-43072) · [17.8 เลือกรถ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=436-50059) · [17.9–17.13 วิธีชำระ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=437-50236) | ต้น |
-| `/kiosk/entry` | Kiosk ทางเข้า | [18](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-44453) | ต้น |
-| `/kiosk/exit` | Kiosk ทางออก | [16](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43291) | ต้น |
+| `/kiosk/entry` | Kiosk ทางเข้า | [18](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-44453) · [Kiosk · Responsive](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=587-51177) | ต้น |
+| `/kiosk/exit` | Kiosk ทางออก | [16](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43291) · [Kiosk · Responsive](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=587-51177) | ต้น |
 
 แก้ไฟล์ในโฟลเดอร์ของคนอื่น ต้องให้เจ้าของหน้านั้นรีวิว ส่วน `layout.tsx` ระดับกลุ่ม, `components/` และ `globals.css` เป็นของอ๊อด
 
@@ -496,6 +496,10 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 
 - ☐ โครงจอ: Top Bar 80px · ซ้ายเป็นวิดีโอ CCTV + ผลการอ่านป้ายด้วย AI (ทะเบียน, ความมั่นใจ %, เวลาอ่าน) · ขวาเป็นข้อมูลรถ + การ์ดสถานะ
 - ☐ จังหวะ: อ่านป้าย ~1.5 วินาที → แสดงผล → กลับหน้ารอรถหลัง 5 วินาที · อ่านไม่สำเร็จ → ลองใหม่อัตโนมัติหลัง 3 วินาที
+- ☐ **รองรับ 3 ขนาดจอ** (เฟรมครบทุก state ใน section [Kiosk · Responsive](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=587-51177)):
+  - แนวนอน 1920×1080 (เฟรม 16 / 18 เดิม): กล้องซ้าย 1080 · รายละเอียดขวา
+  - แนวตั้ง 1080×1920: เรียงบนลงล่าง กล้อง → ผลอ่านป้าย → (ทางเข้า) ช่องว่าง → รายละเอียด
+  - 5:4 1280×1024: ยังเป็นซ้าย–ขวา แต่กล้องกว้าง 640 · ข้อความที่ยาวเกินตัดบรรทัด · ทางเข้า: ป้ายประเภทช่องว่างขึ้นแถวใหม่ใต้ตัวเลข
 - ☐ ทางเข้า: แสดงอัตราค่าจอด + ช่องว่างแยกประเภท · เต็มแล้วไม้กั้นไม่เปิด · บันทึกแล้วแสดง QR ไปหน้าลูกค้า
 - ☐ ทางออก:
   - แสดงเวลาเข้า–ออก, เวลาจอดทั้งหมด, ค่าจอด + PromptPay QR
