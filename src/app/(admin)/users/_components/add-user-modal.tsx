@@ -237,7 +237,7 @@ function AddUserForm({ onClose, onCreate }: Omit<Props, "isOpen">) {
           </Button>
         </div>
         <p id={`${id}-password-help`} className="text-caption text-fg-3">
-          อย่างน้อย 10 ตัวอักษร · ผู้ใช้ต้องเปลี่ยนรหัสผ่านเมื่อเข้าสู่ระบบครั้งแรก
+          อย่างน้อย 8 ตัวอักษร · ผู้ใช้ต้องเปลี่ยนรหัสผ่านเมื่อเข้าสู่ระบบครั้งแรก
         </p>
       </div>
 

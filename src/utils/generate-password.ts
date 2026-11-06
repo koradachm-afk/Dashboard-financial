@@ -19,8 +19,8 @@ const pick = (chars: string) => chars[randomIndex(chars.length)];
 
 /** One of each class (so every `PASSWORD_RULES` rule passes), the rest from all classes, then shuffled. */
 export function generatePassword(length = 12): string {
-  if (!Number.isInteger(length) || length < 10) {
-    throw new RangeError("generatePassword: length must be an integer of at least 10");
+  if (!Number.isInteger(length) || length < 8) {
+    throw new RangeError("generatePassword: length must be an integer of at least 8");
   }
   const chars = [pick(UPPER), pick(LOWER), pick(DIGITS), pick(SPECIAL)];
   while (chars.length < length) chars.push(pick(ALL));
