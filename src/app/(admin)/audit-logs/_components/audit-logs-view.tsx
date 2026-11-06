@@ -21,10 +21,17 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { CalendarDate } from "@internationalized/date";
+import { useRef, useState } from "react";
+import { Dialog, Popover } from "react-aria-components";
 
 import { Avatar } from "@/components/tailgrids/core/avatar";
 import { Button } from "@/components/tailgrids/core/button";
+import {
+  DateRangePicker,
+  formatDateRange,
+  type DateRange,
+} from "@/components/tailgrids/core/date-range-picker";
 import { Input } from "@/components/tailgrids/core/input";
 import { MultiSelectFilter } from "@/components/tailgrids/core/multi-select-filter";
 import { Pagination } from "@/components/tailgrids/core/pagination";
@@ -36,14 +43,15 @@ import { FilterSelect } from "./filter-select";
 
 const PAGE_SIZE = 10;
 
-type Preset = "today" | "7d" | "30d" | "month";
+type Preset = "today" | "7d" | "30d" | "month" | "custom";
 const PRESETS: readonly { id: Preset; label: string }[] = [
   { id: "today", label: "วันนี้" },
   { id: "7d", label: "7 วันล่าสุด" },
   { id: "30d", label: "30 วันล่าสุด" },
   { id: "month", label: "เดือนนี้" },
 ];
-const presetLabel = (id: Preset) => PRESETS.find((p) => p.id === id)?.label ?? "";
+const CUSTOM_LABEL = "กำหนดช่วงเอง";
+const presetLabel = (id: Preset) => (id === "custom" ? CUSTOM_LABEL : (PRESETS.find((p) => p.id === id)?.label ?? ""));
 // "ใน" + preset; Figma puts a space only before a digit ("ใน 7 วันล่าสุด", "ในวันนี้").
 const inRange = (label: string) => (/^\d/.test(label) ? `ใน ${label}` : `ใน${label}`);
 
@@ -68,23 +76,35 @@ const pageIcon = (name: string) => PAGES.find((p) => p.id === name)?.icon;
 
 const ACTION_OPTIONS = AUDIT_ACTIONS.map((a) => ({ id: a, label: a, content: <ActionBadge action={a} /> }));
 
-type Criteria = { query: string; preset: Preset; page: string; actions: readonly string[] };
-const DEFAULTS: Criteria = { query: "", preset: "7d", page: ALL_PAGES, actions: [] };
+type Criteria = {
+  query: string;
+  preset: Preset;
+  /** Used only while `preset` is "custom". */
+  range: DateRange | null;
+  page: string;
+  actions: readonly string[];
+};
+const DEFAULTS: Criteria = { query: "", preset: "7d", range: null, page: ALL_PAGES, actions: [] };
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-/** The first instant of the preset, formatted like AuditEntry.time so strings compare in order. */
-function since(preset: Preset, now: Date): string {
-  const back = { today: 0, "7d": 6, "30d": 29, month: 0 }[preset];
+/** Both ends are formatted like AuditEntry.time so strings compare in order. `to` is null for open-ended presets. */
+type Bounds = { from: string; to: string | null };
+
+function bounds(c: Criteria, now: Date): Bounds {
+  if (c.preset === "custom" && c.range) {
+    return { from: `${c.range.start} 00:00:00`, to: `${c.range.end} 23:59:59` };
+  }
+  const back = { today: 0, "7d": 6, "30d": 29, month: 0, custom: 6 }[c.preset];
   const d =
-    preset === "month"
+    c.preset === "month"
       ? new Date(now.getFullYear(), now.getMonth(), 1)
       : new Date(now.getFullYear(), now.getMonth(), now.getDate() - back);
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} 00:00:00`;
+  return { from: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} 00:00:00`, to: null };
 }
 
-function matches(e: AuditEntry, c: Criteria, from: string): boolean {
-  if (e.time < from) return false;
+function matches(e: AuditEntry, c: Criteria, b: Bounds): boolean {
+  if (e.time < b.from || (b.to !== null && e.time > b.to)) return false;
   if (c.page !== ALL_PAGES && e.page !== c.page) return false;
   if (c.actions.length > 0 && !c.actions.includes(e.action)) return false;
   const q = c.query.toLowerCase();
@@ -108,18 +128,30 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
   const [draft, setDraft] = useState<Criteria>(DEFAULTS);
   const [applied, setApplied] = useState<Criteria>(DEFAULTS);
   // The clock is read when filters apply, not on every render, so a result does not shift under the user.
-  const [from, setFrom] = useState(() => since(DEFAULTS.preset, clock()));
+  const [span, setSpan] = useState(() => bounds(DEFAULTS, clock()));
   const [sort, setSort] = useState<"descending" | "ascending">("descending");
   const [page, setPage] = useState(1);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const dateRef = useRef<HTMLDivElement>(null);
 
   const apply = (next: Criteria) => {
     setApplied(next);
-    setFrom(since(next.preset, clock()));
+    setSpan(bounds(next, clock()));
     setPage(1); // Pagination does not clamp, so any change of the result set starts over.
   };
   const clear = () => {
     setDraft(DEFAULTS);
     apply(DEFAULTS);
+  };
+  const removeDate = () => {
+    setDraft((d) => ({ ...d, preset: DEFAULTS.preset }));
+    apply({ ...applied, preset: DEFAULTS.preset });
+  };
+  const applyRange = (range: DateRange) => {
+    const next: Criteria = { ...draft, query: draft.query.trim(), preset: "custom", range };
+    setDraft(next);
+    apply(next);
+    setPickerOpen(false);
   };
   const removePage = () => {
     setDraft((d) => ({ ...d, page: ALL_PAGES }));
@@ -132,14 +164,24 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
   };
 
   const rows = entries
-    .filter((e) => matches(e, applied, from))
+    .filter((e) => matches(e, applied, span))
     .sort((a, b) => (sort === "descending" ? b.time.localeCompare(a.time) : a.time.localeCompare(b.time)));
   const total = rows.length;
   const pageCount = Math.ceil(total / PAGE_SIZE);
   const start = (page - 1) * PAGE_SIZE;
   const visible = rows.slice(start, start + PAGE_SIZE);
   const SortIcon = sort === "descending" ? ArrowDown : ArrowUp;
-  const range = presetLabel(applied.preset);
+  const customRange = applied.preset === "custom" && applied.range ? formatDateRange(applied.range.start, applied.range.end) : null;
+  // Chip and menu name of the applied date range, and the result-bar wording (Spec Q3, Figma 08.1 / 08.6).
+  const rangeName = customRange ?? presetLabel(applied.preset);
+  const dateText =
+    customRange !== null
+      ? `วันที่ ${customRange}`
+      : applied.preset === "today"
+        ? `วันที่ ${span.from.slice(0, 10)}`
+        : inRange(rangeName);
+  const hasCondition = applied.page !== ALL_PAGES || applied.actions.length > 0;
+  const today = clock();
 
   return (
     <div className="flex min-h-full flex-col gap-4">
@@ -179,16 +221,43 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
             aria-label="ค้นหารายละเอียด หรือ username"
             className="w-65"
           />
-          <FilterSelect
-            icon={Calendar}
-            text={presetLabel(draft.preset)}
-            header="ช่วงวันที่"
-            options={PRESETS}
-            selected={draft.preset}
-            onSelect={(id) => setDraft({ ...draft, preset: id as Preset })}
-            disabledOption={{ label: "กำหนดช่วงเอง…", icon: Calendar }}
-            className="w-45"
-          />
+          <div ref={dateRef} className="w-45">
+            <FilterSelect
+              icon={Calendar}
+              text={presetLabel(draft.preset)}
+              header="ช่วงวันที่"
+              options={PRESETS.filter((p) => p.id !== "custom")}
+              selected={draft.preset}
+              onSelect={(id) => setDraft({ ...draft, preset: id as Preset })}
+              customOption={{ id: "custom", label: "กำหนดช่วงเอง…", icon: Calendar, onAction: () => setPickerOpen(true) }}
+              className="w-full"
+            />
+          </div>
+          <Popover
+            triggerRef={dateRef}
+            isOpen={pickerOpen}
+            onOpenChange={setPickerOpen}
+            placement="bottom start"
+            className="rounded-pop border border-line bg-surface shadow-pop outline-none"
+          >
+            <Dialog aria-label="ช่วงวันที่" className="outline-none">
+              <DateRangePicker
+                value={draft.range}
+                today={new CalendarDate(today.getFullYear(), today.getMonth() + 1, today.getDate())}
+                onApply={applyRange}
+                onCancel={() => setPickerOpen(false)}
+                label="ช่วงวันที่"
+                startLabel="วันเริ่ม"
+                endLabel="วันสิ้นสุด"
+                previousLabel="เดือนก่อนหน้า"
+                nextLabel="เดือนถัดไป"
+                cancelLabel="ยกเลิก"
+                applyLabel="ใช้ช่วงวันที่"
+                startHint="คลิกวันเริ่ม แล้วคลิกวันสิ้นสุด"
+                endHint={(start) => `เริ่ม ${start} · คลิกวันสิ้นสุด`}
+              />
+            </Dialog>
+          </Popover>
           <FilterSelect
             icon={LayoutDashboard}
             text={`หน้า: ${PAGE_OPTIONS.find((p) => p.id === draft.page)?.label ?? ""}`}
@@ -222,7 +291,22 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
         {!isDefault(applied) && (
           <div className="flex items-center gap-2.5 px-4 py-2.5">
             <p className="text-body font-semibold text-fg">พบ {total} รายการ</p>
-            <p className="text-body text-fg-2">{inRange(range)} จากเงื่อนไข</p>
+            <p className="text-body text-fg-2">
+              {dateText}
+              {hasCondition && " จากเงื่อนไข"}
+            </p>
+            {applied.preset !== DEFAULTS.preset && (
+              <button
+                type="button"
+                aria-label={`นำ ${rangeName} ออกจากตัวกรอง`}
+                onClick={removeDate}
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft py-0.75 pr-2 pl-2.5 text-label font-medium text-primary transition-colors hover:text-primary-hover"
+              >
+                <Calendar size={12} aria-hidden="true" />
+                {rangeName}
+                <X size={12} aria-hidden="true" />
+              </button>
+            )}
             {applied.page !== ALL_PAGES && (
               <button
                 type="button"
@@ -327,7 +411,7 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
                       <span className="grid size-14 place-items-center rounded-full bg-page text-fg-3">
                         <History size={24} aria-hidden="true" />
                       </span>
-                      <p className="text-lead font-semibold text-fg">ไม่พบเหตุการณ์{inRange(range)}</p>
+                      <p className="text-lead font-semibold text-fg">{customRange ? `ไม่พบเหตุการณ์ในช่วง ${customRange}` : `ไม่พบเหตุการณ์${inRange(rangeName)}`}</p>
                       <p className="text-body text-fg-2">ลองเปลี่ยนช่วงวันที่ หรือล้างตัวกรองเพื่อดูเหตุการณ์ทั้งหมด</p>
                       <Button variant="secondary" size="sm" onClick={clear}>
                         ล้างตัวกรอง
