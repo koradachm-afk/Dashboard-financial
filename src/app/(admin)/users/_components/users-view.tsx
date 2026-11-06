@@ -7,19 +7,17 @@ import { Avatar } from "@/components/tailgrids/core/avatar";
 import { Button } from "@/components/tailgrids/core/button";
 import { Input } from "@/components/tailgrids/core/input";
 import { MultiSelectFilter } from "@/components/tailgrids/core/multi-select-filter";
+import { Toast } from "@/components/tailgrids/core/toast";
 import { Pagination } from "@/components/tailgrids/core/pagination";
 import { RoleBadge } from "@/components/tailgrids/core/role-badge";
 import { bestAccess } from "@/db/user/access";
-import type { User } from "@/db/user/users";
+import type { UserRow } from "@/db/user/users";
 import { cn } from "@/utils/cn";
 
 import { ACCESS_PAGES, AccessChips, AccessLegend } from "./access-chips";
 import { AddUserModal } from "./add-user-modal";
 import { DeleteUserDialog } from "./delete-user-dialog";
 import { EditUserDrawer } from "./edit-user-drawer";
-
-/** Display fields only: the page never hands credentials or preferences to the client. */
-export type UserRow = Pick<User, "id" | "username" | "email" | "role" | "createdAt" | "permissions">;
 
 const PAGE_SIZE = 10;
 const FILTER_LABEL = "สิทธิ์การเห็นหน้า";
@@ -60,6 +58,9 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
   const [deleting, setDeleting] = useState<UserRow | null>(null);
   const [editing, setEditing] = useState<UserRow | null>(null);
   const [adding, setAdding] = useState(false);
+  const [toast, setToast] = useState({ title: "", id: 0, open: false });
+  // One toast for the page; the id restarts its countdown when a second success follows the first.
+  const notify = (title: string) => setToast((t) => ({ title, id: t.id + 1, open: true }));
 
   const apply = (next: Criteria) => {
     setApplied(next);
@@ -280,16 +281,24 @@ export function UsersView({ users, currentUserId }: { users: readonly UserRow[];
         </footer>
       </section>
 
-      <DeleteUserDialog user={deleting} onClose={() => setDeleting(null)} />
-      <EditUserDrawer user={editing} onClose={() => setEditing(null)} />
+      <DeleteUserDialog user={deleting} onClose={() => setDeleting(null)} onDone={notify} />
+      <EditUserDrawer user={editing} currentUserId={currentUserId} onClose={() => setEditing(null)} onDone={notify} />
       <AddUserModal
         isOpen={adding}
         onClose={() => setAdding(false)}
         onCreate={(created) => {
           setAdding(false);
-          // Spec Q1: a new Admin goes straight on to permissions. Nothing is stored either way.
+          notify(`เพิ่มผู้ใช้ ${created.username} แล้ว`);
+          // Spec Q1: a new Admin goes straight on to permissions.
           if (created.role === "admin") setEditing(created);
         }}
+      />
+      <Toast
+        open={toast.open}
+        messageId={toast.id}
+        title={toast.title}
+        description="บันทึกลง Audit Logs เรียบร้อย"
+        onClose={() => setToast((t) => ({ ...t, open: false }))}
       />
     </div>
   );
