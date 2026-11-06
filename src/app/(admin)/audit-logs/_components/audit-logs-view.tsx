@@ -121,6 +121,10 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
     setDraft(DEFAULTS);
     apply(DEFAULTS);
   };
+  const removePage = () => {
+    setDraft((d) => ({ ...d, page: ALL_PAGES }));
+    apply({ ...applied, page: ALL_PAGES });
+  };
   const removeAction = (action: string) => {
     const actions = applied.actions.filter((a) => a !== action);
     setDraft((d) => ({ ...d, actions }));
@@ -218,7 +222,22 @@ export function AuditLogsView({ canExport, now }: { canExport: boolean; now?: Da
         {!isDefault(applied) && (
           <div className="flex items-center gap-2.5 px-4 py-2.5">
             <p className="text-body font-semibold text-fg">พบ {total} รายการ</p>
-            <p className="text-body text-fg-2">{inRange(range)}</p>
+            <p className="text-body text-fg-2">{inRange(range)} จากเงื่อนไข</p>
+            {applied.page !== ALL_PAGES && (
+              <button
+                type="button"
+                aria-label={`นำ ${applied.page} ออกจากตัวกรอง`}
+                onClick={removePage}
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft py-0.75 pr-2 pl-2.5 text-label font-medium text-primary transition-colors hover:text-primary-hover"
+              >
+                {(() => {
+                  const Icon = pageIcon(applied.page);
+                  return Icon ? <Icon size={12} aria-hidden="true" /> : null;
+                })()}
+                {applied.page}
+                <X size={12} aria-hidden="true" />
+              </button>
+            )}
             {applied.actions.map((action) => (
               <button
                 key={action}
