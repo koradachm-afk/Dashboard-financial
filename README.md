@@ -101,7 +101,7 @@ auto_parking/
 │  │  ├─ layout.tsx               # root: <html lang="th">, ฟอนต์ (ThemeProvider อยู่ใน (admin) ไม่ใช่ที่นี่)
 │  │  ├─ page.tsx                 # redirect → /dashboard
 │  │  ├─ not-found.tsx            # 404 ไม่พบหน้า (URL ไม่มีอยู่ หรือ page เรียก notFound())
-│  │  ├─ _components/             # not-found-view (เนื้อหาหน้า 404 ของ not-found.tsx)
+│  │  ├─ _components/             # not-found-view (เนื้อหาหน้า 404 ของ not-found.tsx) · boot-sync (เช็ก boot ID ของ server แล้ว reset localStorage เมื่อ server เพิ่ง restart)
 │  │  ├─ globals.css              # token สี / ตัวอักษร / ระยะ ตาม DESIGN-STYLE.md
 │  │  ├─ favicon.ico
 │  │  │
@@ -147,7 +147,8 @@ auto_parking/
 │  │  ├─ auth/                    # auth.ts (getCurrentUser, requirePage, getPasswordSetter)
 │  │  │                           # auth-actions.ts (login, logout, requestPasswordReset, setPassword, changePassword)
 │  │  │                           # login-attempts.ts · audit-info.ts · password-rules.ts · password-store.ts
-│  │  ├─ audit/                   # audit.ts (audit() + Audit Log ใน store) · audit-logs.json
+│  │  ├─ audit/                   # audit.ts (audit() + Audit Log ใน store) · audit-logs.json · audit-actions.ts (exportAuditInfo)
+│  │  ├─ boot/                    # boot.ts (BOOT_ID ฝั่ง server เท่านั้น) · boot-actions.ts (getBootId)
 │  │  ├─ floors/                  # floors.ts · floors.json (อาคาร / ชั้น / ช่องจอด)
 │  │  ├─ slot-types/              # slot-types.ts · slot-types.json
 │  │  ├─ sessions/                # sessions.ts · sessions.json (รถเข้า–ออก)
@@ -243,6 +244,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 เฟรม: [09.7 Login](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=58-12887) · [09.8 ลืมรหัสผ่าน](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=58-13040) · [09.9 ตั้งรหัสผ่านใหม่](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=58-13189) · [09.16 ก่อนส่ง](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=492-51025) · [09.17 เงื่อนไขยังไม่ผ่าน](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=492-51331) · [09.18 ไม่พบ email](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=492-51178)
 
 - ☑ Login ด้วย Username **หรือ** Email + รหัสผ่าน
+- ☑ ช่องรหัสผ่านทุกช่องมีปุ่มแสดง / ซ่อน (`PasswordInput` · modal เพิ่มผู้ใช้ใช้ปุ่มแยกข้างช่องตาม 07.6)
 - ☑ ใส่รหัสผิดครบ 5 ครั้งติดกัน → ล็อกการเข้าสู่ระบบ 15 นาที (ตัวนับอยู่ในหน่วยความจำของ server ใน `src/db/auth/login-attempts.ts` restart แล้วรีเซ็ต)
 - ☐ ลืมรหัสผ่าน: กรอก email → แสดง "ส่งลิงก์แล้ว" (ซ่อนบางส่วนของ email) + ปุ่มส่งอีกครั้ง · ลิงก์อายุ 24 ชม.
   - ทำแล้วบางส่วน: กรอก email → ตั้งรหัสใหม่ได้ (ลิงก์รีเซ็ตอายุ 24 ชม.) · ที่ยังขาดคือ state "ส่งลิงก์แล้ว" (09.8)
@@ -274,7 +276,7 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 เฟรม: [09.2 Superadmin](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=57-12581) · [09.3 Admin](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=57-13060) · [09.4 เปลี่ยนรหัสสำเร็จ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=57-13273)
 
 - ☑ แสดงข้อมูลบัญชี (Username, Email, Role, วันที่สร้าง) และ "สิทธิ์ของฉัน" ราย page รวม System Settings
-- ☑ เปลี่ยนรหัสผ่าน (เงื่อนไขเดียวกับ 6.1)
+- ☑ เปลี่ยนรหัสผ่าน (เงื่อนไขเดียวกับ 6.1 · ทุกช่องมีปุ่มแสดง / ซ่อน)
 
 ### 6.4 User & Permissions — อ๊อด (เฉพาะ Superadmin)
 

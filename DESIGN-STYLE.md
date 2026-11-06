@@ -365,7 +365,7 @@ export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
 component ที่ใช้หลายหน้าอยู่ใน `src/components/tailgrids/core/` (เมนูด้านซ้ายอยู่ที่ `src/components/sidebarmenu.tsx`) และมีชื่อ / props ตรงกับ Figma
 
-> **ข้อนี้คือสเปก ไม่ใช่รายการของที่ทำแล้ว** · ตอนนี้ใน `src/components/tailgrids/core/` มี: avatar · button · checkbox · date-range-picker · dialog (`ConfirmDialog`) · dropdown · form-alert · input · multi-select-filter · pagination · password-rule-list · role-badge · segmented-control · sheet (Drawer) · sidebar (มี hook `useIsMobile` อยู่ในไฟล์เดียวกัน) · toast · tooltip · และ `src/components/error-card.tsx`
+> **ข้อนี้คือสเปก ไม่ใช่รายการของที่ทำแล้ว** · ตอนนี้ใน `src/components/tailgrids/core/` มี: avatar · button · checkbox · date-range-picker · dialog (`ConfirmDialog`) · dropdown · form-alert · input · multi-select-filter · pagination · password-input (`PasswordInput`) · password-rule-list · role-badge · segmented-control · sheet (Drawer) · sidebar (มี hook `useIsMobile` อยู่ในไฟล์เดียวกัน) · toast · tooltip · และ `src/components/error-card.tsx`
 > ที่มีสเปกแต่ยังไม่ได้ทำ: Select · Radio · Switch · Tab · Icon Button · Badge / Chip (ที่ใช้อยู่ตอนนี้เป็นของเฉพาะหน้าใน `_components/` ของหน้านั้น) · Card · KPI Card · Table · Plate · Detail Row · Step · PromptPay QR · Mobile Header · Entry Snapshot · Plate Match Card · Payment Method Option · Bank Option · Kiosk Top Bar · Heat Cell
 > ถ้าหน้าที่กำลังทำต้องใช้ตัวที่ยังไม่มี ให้สร้างใน `src/components/tailgrids/core/` ตามสเปกในข้อนี้
 ไอคอน import จาก `lucide-react` โดยตรง ไม่ต้องสร้าง component ไอคอนเอง
@@ -410,6 +410,11 @@ Focus: focus-within:border-focus focus-within:ring-1 focus-within:ring-focus
 Error: border-danger ring-1 ring-danger  + ข้อความ error ด้านล่าง: text-label text-danger
 ```
 > Figma ใช้ขอบหนา 1.5px ตอน focus / error ในโค้ดใช้ `border` + `ring-1` แทน ได้ความหนาใกล้เคียงกัน
+
+**ช่องรหัสผ่าน** ใช้ `PasswordInput` (`src/components/tailgrids/core/password-input.tsx`) คือ Input ที่มีปุ่มตาท้ายช่อง (ใน Figma คือ Input ที่เปิด `showTrailing` ไอคอน `icon/eye`)
+- ไอคอน `eye` ตอนซ่อน / `eye-off` ตอนแสดง ขนาด 16 `text-fg-3 hover:text-fg-2` · aria-label "แสดงรหัสผ่าน" / "ซ่อนรหัสผ่าน" · มีกรอบ focus `focus-visible:ring-2 ring-focus`
+- แต่ละช่องสลับแยกกัน เริ่มต้นเป็นซ่อน · ช่อง disabled ปุ่มก็ disabled
+- ใช้ที่: Login (09.7), ตั้งรหัสผ่านใหม่ (09.9, 09.17), บัญชีของฉัน (09.2–09.4, 09.19) · **ยกเว้น** modal เพิ่มผู้ใช้ (07.6) ที่ปุ่มตาเป็นปุ่มแยกข้างช่อง ถัดจาก "สร้างอัตโนมัติ"
 > ใช้ lg เฉพาะหน้าลูกค้า (ช่องกรอกทะเบียน)
 
 #### Select
@@ -650,7 +655,7 @@ Fabric.js อ่าน CSS variable ไม่ได้เอง ต้องด�
 | **Drawer** | ด้านขวา กว้าง 520 สูงเต็มจอ · `bg-surface shadow-drawer flex flex-col` · Header `pt-5 pr-4 pb-5 pl-6 border-b` · Body `flex-1 overflow-y-auto py-5 px-6 gap-5.5` (**ต้อง scroll ได้** ลิ้นชักแก้ไขผู้ใช้ยาวเกินจอแล้วหลังเพิ่มสิทธิ์ System Settings) · Footer `py-4 px-6 border-t` ปุ่มชิดขวา ติดล่างเสมอ |
 | **Drawer รายละเอียด** (Audit Logs 08.20–08.38) | ใช้ Drawer เดียวกันแต่ไม่มี Footer · Body เป็นกลุ่ม Detail Row คั่นด้วยเส้น `border-line` · แถว "ผลลัพธ์" อยู่ท้ายสุดและมีเส้นคั่นก่อนเสมอ · ค่าเดิม → ค่าใหม่ แสดงเป็น `ค่าเดิม → ค่าใหม่` |
 | **Dropdown / Popover** | `rounded-pop border border-line bg-surface pt-2.5 px-2 pb-2 gap-0.5 shadow-pop` · option `h-9 rounded-md px-2 gap-2.5 text-body` · option ที่เลือก `bg-primary-soft text-primary font-semibold` · ท้ายเมนูมีเส้นคั่น + ปุ่ม "ล้างที่เลือก" `text-label font-semibold text-primary` |
-| **Toast** | มุมขวาบน · `rounded-pop border border-line bg-surface pt-3 pr-2.5 pb-3 pl-3.5 gap-3 shadow-pop` · ไอคอน 22 สีตามผล · หัว `text-control` + รายละเอียด `text-label text-fg-2` · ปุ่มปิด |
+| **Toast** | มุมขวาบน · `rounded-pop border border-line bg-surface pt-3 pr-2.5 pb-3 pl-3.5 gap-3 shadow-pop` · ไอคอน 22 สีตามผล · หัว `text-control` + รายละเอียด `text-label text-fg-2` · ปุ่มปิด · ในโค้ดคือ `Toast` (`tailgrids/core/toast.tsx`) มี `placement` = `top-center` (ค่าตั้งต้น ใช้กับข้อความสำเร็จในหน้า Users / บัญชีของฉัน) หรือ `top-right` (Export Excel ตาม 10.1) · `icon` + `iconClassName` (ค่าตั้งต้น `circle-check` สี success) · `closeLabel` (ค่าตั้งต้น "ปิด") |
 | **กล่องข้อมูล (Info box)** | `rounded-lg bg-primary-soft py-2.5 px-3 gap-2` + ไอคอน info 16 + `text-label` |
 
 ### 10.1 Export Excel
