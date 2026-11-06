@@ -24,6 +24,10 @@ const ENTRIES: AuditEntry[] = [
       page: "การเข้าสู่ระบบ",
       detail: "ออกจากระบบ · Chrome บน macOS",
       target: "บัญชี admin",
+      title: "ออกจากระบบ",
+      extras: [
+        { label: "ระยะเวลาใช้งาน", value: "12 ชม. 18 น. (เข้าสู่ระบบ 00:12:40)" },
+      ],
       result: "ออกจากระบบด้วยตนเอง",
     }),
     admin({
@@ -33,6 +37,11 @@ const ENTRIES: AuditEntry[] = [
       page: "Audit Logs",
       detail: "ส่งออก Excel · 7 วันล่าสุด (1,248 รายการ)",
       target: "Audit Logs · 7 วันล่าสุด",
+      title: "ส่งออก Audit Logs เป็น Excel",
+      extras: [
+        { label: "จำนวน", value: "1,248 รายการ" },
+        { label: "ไฟล์", value: "audit-logs-2026-10-11_17.xlsx" },
+      ],
     }),
     admin({
       id: "#AL-10517",
@@ -41,6 +50,10 @@ const ENTRIES: AuditEntry[] = [
       page: "บัญชีของฉัน",
       detail: "เปลี่ยนรหัสผ่านของตัวเอง",
       target: "บัญชี admin",
+      title: "เปลี่ยนรหัสผ่าน",
+      changes: [
+        { field: "รหัสผ่าน", before: "รหัสเดิม", after: "รหัสใหม่" },
+      ],
     }),
     admin({
       id: "#AL-10514",
@@ -49,6 +62,10 @@ const ENTRIES: AuditEntry[] = [
       page: "System Settings",
       detail: "แก้ไขข้อมูลสาขา · อัปโหลดโลโก้ใหม่",
       target: "System Settings · ข้อมูลสาขา",
+      title: "แก้ไขข้อมูลสาขา",
+      changes: [
+        { field: "โลโก้", before: "โลโก้ตั้งต้น", after: "อัปโหลดใหม่" },
+      ],
     }),
     admin({
       id: "#AL-10512",
@@ -57,6 +74,10 @@ const ENTRIES: AuditEntry[] = [
       page: "System Settings",
       detail: "แก้ไขเวลาออกหลังชำระ 10 → 15 นาที",
       target: "System Settings · ค่าจอดและการชำระเงิน",
+      title: "แก้ไขค่าจอดและการชำระเงิน",
+      changes: [
+        { field: "เวลาออกหลังชำระ", before: "10 นาที", after: "15 นาที" },
+      ],
     }),
     admin({
       id: "#AL-10506",
@@ -65,6 +86,11 @@ const ENTRIES: AuditEntry[] = [
       page: "Parking Heat Map",
       detail: "ส่งออก Excel · ชั้น B1 · 30 วัน (63 ช่องจอด)",
       target: "อาคาร A · ชั้น B1 · 30 วัน",
+      title: "ส่งออก Heat Map เป็น Excel",
+      extras: [
+        { label: "จำนวน", value: "63 ช่องจอด" },
+        { label: "ไฟล์", value: "heat-map-B1-30d.xlsx" },
+      ],
     }),
     admin({
       id: "#AL-10503",
@@ -73,6 +99,11 @@ const ENTRIES: AuditEntry[] = [
       page: "Activity Log",
       detail: "ส่งออก Excel · 11–17 ต.ค. 2026 (1,395 รายการ)",
       target: "Activity Log · 11–17 ต.ค. 2026",
+      title: "ส่งออกรายการเข้า–ออกเป็น Excel",
+      extras: [
+        { label: "จำนวน", value: "1,395 รายการ" },
+        { label: "ไฟล์", value: "activity-log-2026-10-11_17.xlsx" },
+      ],
     }),
     admin({
       id: "#AL-10497",
@@ -81,6 +112,11 @@ const ENTRIES: AuditEntry[] = [
       page: "User & Permissions",
       detail: "ลบผู้ใช้ viewer.pim (pim.v@autoparking.co)",
       target: "viewer.pim · pim.v@autoparking.co",
+      title: "ลบผู้ใช้ viewer.pim",
+      changes: [
+        { field: "สถานะบัญชี", before: "ใช้งานอยู่", after: "ลบถาวร" },
+        { field: "Role", before: "Admin", after: "—" },
+      ],
     }),
     admin({
       id: "#AL-10495",
@@ -89,6 +125,11 @@ const ENTRIES: AuditEntry[] = [
       page: "User & Permissions",
       detail: "เปลี่ยน Role it.arm · Admin → Superadmin",
       target: "it.arm · arm.it@autoparking.co",
+      title: "เปลี่ยน Role ของ it.arm",
+      changes: [
+        { field: "Role", before: "Admin", after: "Superadmin" },
+        { field: "สิทธิ์การเข้าถึง", before: "กำหนดรายหน้า", after: "ทุกหน้า" },
+      ],
     }),
     admin({
       id: "#AL-10493",
@@ -97,6 +138,11 @@ const ENTRIES: AuditEntry[] = [
       page: "User & Permissions",
       detail: "เพิ่มผู้ใช้ jane.d (Admin) และส่งอีเมลเชิญ",
       target: "jane.d · jane.d@autoparking.co",
+      title: "เพิ่มผู้ใช้ jane.d",
+      changes: [
+        { field: "Role", before: "—", after: "Admin" },
+        { field: "อีเมลเชิญ", before: "—", after: "ส่งแล้ว" },
+      ],
     }),
     admin({
       id: "#AL-10490",
@@ -105,6 +151,12 @@ const ENTRIES: AuditEntry[] = [
       page: "Parking Layout",
       detail: "บันทึกผังชั้น B1 · อาคาร A (3 การเปลี่ยนแปลง)",
       target: "อาคาร A · ชั้น B1",
+      title: "บันทึกผังชั้น B1 · อาคาร A",
+      changes: [
+        { field: "เลขช่อง C-09", before: "C-09", after: "C-10" },
+        { field: "แถว C", before: "—", after: "16 ช่อง (C-01–C-16)" },
+        { field: "ช่อง B-04", before: "ใช้งาน", after: "ปิดใช้งาน" },
+      ],
     }),
     {
       id: "#AL-10485",
@@ -116,6 +168,7 @@ const ENTRIES: AuditEntry[] = [
       page: "การเข้าสู่ระบบ",
       detail: "เข้าสู่ระบบไม่สำเร็จ (รหัสผ่านไม่ถูกต้อง)",
       target: "บัญชี somchai.k",
+      title: "เข้าสู่ระบบไม่สำเร็จ",
       device: SOMCHAI_WIN,
       result: "รหัสผ่านไม่ถูกต้อง · ครั้งที่ 1 จาก 5",
     },
@@ -126,6 +179,11 @@ const ENTRIES: AuditEntry[] = [
       page: "User & Permissions",
       detail: "เปลี่ยนสิทธิ์ somchai.k · Parking Layout, Activity Log",
       target: "somchai.k · somchai.k@autoparking.co",
+      title: "เปลี่ยนสิทธิ์การเข้าถึงของ somchai.k",
+      changes: [
+        { field: "Parking Layout", before: "ดูได้", after: "แก้ไขได้" },
+        { field: "Activity Log", before: "ไม่มีสิทธิ์", after: "ดูได้" },
+      ],
     }),
     admin({
       id: "#AL-10479",
@@ -134,6 +192,7 @@ const ENTRIES: AuditEntry[] = [
       page: "การเข้าสู่ระบบ",
       detail: "เข้าสู่ระบบสำเร็จ · Chrome บน macOS",
       target: "บัญชี admin",
+      title: "เข้าสู่ระบบสำเร็จ",
       result: "สำเร็จ",
     }),
     admin({
@@ -143,6 +202,11 @@ const ENTRIES: AuditEntry[] = [
       page: "Financial Overview",
       detail: "ส่งออก Excel · รายรับ 16 ต.ค. 2026 (232 รายการ)",
       target: "Financial Overview · รายวัน 16 ต.ค. 2026",
+      title: "ส่งออกรายรับเป็น Excel",
+      extras: [
+        { label: "จำนวน", value: "232 รายการ" },
+        { label: "ไฟล์", value: "financial-2026-10-16.xlsx" },
+      ],
     }),
     {
       id: "#AL-10456",
@@ -154,6 +218,11 @@ const ENTRIES: AuditEntry[] = [
       page: "Parking Layout",
       detail: "เพิ่มชั้น B1 · อาคาร A (48 × 32 ม.)",
       target: "อาคาร A · ชั้น B1",
+      title: "เพิ่มชั้น B1",
+      changes: [
+        { field: "ชื่อชั้น", before: "—", after: "B1" },
+        { field: "ขนาดพื้นที่", before: "—", after: "48 × 32 ม." },
+      ],
       device: "Chrome 129 · Windows",
       result: "",
     },
@@ -164,6 +233,11 @@ const ENTRIES: AuditEntry[] = [
       page: "System Settings",
       detail: "ลบประเภทช่องจอด มอเตอร์ไซค์",
       target: "System Settings · ประเภทช่องจอด",
+      title: "ลบประเภทช่องจอด มอเตอร์ไซค์",
+      changes: [
+        { field: "ประเภท", before: "มอเตอร์ไซค์", after: "—" },
+        { field: "ช่องที่ใช้อยู่", before: "0 ช่อง", after: "—" },
+      ],
     }),
     admin({
       id: "#AL-10438",
@@ -172,6 +246,10 @@ const ENTRIES: AuditEntry[] = [
       page: "System Settings",
       detail: "แก้ไขประเภทช่องจอด รถตู้ / รถใหญ่ · ขนาดตั้งต้น",
       target: "System Settings · ประเภทช่องจอด",
+      title: "แก้ไขประเภทช่องจอด รถตู้ / รถใหญ่",
+      changes: [
+        { field: "ขนาดตั้งต้น", before: "3.0 × 6.5 ม.", after: "3.0 × 7.0 ม." },
+      ],
     }),
     admin({
       id: "#AL-10436",
@@ -180,6 +258,11 @@ const ENTRIES: AuditEntry[] = [
       page: "System Settings",
       detail: "เพิ่มประเภทช่องจอด มอเตอร์ไซค์ (1.0 × 2.0 ม.)",
       target: "System Settings · ประเภทช่องจอด",
+      title: "เพิ่มประเภทช่องจอด มอเตอร์ไซค์",
+      changes: [
+        { field: "ชื่อประเภท", before: "—", after: "มอเตอร์ไซค์" },
+        { field: "ขนาดตั้งต้น", before: "—", after: "1.0 × 2.0 ม." },
+      ],
     }),
     {
       id: "#AL-10431",
@@ -191,6 +274,11 @@ const ENTRIES: AuditEntry[] = [
       page: "การเข้าสู่ระบบ",
       detail: "ตั้งรหัสผ่านครั้งแรกผ่านลิงก์เชิญ",
       target: "บัญชี somchai.k",
+      title: "ตั้งรหัสผ่านครั้งแรกผ่านลิงก์เชิญ",
+      changes: [
+        { field: "รหัสผ่าน", before: "รหัสเริ่มต้น", after: "ตั้งใหม่แล้ว" },
+        { field: "ต้องเปลี่ยนรหัสผ่าน", before: "ใช่", after: "ไม่" },
+      ],
       device: SOMCHAI_WIN,
       result: "",
     },
