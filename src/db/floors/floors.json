@@ -12,7 +12,7 @@
         "slots": [
           {
             "id": "A-01",
-            "type": "disabled",
+            "type": "accessible",
             "x": 4,
             "y": 0,
             "width": 3.5,
@@ -22,7 +22,7 @@
           },
           {
             "id": "A-02",
-            "type": "disabled",
+            "type": "accessible",
             "x": 7.5,
             "y": 0,
             "width": 3.5,
