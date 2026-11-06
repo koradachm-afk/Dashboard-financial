@@ -1,6 +1,7 @@
 import { Inter, Noto_Sans_Thai } from "next/font/google";
 
 import "@/app/globals.css";
+import { BootSync } from "@/app/_components/boot-sync";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="h-dvh w-screen flex flex-col overflow-hidden m-0">
+        <BootSync />
         {children}
       </body>
     </html>
