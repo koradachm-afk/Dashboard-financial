@@ -1,0 +1,8 @@
+[
+  { "id": "car", "name": "รถยนต์ทั่วไป", "icon": "car", "color": "type-general", "width": 2.5, "length": 5.0, "isDefault": true },
+  { "id": "ev", "name": "EV", "icon": "zap", "color": "type-ev", "width": 2.5, "length": 5.0, "isDefault": true },
+  { "id": "disabled", "name": "ผู้พิการ", "icon": "accessibility", "color": "type-accessible", "width": 3.5, "length": 5.0, "isDefault": true },
+  { "id": "vip", "name": "VIP", "icon": "crown", "color": "type-vip", "width": 2.5, "length": 5.0, "isDefault": true },
+  { "id": "van", "name": "รถตู้ / รถใหญ่", "icon": "truck", "color": "warning", "width": 3.0, "length": 7.0, "isDefault": false },
+  { "id": "motorcycle", "name": "มอเตอร์ไซค์", "icon": "bike", "color": "success", "width": 1.0, "length": 2.0, "isDefault": false }
+]
