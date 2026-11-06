@@ -24,7 +24,7 @@ export function FilterSelect({
   options,
   selected,
   onSelect,
-  disabledOption,
+  customOption,
   className,
 }: {
   icon: LucideIcon;
@@ -35,11 +35,12 @@ export function FilterSelect({
   options: readonly FilterSelectOption[];
   selected: string;
   onSelect: (id: string) => void;
-  /** A last, disabled item after a separator (the custom-range entry). */
-  disabledOption?: { label: string; icon: LucideIcon };
+  /** A last item after a separator (the custom-range entry). It does not select an option: `onAction` runs and the caller shows its own UI. */
+  customOption?: { id: string; label: string; icon: LucideIcon; onAction: () => void };
   className?: string;
 }) {
-  const DisabledIcon = disabledOption?.icon;
+  const CustomIcon = customOption?.icon;
+  const customOn = customOption !== undefined && customOption.id === selected;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -70,18 +71,22 @@ export function FilterSelect({
             </DropdownMenuItem>
           );
         })}
-        {disabledOption && DisabledIcon && (
+        {customOption && CustomIcon && (
           <>
             <DropdownMenuSeparator className="my-1" />
             <DropdownMenuItem
-              id="disabled-option"
-              textValue={disabledOption.label}
-              isDisabled
-              className={cn(ITEM, "text-fg-2 data-disabled:opacity-60")}
+              id={customOption.id}
+              textValue={customOption.label}
+              onAction={customOption.onAction}
+              className={cn(ITEM, customOn ? "bg-primary-soft font-semibold text-primary focus:text-primary" : "text-fg-2")}
             >
-              <DisabledIcon size={16} aria-hidden className="shrink-0" />
-              <span className="truncate">{disabledOption.label}</span>
-              <ChevronRight size={14} aria-hidden className="ml-auto shrink-0 text-fg-3" />
+              <CustomIcon size={16} aria-hidden className="shrink-0" />
+              <span className="truncate">{customOption.label}</span>
+              {customOn ? (
+                <Check size={16} aria-hidden className="ml-auto shrink-0" />
+              ) : (
+                <ChevronRight size={14} aria-hidden className="ml-auto shrink-0 text-fg-3" />
+              )}
             </DropdownMenuItem>
           </>
         )}
