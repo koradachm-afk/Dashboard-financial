@@ -54,7 +54,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ```
 src/
 ├─ app/
-│  ├─ layout.tsx · page.tsx · not-found.tsx · globals.css · _components/ (not-found-view)
+│  ├─ layout.tsx · page.tsx · not-found.tsx · globals.css · _components/ (not-found-view · boot-sync)
 │  ├─ (admin)/   layout.tsx + _components/ + 403 · account · activity-log · audit-logs · dashboard ·
 │  │             financial-overview · heat-map · parking-layout · settings · users
 │  ├─ (auth)/    layout.tsx + _components/ + login · forgot-password · set-password
@@ -68,7 +68,7 @@ src/
 │  └─ error-card.tsx    การ์ดแจ้ง error (403 / 404)
 ├─ config/site.ts       ชื่อแบรนด์ (siteConfig.brandName)
 ├─ db/                  store.ts (ชั้นกลางของ localStorage) · 1 โดเมน = 1 โฟลเดอร์ (ฟังก์ชันกลาง + seed JSON)
-│                       settings/ · prefs/ · audit/ · user/ · auth/ · floors/ · slot-types/ · sessions/ · payments/ · banks/ · reports/
+│                       settings/ · prefs/ · audit/ · user/ · auth/ · boot/ · floors/ · slot-types/ · sessions/ · payments/ · banks/ · reports/
 │                       (ตอนนี้ store.ts ใช้โดย settings · prefs · audit เท่านั้น)
 └─ utils/               cn.ts · id.ts (newSessionId) · user-agent.ts · generate-password.ts · reload-to.ts
                         (ยังไม่มีตัว format วันที่ / เงิน / ระยะเวลา / ทะเบียน ให้เพิ่มเมื่อหน้าที่ต้องใช้ถูกสร้าง)
