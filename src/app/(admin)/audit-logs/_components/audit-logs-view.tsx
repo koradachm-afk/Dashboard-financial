@@ -5,10 +5,12 @@ import {
   ArrowUp,
   Calendar,
   ChevronRight,
+  CircleCheck,
   Download,
   Filter,
   History,
   LayoutDashboard,
+  LoaderCircle,
   Lock,
   Search,
   X,
@@ -28,11 +30,13 @@ import { Input } from "@/components/tailgrids/core/input";
 import { Toast } from "@/components/tailgrids/core/toast";
 import { MultiSelectFilter } from "@/components/tailgrids/core/multi-select-filter";
 import { Pagination } from "@/components/tailgrids/core/pagination";
-import { AUDIT_ACTIONS, useAuditLog, type AuditEntry } from "@/db/audit/audit";
+import { AUDIT_ACTIONS, audit, useAuditLog, type AuditEntry } from "@/db/audit/audit";
+import { exportAuditInfo } from "@/db/audit/audit-actions";
 import { cn } from "@/utils/cn";
 
 import { ActionBadge } from "./action-badge";
 import { AuditDetailDrawer } from "./audit-detail-drawer";
+import { downloadAuditXlsx, exportFileName, exportRows } from "./audit-export";
 import { FilterSelect } from "./filter-select";
 import { PAGES, pageIcon } from "./page-icons";
 
@@ -132,6 +136,9 @@ export function AuditLogsView({
   const chevrons = useRef(new Map<string, HTMLButtonElement>());
   const restoreId = useRef<string | null>(null);
   const [toast, setToast] = useState({ title: "", id: 0, open: false });
+  const [exportToast, setExportToast] = useState({ open: false, done: false, description: "" });
+  const [exporting, setExporting] = useState(false);
+  const exportingRef = useRef(false);
   const opened = openId === null ? null : (entries.find((e) => bare(e.id) === openId) ?? null);
 
   const closeDetail = () => {
@@ -203,6 +210,49 @@ export function AuditLogsView({
   const hasCondition = applied.page !== ALL_PAGES || applied.actions.length > 0;
   const today = clock();
 
+  // Spec Q5: the steps run in this order, and the busy guard stops a second run before the first ends.
+  const exportExcel = async () => {
+    if (exportingRef.current || total === 0) return;
+    exportingRef.current = true;
+    setExporting(true);
+    const snapshot = rows;
+    const count = total.toLocaleString("th-TH");
+    const from = span.from.slice(0, 10);
+    const to = span.to?.slice(0, 10) ?? `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+    const fileName = exportFileName(from, to);
+    setExportToast({ open: true, done: false, description: `${count} รายการ · ${rangeName}` });
+    try {
+      const info = await exportAuditInfo();
+      if (!info) {
+        setExportToast((t) => ({ ...t, open: false }));
+        return;
+      }
+      await downloadAuditXlsx(exportRows(snapshot), fileName);
+      audit({
+        actor: info.actor,
+        role: info.role,
+        ip: info.ip,
+        device: info.device,
+        action: "ส่งออก",
+        page: "Audit Logs",
+        detail: `ส่งออก Excel · ${rangeName} (${count} รายการ)`,
+        title: "ส่งออก Audit Logs เป็น Excel",
+        target: `Audit Logs · ${rangeName}`,
+        extras: [
+          { label: "จำนวน", value: `${count} รายการ` },
+          { label: "ไฟล์", value: fileName },
+        ],
+        result: "",
+      });
+      setExportToast({ open: true, done: true, description: fileName });
+    } catch {
+      setExportToast((t) => ({ ...t, open: false }));
+    } finally {
+      exportingRef.current = false;
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="flex min-h-full flex-col gap-4">
       <div className="flex items-center gap-3">
@@ -211,8 +261,17 @@ export function AuditLogsView({
           <p className="text-body text-fg-2">ประวัติการเปลี่ยนแปลงทั้งหมดในระบบ · บันทึกอัตโนมัติ แก้ไขหรือลบไม่ได้</p>
         </div>
         {canExport ? (
-          // No handler yet: Export Excel is wired in a later branch.
-          <Button variant="secondary" icon={Download} className="ml-auto">
+          // aria-disabled while busy (not `disabled`) so a keyboard user keeps focus; exportExcel ignores the click.
+          <Button
+            variant="secondary"
+            icon={exporting ? undefined : Download}
+            disabled={total === 0}
+            aria-busy={exporting}
+            aria-disabled={exporting || undefined}
+            onClick={exportExcel}
+            className="ml-auto"
+          >
+            {exporting && <LoaderCircle size={16} className="shrink-0 animate-spin" aria-hidden />}
             Export Excel
           </Button>
         ) : (
@@ -485,6 +544,16 @@ export function AuditLogsView({
         </footer>
       </section>
       <AuditDetailDrawer entry={opened} onClose={closeDetail} onCopyLink={copyLink} />
+      <Toast
+        open={exportToast.open}
+        placement="top-right"
+        icon={exportToast.done ? CircleCheck : Download}
+        iconClassName={exportToast.done ? "text-success" : "text-primary"}
+        title={exportToast.done ? "สร้างไฟล์ Excel แล้ว" : "กำลังสร้างไฟล์ Excel"}
+        description={exportToast.description}
+        duration={exporting ? 60000 : undefined}
+        onClose={() => setExportToast((t) => ({ ...t, open: false }))}
+      />
       <Toast
         open={toast.open}
         messageId={toast.id}
