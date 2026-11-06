@@ -144,3 +144,26 @@ export function resetStore(): void {
   }
   registry.forEach((s) => s.reset());
 }
+
+const BOOT_KEY = STORE_PREFIX + "boot";
+
+/**
+ * Compare the server boot id with the one stored in this browser. When they differ (or none is stored),
+ * reset every store and then remember the new id (after the reset, which deletes every prefixed key).
+ * Returns whether it reset.
+ */
+export function syncBootId(id: string): boolean {
+  if (!hasWindow()) return false;
+  try {
+    if (localStorage.getItem(BOOT_KEY) === id) return false;
+  } catch {
+    // storage blocked: reset the in-memory stores below
+  }
+  resetStore();
+  try {
+    localStorage.setItem(BOOT_KEY, id);
+  } catch {
+    // ignore: the id is simply not remembered
+  }
+  return true;
+}
