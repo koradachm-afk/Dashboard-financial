@@ -1,5 +1,6 @@
 import { getFloors } from "@/db/floors/floors";
 import activityData from "./activity.json";
+import dashboardData from "./dashboard.json";
 import financialData from "./financial.json";
 import heatMapData from "./heat-map.json";
 
@@ -386,7 +387,11 @@ function isFinancialData(v: unknown): v is FinancialData {
 
 function isFinancialFile(v: unknown): v is FinancialFile {
   if (!rec(v) || !Array.isArray(v.periods) || v.periods.length !== FINANCIAL_PERIODS.length) return false;
-  return FINANCIAL_PERIODS.every((p, i) => isFinancialData(v.periods[i]) && samePeriod(v.periods[i].period, p));
+  const periods: unknown[] = v.periods;
+  return FINANCIAL_PERIODS.every((p, i) => {
+    const d = periods[i];
+    return isFinancialData(d) && samePeriod(d.period, p);
+  });
 }
 
 export function loadFinancial(input: unknown): FinancialFile {
@@ -398,4 +403,172 @@ const FINANCIAL = loadFinancial(financialData);
 /** `null` for any period Figma has no frame for. */
 export function getFinancial(period: FinancialPeriod): FinancialData | null {
   return FINANCIAL.periods.find((d) => samePeriod(d.period, period)) ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// Dashboard (Figma 12, 12.23 – 12.25).
+// Not stored, because they are computed: slot counts and alerts (floors) and the
+// revenue-per-day bars (getDailyRevenue, from financial.json).
+// ---------------------------------------------------------------------------
+
+export const DASHBOARD_RANGES = ["today", "yesterday", "7d", "30d"] as const;
+export type DashboardRangeId = (typeof DASHBOARD_RANGES)[number];
+
+type DashboardKpi = { value: number; comparison: Required<FinancialDelta> };
+
+export type DashboardRange = {
+  kpis: {
+    /** Baht. */
+    revenue: DashboardKpi;
+    entries: DashboardKpi;
+    /** Minutes. */
+    avgStayMin: DashboardKpi;
+  };
+  /**
+   * The "รถเข้า–ออก" chart, vehicles per hour (today: 00–22; yesterday: 00–23) or per day (7d, 30d).
+   * Read from the line geometry and rounded to whole vehicles, hence `approx`; the sums match the KPIs.
+   */
+  inOut: {
+    title: string;
+    subtitle: string;
+    unit: "hour" | "day";
+    approx: true;
+    entries: readonly number[];
+    exits: readonly number[];
+    /** The dashed line: yesterday for today, the 15th for yesterday, the previous 7 / 30 days. */
+    compare: { label: string; values: readonly number[] };
+  };
+};
+
+/** Pairs are free / total exactly as the card prints them. */
+export type DashboardFreeByType = { id: FinancialSlotType; label: string; free: number; total: number };
+
+type VehicleDelta = { value: number; pct: number };
+export type VehicleComparison = {
+  period: { from: string; to: string; label: string };
+  types: readonly {
+    id: ActivityVehicleType;
+    label: string;
+    entries: number;
+    sharePct: number;
+    avgStayMin: number;
+    revenue: number;
+    perVehicle: number;
+  }[];
+  /** "ส่วนต่าง" row, Sedan minus SUV. `sharePts` is in percentage points. */
+  diff: {
+    entries: VehicleDelta;
+    sharePts: number;
+    avgStayMin: VehicleDelta;
+    revenue: VehicleDelta;
+    perVehicle: VehicleDelta;
+  };
+  /** Entries per day from the line dots (rounded, hence `approx`). */
+  daily: { approx: true; dates: readonly string[]; sedan: readonly number[]; suv: readonly number[] };
+};
+
+type DashboardFile = {
+  ranges: Readonly<Record<DashboardRangeId, DashboardRange>>;
+  freeByType: readonly DashboardFreeByType[];
+  vehicleComparison: VehicleComparison;
+  recentActivity: { count: number; label: string };
+};
+
+const isDeltaFull = (v: unknown): v is Required<FinancialDelta> =>
+  isDelta(v) && v.pct !== undefined;
+const isDashboardKpi = (v: unknown): v is DashboardKpi => rec(v) && isInt(v.value) && isDeltaFull(v.comparison) && Object.keys(v).length === 2;
+const isIntArray = (v: unknown, length?: number): v is number[] =>
+  Array.isArray(v) && (length === undefined || v.length === length) && v.every(isInt);
+const isVehicleDelta = (v: unknown): v is VehicleDelta => rec(v) && isInt(v.value) && isNum(v.pct);
+
+function isDashboardRange(v: unknown): v is DashboardRange {
+  if (!rec(v) || !rec(v.kpis) || !sameKeys(v.kpis, ["revenue", "entries", "avgStayMin"])) return false;
+  if (!Object.values(v.kpis).every(isDashboardKpi)) return false;
+  const c = v.inOut;
+  if (!rec(c) || !isText(c.title) || !isText(c.subtitle) || (c.unit !== "hour" && c.unit !== "day") || c.approx !== true) return false;
+  if (!isIntArray(c.entries) || !isIntArray(c.exits, c.entries.length)) return false;
+  return rec(c.compare) && isText(c.compare.label) && isIntArray(c.compare.values) && c.compare.values.length > 0;
+}
+
+function isVehicleComparison(v: unknown): v is VehicleComparison {
+  if (!rec(v) || !rec(v.period) || !isText(v.period.from) || !isText(v.period.to) || !isText(v.period.label)) return false;
+  if (!Array.isArray(v.types) || v.types.length !== 2) return false;
+  const typesOk = v.types.every(
+    (t, i) =>
+      rec(t) &&
+      t.id === (["sedan", "suv"] as const)[i] &&
+      isText(t.label) &&
+      isInt(t.entries) &&
+      isNum(t.sharePct) &&
+      isInt(t.avgStayMin) &&
+      isInt(t.revenue) &&
+      isInt(t.perVehicle),
+  );
+  const { diff, daily } = v;
+  if (!typesOk || !rec(diff) || !isVehicleDelta(diff.entries) || !isNum(diff.sharePts) || !isVehicleDelta(diff.avgStayMin)) return false;
+  if (!isVehicleDelta(diff.revenue) || !isVehicleDelta(diff.perVehicle)) return false;
+  return (
+    rec(daily) &&
+    daily.approx === true &&
+    Array.isArray(daily.dates) &&
+    daily.dates.length > 0 &&
+    daily.dates.every(isText) &&
+    isIntArray(daily.sedan, daily.dates.length) &&
+    isIntArray(daily.suv, daily.dates.length)
+  );
+}
+
+function isDashboardFile(v: unknown): v is DashboardFile {
+  if (!rec(v) || !rec(v.ranges) || !sameKeys(v.ranges, DASHBOARD_RANGES)) return false;
+  const ranges = v.ranges;
+  if (!DASHBOARD_RANGES.every((r) => isDashboardRange(ranges[r]))) return false;
+  const free = v.freeByType;
+  const freeOk =
+    Array.isArray(free) &&
+    free.length === FINANCIAL_SLOT_TYPES.length &&
+    free.every((t, i) => rec(t) && t.id === FINANCIAL_SLOT_TYPES[i] && isText(t.label) && isInt(t.free) && isInt(t.total) && t.free <= t.total);
+  return freeOk && isVehicleComparison(v.vehicleComparison) && rec(v.recentActivity) && isInt(v.recentActivity.count) && isText(v.recentActivity.label);
+}
+
+export function loadDashboard(input: unknown): DashboardFile {
+  return load("dashboard.json", input, isDashboardFile);
+}
+
+const DASHBOARD = loadDashboard(dashboardData);
+
+/** `null` for any range Figma has no frame for (the custom range has none). */
+export function getDashboard(range: string): DashboardRange | null {
+  return (DASHBOARD_RANGES as readonly string[]).includes(range) ? DASHBOARD.ranges[range as DashboardRangeId] : null;
+}
+
+/** "ว่างแยกตามประเภท" as printed (24/50, 2/6, 1/2, 1/3); not reconciled with the floor plan. */
+export function getFreeByType(): readonly DashboardFreeByType[] {
+  return DASHBOARD.freeByType;
+}
+
+export function getVehicleComparison(): VehicleComparison {
+  return DASHBOARD.vehicleComparison;
+}
+
+/** The "190 รายการ" count of the recent-activity card (the rows themselves are sessions). */
+export function getRecentActivityCount(): number {
+  return DASHBOARD.recentActivity.count;
+}
+
+/**
+ * Revenue per day for the `days` days ending on `endDate` (YYYY-MM-DD), read from the daily series of
+ * financial.json (the Dashboard "รายรับ 14 วันล่าสุด" bars). `null` when a day is not in the stored months.
+ */
+export function getDailyRevenue(endDate: string, days: number): { date: string; revenue: number }[] | null {
+  const end = new Date(`${endDate}T00:00:00Z`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(endDate) || Number.isNaN(end.getTime()) || !Number.isInteger(days) || days < 1) return null;
+  const out: { date: string; revenue: number }[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const date = new Date(end.getTime() - i * 86_400_000).toISOString().slice(0, 10);
+    const month = getFinancial({ kind: "month", month: date.slice(0, 7) });
+    const revenue = month?.series.points.find((p) => p.x === Number(date.slice(8)))?.revenue;
+    if (revenue === undefined) return null;
+    out.push({ date, revenue });
+  }
+  return out;
 }
