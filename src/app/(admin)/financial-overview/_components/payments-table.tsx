@@ -30,21 +30,23 @@ export function PaymentsTable({ rows, total, note }: { rows: readonly PaymentRow
   return (
     <Card>
       <CardHeader title="รายการชำระเงิน" action={<span className="text-label text-fg-3 tabular-nums">{note}</span>} />
+      {/* Column widths follow Figma 13 (150 / 100 / 110 / 160 / 120 / 110 / 130 / rest); the plate and time
+          columns are 128 because cells here add 16px padding each side. Keep the sum below the card width at 1440. */}
       <table className="w-full table-fixed border-collapse">
         <thead>
           <tr className="border-b border-line">
-            <th scope="col" aria-sort="descending" className={cn(TH, "w-44 text-primary")}>
+            <th scope="col" aria-sort="descending" className={cn(TH, "w-37.5 text-primary")}>
               <span className="inline-flex items-center gap-1.5">
                 เวลาชำระ
                 <ArrowDown size={14} aria-hidden />
               </span>
             </th>
-            <th scope="col" className={cn(TH, "w-36")}>เลขอ้างอิง</th>
-            <th scope="col" className={cn(TH, "w-40")}>ทะเบียน</th>
-            <th scope="col" className={cn(TH, "w-48")}>ช่องจอด</th>
-            <th scope="col" className={cn(TH, "w-40")}>เวลาเข้า – ออก</th>
-            <th scope="col" className={cn(TH, "w-36")}>ระยะเวลา</th>
-            <th scope="col" className={cn(TH, "w-48")}>ช่องทางชำระ</th>
+            <th scope="col" className={cn(TH, "w-25")}>เลขอ้างอิง</th>
+            <th scope="col" className={cn(TH, "w-32")}>ทะเบียน</th>
+            <th scope="col" className={cn(TH, "w-40")}>ช่องจอด</th>
+            <th scope="col" className={cn(TH, "w-32")}>เวลาเข้า – ออก</th>
+            <th scope="col" className={cn(TH, "w-27.5")}>ระยะเวลา</th>
+            <th scope="col" className={cn(TH, "w-32.5")}>ช่องทางชำระ</th>
             <th scope="col" className={cn(TH, "text-right")}>ยอด</th>
           </tr>
         </thead>
