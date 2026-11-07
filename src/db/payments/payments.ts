@@ -60,3 +60,8 @@ export function getPayments(): readonly Payment[] {
 export function paymentForSession(sessionId: string): Payment | undefined {
   return PAYMENTS.find((p) => p.sessionId === sessionId);
 }
+
+/** Returns the mock handoff result; it never opens or deep-links to a real banking app. */
+export async function openBankApp(): Promise<"pending"> {
+  return "pending";
+}

@@ -21,7 +21,7 @@
 
 | เรื่อง | เดิม | ตอนนี้ | ข้อ |
 |---|---|---|---|
-| โลโก้ธนาคาร (Bank Option) | วงสีเทา + ไอคอน `Landmark` | ไอคอนจริงจากเว็บทางการ 4 แห่ง (ไทยพาณิชย์ · กรุงเทพ · กรุงไทย · ทีทีบี) · กสิกรไทยและกรุงศรีเป็นวงสีประจำธนาคาร + อักษรย่อ (component property `Initials`) จนกว่าจะได้ไฟล์ | 8.5 |
+| โลโก้ธนาคาร (Bank Option) | วงสีเทา + ไอคอน `Landmark` | ใช้ไฟล์ไอคอนที่ PM ส่งให้ครบทั้ง 6 ธนาคาร · ดูชื่อไฟล์ใน README §6.12 | 8.5 |
 | ผลการชำระผ่านแอป | มีแค่รอยืนยัน (17.11) และสำเร็จ (17.7) | เพิ่ม **17.12** ไม่สำเร็จ / ยกเลิก และ **17.13** หมดเวลารอยืนยัน | 9.3 |
 
 **v2.3 (6 พ.ย.) · สิทธิ์เหลือ 2 ระดับ**
@@ -573,7 +573,7 @@ Fabric.js อ่าน CSS variable ไม่ได้เอง ต้องด�
 | **Entry Snapshot** (รูปตอนเข้า) | 128×96 (4:3) · `rounded-pop overflow-hidden` · รูป `object-cover` · แถบไล่เฉดดำด้านล่าง (`bg-linear-to-b from-transparent to-black/70` สูง 28) · ซ้าย: ชื่อกล้อง `text-nano text-white/80` · ขวา: เวลาเข้า `text-caption font-semibold text-white tabular-nums` |
 | **Plate Match Card** `State: Default / Selected` | `flex items-center gap-3 rounded-2xl border border-line bg-surface p-3` · Selected: `border-2 border-primary bg-primary-soft` · ซ้าย Entry Snapshot · กลาง (`flex-1 gap-0.5`): ทะเบียน `text-h3 font-bold` · จังหวัด `text-body text-fg-2` · "เข้า 17 ต.ค. · 18:42 · ประตู 1" `text-label text-fg-3` · ขวา Radio |
 | **Payment Method Option** `State: Default / Selected` | `flex items-center gap-3 rounded-2xl border border-line bg-surface p-4` · Selected: `border-2 border-primary bg-primary-soft` · กล่องไอคอน `size-11 rounded-xl bg-subtle` + ไอคอน 24 `text-fg-2` (Selected: กล่อง `bg-surface` ไอคอน `text-primary`) · ชื่อ `text-title font-semibold` · คำอธิบาย `text-body text-fg-2` · ขวา Radio |
-| **Bank Option** `State: Default / Selected` | กว้าง 106 · `flex flex-col items-center gap-1.5 rounded-xl border border-line bg-surface px-2 pt-3 pb-2.5` · Selected: `border-2 border-primary bg-primary-soft` · วงโลโก้ `size-9 rounded-full overflow-hidden` ใส่ไอคอนจริงของธนาคารเต็มวง (`object-cover`) สำหรับ ไทยพาณิชย์ · กรุงเทพ · กรุงไทย · ทีทีบี (ที่มาของไฟล์ดู README §6.12) · กสิกรไทยและกรุงศรียังไม่มีไฟล์ ใช้วงสีประจำธนาคาร + อักษรย่อ Inter Bold 11 แทน: กสิกรไทย `#138F2D` ตัวอักษรขาว "K" · กรุงศรี `#FEC43B` ตัวอักษรสีเข้ม "BAY" (สีเป็นค่าประมาณ ในโค้ดต้องเพิ่มเป็น token เช่น `bank-kbank` ก่อนใช้) · ชื่อธนาคาร `text-label font-medium text-center` · วางเป็น `grid grid-cols-3 gap-x-4 gap-y-2.5` |
+| **Bank Option** `State: Default / Selected` | กว้าง 106 · `flex flex-col items-center gap-1.5 rounded-xl border border-line bg-surface px-2 pt-3 pb-2.5` · Selected: `border-2 border-primary bg-primary-soft` · วงโลโก้ `size-9 rounded-full overflow-hidden` แสดงไอคอนจากไฟล์ที่ PM ส่งให้ครบทั้ง 6 ธนาคาร (`size-11 object-cover` อยู่ในวงเพื่อขยายภาพเต็มกรอบ; ที่มาของไฟล์ดู README §6.12) · ชื่อธนาคาร `text-label font-medium text-center` · วางเป็น `grid grid-cols-3 gap-x-4 gap-y-2.5` |
 | **Kiosk Top Bar** | สูง 80 · `px-10 py-4.5 bg-surface border-b border-line` · แบรนด์ `text-h2 font-bold` · ไอคอน 28 · ขวาสุดเป็น Badge สถานะระบบ + นาฬิกา |
 | **Calendar Day** `Default/Today/Selected/In range/Disabled/Empty` | 38×34 `rounded-md text-body` · Today: `border border-primary text-primary font-semibold` · Selected: `bg-primary text-on-primary font-semibold` · In range: `bg-primary-soft text-primary font-medium` · Disabled: `text-fg-3` |
 | **Date Range Picker** | 320 กว้าง · `rounded-pop border border-line bg-surface p-3.5 gap-3 shadow-pop` · ใช้ตัวเดียวกันทั้ง Dashboard, Audit Logs, Activity Log |
@@ -1064,6 +1064,6 @@ const thai = Noto_Sans_Thai({ subsets: ["thai"], weight: ["400", "500", "600", "
 | ฟอร์ม: ตำแหน่ง label และข้อความ error | label `text-body font-medium` อยู่เหนือ input (gap 6) · error `text-label text-danger` อยู่ใต้ input |
 | สีปุ่ม Switch ตอนปิด | Figma ผูกกับ `status/unknown` ควรเปลี่ยนเป็น token ของตัวเอง (เช่น `control/off`) |
 | Mobile Banking ชำระไม่สำเร็จ / หมดเวลา | ใช้โครงหน้า 17.6 ปุ่มหลักเป็น "เปิดแอป{ธนาคาร}อีกครั้ง" และปุ่มรองเป็น "เปลี่ยนวิธีชำระ" |
-| โลโก้ธนาคารจริง | ใช้ไอคอนจริงแล้ว 4 แห่ง (ดู Bank Option ใน 8.5) · ไฟล์ของกสิกรไทยและกรุงศรียังไม่มี ใช้วงสี + อักษรย่อไปก่อน |
+| โลโก้ธนาคารจริง | ใช้ไอคอนทั้ง 6 แห่งจากไฟล์ที่ PM ส่งให้ (ดู Bank Option ใน 8.5 และ README §6.12) |
 | แตะรูปตอนเข้าเพื่อขยาย | Figma ยังไม่มี ยังไม่ต้องทำ (มีไอคอน `zoom-in` เตรียมไว้) |
 | รูปตอนเข้าโหลดไม่ขึ้น | กล่อง `bg-subtle` ขนาดเท่ารูป + ไอคอน `image` 20 `text-fg-3` |
