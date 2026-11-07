@@ -21,3 +21,13 @@ export async function exportFinancialInfo(): Promise<AuditInfo | null> {
   if (!user || accessFor(user, "financial-overview") !== "edit") return null;
   return auditFor(user, user.username);
 }
+
+/**
+ * Audit info for an Activity Log export, or null unless the caller is signed in and can open Activity Log (access "edit").
+ * Same contract as `exportAuditInfo`: the client exports nothing on null and writes the "ส่งออก" entry on success.
+ */
+export async function exportActivityInfo(): Promise<AuditInfo | null> {
+  const user = await getCurrentUser();
+  if (!user || accessFor(user, "activity-log") !== "edit") return null;
+  return auditFor(user, user.username);
+}
