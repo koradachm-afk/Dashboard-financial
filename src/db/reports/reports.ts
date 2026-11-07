@@ -119,9 +119,9 @@ export function getHeatMap(period: string): HeatMapData | null {
   return (HEAT_MAP_PERIODS as readonly string[]).includes(period) ? HEAT_MAP.periods[period as HeatMapPeriod] : null;
 }
 
-export type HeatMetric = "count" | "hours";
+export type HeatMetric = "count" | "hours" | "rate";
 export type HeatQuery = {
-  /** Default "count". "hours" exists for 30 days only. */
+  /** Default "count". "hours" and "rate" (whole percent) exist for 30 days only. */
   metric?: HeatMetric;
   /** Slot-type id from slot-types.json (the type filter of 15.7), e.g. "ev". */
   type?: string;
