@@ -31,3 +31,13 @@ export async function exportActivityInfo(): Promise<AuditInfo | null> {
   if (!user || accessFor(user, "activity-log") !== "edit") return null;
   return auditFor(user, user.username);
 }
+
+/**
+ * Audit info for a Parking Heat Map export, or null unless the caller is signed in and can open Parking Heat Map.
+ * Same contract as `exportAuditInfo`: the client exports nothing on null.
+ */
+export async function exportHeatMapInfo(): Promise<AuditInfo | null> {
+  const user = await getCurrentUser();
+  if (!user || accessFor(user, "heat-map") !== "edit") return null;
+  return auditFor(user, user.username);
+}
