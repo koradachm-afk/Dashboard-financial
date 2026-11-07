@@ -41,6 +41,7 @@ type CheckoutProps = {
   bank: string;
   state: string;
   reference: string;
+  paidAt: string;
 };
 
 const MONTHS = [
@@ -76,10 +77,51 @@ function getParkingTime(session: Session) {
   );
   const billedHours = Math.max(1, Math.ceil(durationMinutes / 60));
   return {
+    now,
+    enteredAt,
     nowLabel: `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
     durationMinutes,
     billedHours,
     dateLabel: formatDateTime(session.entryAt),
+  };
+}
+
+function parsePaidAt(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value);
+  if (!match) return null;
+
+  const [, year, month, day, hour, minute] = match.map(Number);
+  const date = new Date(year, month - 1, day, hour, minute);
+  return date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day &&
+    date.getHours() === hour &&
+    date.getMinutes() === minute
+    ? date
+    : null;
+}
+
+function getOvertimeCharge(
+  paidAt: Date | null,
+  now: Date,
+  graceMinutes: number,
+  pricePerHour: number,
+  recalcOvertime: boolean,
+) {
+  if (!paidAt || !recalcOvertime) {
+    return { elapsedMinutes: 0, billableHours: 0, amount: 0 };
+  }
+
+  const elapsedMinutes = Math.max(
+    0,
+    Math.floor((now.getTime() - paidAt.getTime()) / 60_000),
+  );
+  const billableHours =
+    elapsedMinutes > graceMinutes ? Math.ceil(elapsedMinutes / 60) : 0;
+  return {
+    elapsedMinutes,
+    billableHours,
+    amount: billableHours * pricePerHour,
   };
 }
 
@@ -89,10 +131,16 @@ function formatDuration(minutes: number): string {
   return hours > 0 ? `${hours} ชม. ${remainder} น.` : `${remainder} น.`;
 }
 
-function getExitDeadline(time: string, graceMinutes: number): string {
-  const [hours, minutes] = time.split(":").map(Number);
-  const totalMinutes = hours * 60 + minutes + graceMinutes;
-  return `${String(Math.floor(totalMinutes / 60) % 24).padStart(2, "0")}:${String(totalMinutes % 60).padStart(2, "0")}`;
+function getExitDeadline(paidAt: Date, graceMinutes: number): string {
+  return formatClock(new Date(paidAt.getTime() + graceMinutes * 60_000));
+}
+
+function formatClock(date: Date): string {
+  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+}
+
+function formatPaymentDate(date: Date): string {
+  return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()} · ${formatClock(date)}`;
 }
 
 function formatMoney(value: number, decimals = 0): string {
@@ -344,17 +392,13 @@ function BankOptions({
       <div className="grid grid-cols-3 gap-2.5">
         {getBanks().map((bank) => {
           const selected = bank.id === selectedBank;
-          const initials: Record<string, string> = {
-            KBANK: "K",
-            SCB: "SCB",
-            BBL: "B",
-            KTB: "KTB",
-            BAY: "BAY",
-            TTB: "ttb",
-          };
           const logoSrc: Record<string, string> = {
-            SCB: "/banks/scb.png",
-            TTB: "/banks/ttb.png",
+            KBANK: "/banks/Kplus-logo.png",
+            SCB: "/banks/SCB-logo.png",
+            BBL: "/banks/bbl.webp",
+            KTB: "/banks/Krung_Thai_Bank_logo.svg",
+            BAY: "/banks/Krungsri.webp",
+            TTB: "/banks/ttb-logo.webp",
           };
           return (
             <label
@@ -377,27 +421,17 @@ function BankOptions({
               <span
                 aria-hidden
                 className={cn(
-                  "grid size-9 place-items-center rounded-full text-caption font-bold",
-                  logoSrc[bank.id]
-                    ? "overflow-hidden bg-surface"
-                    : bank.id === "KBANK"
-                      ? "bg-success text-on-primary"
-                      : bank.id === "BAY"
-                        ? "bg-warning text-fg"
-                        : "bg-primary-soft text-primary",
+                  "relative grid size-9 place-items-center overflow-hidden rounded-full bg-surface text-caption font-bold",
                 )}
               >
-                {logoSrc[bank.id] ? (
-                  <Image
-                    src={logoSrc[bank.id]}
-                    alt=""
-                    width={36}
-                    height={36}
-                    className="size-9 object-contain"
-                  />
-                ) : (
-                  initials[bank.id]
-                )}
+                <Image
+                  src={logoSrc[bank.id]}
+                  alt=""
+                  width={44}
+                  height={44}
+                  unoptimized
+                  className="absolute left-1/2 top-1/2 size-11 max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
+                />
               </span>
               <span className="text-label font-medium text-fg">{bank.name}</span>
             </label>
@@ -417,6 +451,7 @@ export function PayCheckout({
   bank: rawBank,
   state: rawState,
   reference,
+  paidAt: rawPaidAt,
 }: CheckoutProps) {
   const router = useRouter();
   const settings = useSettings();
@@ -436,8 +471,30 @@ export function PayCheckout({
   const paymentReference = reference || `PK-26-10-${customerSessionId.slice(-4).toUpperCase()}`;
   const parking = useMemo(() => getParkingTime(session), [session]);
   const amount = parking.billedHours * settings.pricePerHour;
+  const paidAt = parsePaidAt(rawPaidAt);
+  const overtime = getOvertimeCharge(
+    paidAt,
+    parking.now,
+    settings.exitGraceMinutes,
+    settings.pricePerHour,
+    settings.recalcOvertime,
+  );
+  const checkoutAmount = paidAt ? overtime.amount : amount;
+  const lastPaidAt = paidAt ?? parking.now;
+  const paidAmount = paidAt
+    ? Math.max(
+        1,
+        Math.ceil(
+          (paidAt.getTime() - parking.enteredAt.getTime()) / 3_600_000,
+        ),
+      ) * settings.pricePerHour
+    : amount;
   const exitDeadline = getExitDeadline(
-    parking.nowLabel,
+    lastPaidAt,
+    settings.exitGraceMinutes,
+  );
+  const currentPaymentDeadline = getExitDeadline(
+    parking.now,
     settings.exitGraceMinutes,
   );
   const activeStep: 1 | 2 | 3 =
@@ -451,6 +508,7 @@ export function PayCheckout({
         bank?: string;
         state?: PaymentState;
         reference?: string;
+        paidAt?: string;
       } = {},
     ) => {
       const params = new URLSearchParams({
@@ -464,6 +522,8 @@ export function PayCheckout({
         params.set("bank", options.bank ?? bank.id);
       }
       if (options.state) params.set("state", options.state);
+      const nextPaidAt = options.paidAt ?? rawPaidAt;
+      if (nextPaidAt) params.set("paidAt", nextPaidAt);
       router.push(`/pay/${customerSessionId}?${params.toString()}`);
     },
     [
@@ -474,6 +534,7 @@ export function PayCheckout({
       router,
       searchQuery,
       session.id,
+      rawPaidAt,
     ],
   );
 
@@ -497,7 +558,7 @@ export function PayCheckout({
     if (step === "detail") {
       router.push(`/pay?q=${encodeURIComponent(searchQuery)}`);
     } else if (step === "method") {
-      navigate("detail");
+      navigate("detail", paidAt ? { state: "paid" } : {});
     } else {
       navigate("method", { method, bank: bank.id });
     }
@@ -566,14 +627,14 @@ export function PayCheckout({
           </section>
           <dl className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-4.5">
             <DetailRow label="ทะเบียน" value={session.plate} />
-            <DetailRow label="ชำระแล้ว" value={`฿${formatMoney(amount)}`} tabular />
+            <DetailRow label="ชำระแล้ว" value={`฿${formatMoney(checkoutAmount)}`} tabular />
             <DetailRow
               label="เวลาชำระ"
-              value={`17 ต.ค. 2026 · ${parking.nowLabel}`}
+              value={formatPaymentDate(parking.now)}
               tabular
             />
             <DetailRow label="เลขที่ธุรกรรม" value={`TXN 2610-${paymentReference.slice(-4)}`} tabular />
-            <DetailRow label="หมดเวลาออก" value={exitDeadline} tabular />
+            <DetailRow label="หมดเวลาออก" value={currentPaymentDeadline} tabular />
           </dl>
           <p className="text-center text-lead text-warning">
             หากเกิน {settings.exitGraceMinutes} นาที ต้องชำระค่าจอดเพิ่ม
@@ -676,24 +737,62 @@ export function PayCheckout({
                   />
                 </dl>
               </section>
-              <section className="flex flex-col gap-2 rounded-2xl border border-success bg-success-soft p-4.5">
-                <div className="flex items-center gap-2.5 text-h3 font-bold text-success">
-                  <CheckCircle2 size={24} aria-hidden />
-                  ไม่มียอดค้างชำระ
-                </div>
-                <p className="text-lead text-fg-2">
-                  ชำระ ฿{formatMoney(amount)} แล้วเมื่อ {parking.nowLabel} ·
-                  ออกจากพื้นที่ได้ถึง {exitDeadline}
-                </p>
-              </section>
-              <Button
-                size="lg"
-                variant="secondary"
-                className="mt-auto w-full"
-                onClick={() => router.push("/pay")}
-              >
-                กลับหน้าแรก
-              </Button>
+              {overtime.amount > 0 ? (
+                <>
+                  <section className="flex flex-col gap-2 rounded-2xl border border-warning bg-warning-soft p-4.5">
+                    <div className="flex items-center gap-2.5 text-h3 font-bold text-warning">
+                      <Clock size={24} aria-hidden />
+                      ต้องชำระค่าจอดเพิ่ม
+                    </div>
+                    <p className="text-lead text-fg-2">
+                      พ้นกำหนดออกหลังชำระ {settings.exitGraceMinutes} นาที ·
+                      คิดใหม่จากเวลาชำระครั้งล่าสุด
+                    </p>
+                    <p className="text-h2 font-bold text-warning tabular-nums">
+                      ฿{formatMoney(overtime.amount)}
+                    </p>
+                    <p className="text-lead text-fg-2">
+                      คิด {overtime.billableHours} ชม. ×{" "}
+                      {formatMoney(settings.pricePerHour)} บาท
+                    </p>
+                  </section>
+                  <Button
+                    size="lg"
+                    className="mt-auto w-full"
+                    onClick={() =>
+                      navigate("qr", {
+                        method: "qr",
+                        state: "pending",
+                        reference: createReference(),
+                        paidAt: rawPaidAt,
+                      })
+                    }
+                  >
+                    ชำระค่าจอดเพิ่ม ฿{formatMoney(overtime.amount)}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <section className="flex flex-col gap-2 rounded-2xl border border-success bg-success-soft p-4.5">
+                    <div className="flex items-center gap-2.5 text-h3 font-bold text-success">
+                      <CheckCircle2 size={24} aria-hidden />
+                      ไม่มียอดค้างชำระ
+                    </div>
+                    <p className="text-lead text-fg-2">
+                      ชำระ ฿{formatMoney(paidAmount)} แล้วเมื่อ {formatPaymentDate(lastPaidAt)} ·
+                      ออกจากพื้นที่ได้ถึง {exitDeadline}
+                    </p>
+                  </section>
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    className="mt-auto w-full"
+                    onClick={() => router.push("/pay")}
+                  >
+                    กลับหน้าแรก
+                  </Button>
+                </>
+              )}
             </main>
           )}
 
@@ -701,7 +800,7 @@ export function PayCheckout({
             <main className="flex flex-1 flex-col gap-4 px-5 pb-6 pt-5">
               <h2 className="text-h2 font-bold text-fg">เลือกวิธีชำระเงิน</h2>
               <p className="text-lead text-fg-2">
-                ยอดชำระ ฿{formatMoney(amount, 2)} · ทะเบียน {session.plate}{" "}
+                ยอดชำระ ฿{formatMoney(checkoutAmount, 2)} · ทะเบียน {session.plate}{" "}
                 {session.province}
               </p>
               <fieldset className="flex flex-col gap-2.5">
@@ -799,7 +898,7 @@ export function PayCheckout({
                 >
                   {method === "qr"
                     ? "ถัดไป · แสดง QR PromptPay"
-                    : `เปิดแอป${bank.name} · ชำระ ฿${formatMoney(amount)}`}
+                    : `เปิดแอป${bank.name} · ชำระ ฿${formatMoney(checkoutAmount)}`}
                 </Button>
                 <Button
                   size="lg"
@@ -832,7 +931,7 @@ export function PayCheckout({
                   <QrPattern reference={paymentReference} />
                 </div>
                 <p className="text-h2 font-bold text-fg tabular-nums">
-                  ยอดชำระ ฿{formatMoney(amount, 2)}
+                  ยอดชำระ ฿{formatMoney(checkoutAmount, 2)}
                 </p>
                 <p className="text-lead text-fg-3">
                   ทะเบียน {session.plate} · อ้างอิง {paymentReference}
@@ -934,7 +1033,7 @@ export function PayCheckout({
                   )}
                 </span>
                 <p className="text-h2 font-bold text-fg tabular-nums">
-                  ยอดชำระ ฿{formatMoney(amount, 2)}
+                  ยอดชำระ ฿{formatMoney(checkoutAmount, 2)}
                 </p>
                 <p className="text-center text-lead text-fg-3">
                   ทะเบียน {session.plate} · {bank.name} · อ้างอิง{" "}

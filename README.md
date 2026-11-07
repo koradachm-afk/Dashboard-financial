@@ -17,14 +17,14 @@
 - **สิทธิ์เหลือ 2 ระดับ:** ไม่มีสิทธิ์ / แก้ไขได้ (เลิกใช้ "ดูได้" · ลบเฟรม 08.3 และ 10.25)
 - **รหัสผ่าน:** อย่างน้อย 8 ตัวอักษร (Figma แก้ตามแล้ว) · ทุกช่องรหัสผ่านมีปุ่มแสดง / ซ่อน (`PasswordInput`)
 - **Audit Logs:** ปฏิทินกำหนดช่วงเอง · drawer รายละเอียด · Export Excel · seed แสดงใน 7 วันล่าสุดเสมอ
-- **Mobile Banking (Figma):** เพิ่ม 17.12 ไม่สำเร็จ / ยกเลิก และ 17.13 หมดเวลา · ไอคอนธนาคารจริง 4 แห่ง (กสิกรไทยและกรุงศรียังเป็นวงสี + อักษรย่อ)
+- **Mobile Banking (Figma):** เพิ่ม 17.12 ไม่สำเร็จ / ยกเลิก และ 17.13 หมดเวลา · ใช้ไอคอนธนาคารครบทั้ง 6 แห่งจากไฟล์ที่ PM ส่งให้
 - **ข้อมูล:** seed ทุกหน้าเป็น JSON ใน `src/db/` (ข้อ 8) · restart server แล้ว localStorage ของ browser กลับเป็น seed ด้วย
 
 **รอบก่อน (3 พ.ย.) · Customer Web**
 - **ทะเบียนซ้ำ / คล้ายกัน:** ค้นแล้วเจอหลายคัน (เช่น กข 1234 กรุงเทพฯ, กข 1234 นนทบุรี, 1กข 1234) แสดงรายการพร้อม **รูปตอนเข้า** ให้ลูกค้าเลือกคันของตัวเอง (เฟรม 17.8)
 - **วิธีชำระ:** เพิ่มหน้าเลือก **QR PromptPay / Mobile Banking** และหน้ารอยืนยันในแอปธนาคาร (17.9–17.11)
 - Design System เพิ่ม component: Plate Match Card · Entry Snapshot · Payment Method Option · Bank Option · Radio
-- ตัดสินแล้ว: แสดงรูป จังหวัด และเวลาเข้าของทุกคันที่ตรง · โลโก้ธนาคารใช้ไอคอนกลางไปก่อน · Mobile Banking ใช้ mock (ข้อ 10)
+- ตัดสินแล้ว: แสดงรูป จังหวัด และเวลาเข้าของทุกคันที่ตรง · ใช้ไฟล์โลโก้ธนาคารตามที่ PM ส่งให้ · Mobile Banking ใช้ mock (ข้อ 10)
 
 **รอบก่อนหน้านั้น (2 พ.ย.)**
 - ธีมเหลือ **สว่าง / มืด** (ไม่มี "ตามระบบ")
@@ -130,8 +130,8 @@ auto_parking/
 │  │  │  ├─ layout.tsx            # โครงหน้า auth (BrandPanel ซ้าย + ฟอร์มขวา)
 │  │  │  └─ _components/          # brand-panel · branch-name
 │  │  ├─ (customer)/
-│  │  │  └─ pay/                  # layout.tsx (ธีมสว่าง) · page.tsx (ยังเป็นหน้าเปล่า)
-│  │  │     └─ [sessionId]/       # รายละเอียด · method · qr · bank · success (ยังไม่ได้ทำ)
+│  │  │  └─ pay/                  # layout.tsx (ธีมสว่าง) · page.tsx (ค้นทะเบียน) · _components/pay-search.tsx · _components/pay-checkout.tsx
+│  │  │     └─ [sessionId]/       # checkout ใช้ sessionId สุ่ม
 │  │  └─ kiosk/                   # layout.tsx (ธีมสว่าง) · entry/ · exit/ (ยังเป็นหน้าเปล่า)
 │  │
 │  ├─ components/
@@ -158,7 +158,8 @@ auto_parking/
 │  │  ├─ boot/                    # boot.ts (BOOT_ID ฝั่ง server เท่านั้น) · boot-actions.ts (getBootId)
 │  │  ├─ floors/                  # floors.ts · floors.json (อาคาร / ชั้น / ช่องจอด)
 │  │  ├─ slot-types/              # slot-types.ts · slot-types.json
-│  │  ├─ sessions/                # sessions.ts · sessions.json (รถเข้า–ออก)
+│  │  ├─ sessions/                # sessions.ts · session-schema.ts · sessions.json (รถเข้า–ออก)
+│  │  ├─ customer/                # customer.ts · customer-sessions.json (mock Customer แยกจาก session หลัก)
 │  │  ├─ payments/                # payments.ts · payments.json
 │  │  ├─ banks/                   # banks.ts · banks.json
 │  │  └─ reports/                 # reports.ts · activity.json · dashboard.json · financial.json · heat-map.json
@@ -469,7 +470,7 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 - ☑ **เลือกวิธีชำระ (17.9 / 17.10):** กด "ชำระเงิน" ใน 17.3 แล้วมาที่หน้านี้ · ค่าเริ่มต้น QR PromptPay
   - QR PromptPay → ปุ่ม "ถัดไป · แสดง QR PromptPay" → 17.5
   - Mobile Banking → เลือกธนาคาร 6 แห่ง (กสิกรไทย, ไทยพาณิชย์, กรุงเทพ, กรุงไทย, กรุงศรี, ทีทีบี) → ปุ่ม "เปิดแอป{ธนาคาร} · ชำระ ฿60" → 17.11
-  - โลโก้ธนาคาร (Figma 17.10): ไทยพาณิชย์และทีทีบีใช้ไอคอนจากเว็บไซต์ทางการ (`public/banks/scb.png`, `public/banks/ttb.png`) · URL ทางการของกรุงเทพ (`bangkokbank.com/favicon.ico`) timeout และกรุงไทย (`krungthai.com/favicon.ico`) redirect loop ในสภาพแวดล้อมนี้ จึงคงวงสี + อักษรย่อไว้ชั่วคราวเช่นเดียวกับกสิกรไทยและกรุงศรี · ห้ามใช้เว็บรวมโลโก้หรือใส่สี hex
+  - โลโก้ธนาคาร (Figma 17.10) จากไฟล์ที่ PM ส่งให้: กสิกรไทย `public/banks/Kplus-logo.png` · ไทยพาณิชย์ `public/banks/SCB-logo.png` · กรุงเทพ `public/banks/bbl.webp` · กรุงไทย `public/banks/Krung_Thai_Bank_logo.svg` · กรุงศรี `public/banks/Krungsri.webp` · ทีทีบี `public/banks/ttb-logo.webp`
   - วิธีที่เลือกเก็บใน `?method=qr|bank&bank=<รหัส>` ย้อนกลับมาแล้วยังเลือกไว้เหมือนเดิม
 - ☑ **รอยืนยันในแอปธนาคาร (17.11):**
   - ☑ นับถอยหลัง · ปุ่มเปิดแอปซ้ำ · ปุ่มเปลี่ยนวิธีชำระกลับ 17.10
@@ -480,10 +481,10 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 - ☑ รายละเอียด: ทะเบียน, ประเภทรถ, เวลาเข้า, เวลาจอด, ยอดพร้อมวิธีคิด · `?state=paid` แสดง "ไม่มียอดค้างชำระ"
 - ☑ หน้า QR: QR จำลอง PromptPay, นับถอยหลัง, ปุ่มบันทึกรูป และสร้าง QR ใหม่เมื่อหมดอายุหรือไม่สำเร็จ
 - ☑ สำเร็จ: เลขที่ธุรกรรม + เวลาที่ต้องออก
-- ☐ จ่ายแล้วแต่ออกไม่ทันเวลา (15 นาที) → แสดงยอดที่ต้องจ่ายเพิ่ม คิดใหม่นับจากเวลาที่ชำระครั้งล่าสุด + สร้าง QR ใหม่ · ข้อความในหน้าสำเร็จ (17.7): "หากเกิน 15 นาที ต้องชำระค่าจอดเพิ่ม โดยคิดใหม่นับจากเวลาที่ชำระครั้งนี้"
+- ☑ จ่ายแล้วแต่ออกไม่ทันเวลา (15 นาที) → ถ้าเปิดสวิตช์คิดค่าจอดใหม่ แสดงยอดเพิ่ม (ปัดขึ้นเป็นชั่วโมงจากเวลาจ่ายล่าสุด) และปุ่มสร้าง QR · ทดสอบด้วย `?vehicle=sess_customer_003&step=detail&state=paid&paidAt=2026-10-17T20:30` (คำนวณ ณ 21:00) · ปิดสวิตช์แล้วไม่คิดเพิ่ม · ข้อความในหน้าสำเร็จ (17.7): "หากเกิน 15 นาที ต้องชำระค่าจอดเพิ่ม โดยคิดใหม่นับจากเวลาที่ชำระครั้งนี้"
 - ☑ `sessionId` ใน URL เป็น UUID สุ่ม ไม่ใช่ทะเบียน
 - ☑ ธีมสว่างเท่านั้น · กว้างสูงสุด 480px
-- seed: `sessions/sessions.json` · `payments/payments.json` · `banks/banks.json` · `settings/settings.json` · หน้า Customer อยู่ที่ `/pay`
+- seed Customer: `customer/customer-sessions.json` มีทะเบียนตัวอย่างไม่ซ้ำ 20 ทะเบียน และรายการซ้ำสำหรับทดสอบกรณีหลายคัน · รถหลักของระบบและหน้าอื่นยังใช้ `sessions/sessions.json` · seed อื่น: `payments/payments.json` · `banks/banks.json` · `settings/settings.json` · หน้า Customer อยู่ที่ `/pay`
 
 ### 6.13 Kiosk ทางเข้า / ทางออก — ต้น
 
@@ -537,12 +538,13 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 | `user/credentials.json` | รหัสผ่าน demo (`pass`) ราย user id | ไม่เก็บ · **import ได้เฉพาะ `src/db/auth/auth-actions.ts`** (ฝั่ง server) · รหัสผ่านที่ตั้งใหม่เก็บในหน่วยความจำของ server (`password-store.ts`) | Login, Set password, Account |
 | `floors/floors.json` | อาคาร A → ชั้น B1 (48 × 32 ม., 63 ช่อง A–D พร้อมสถานะ / ประเภท / `note`, วัตถุบนผัง: เลน ลูกศร เสา ทางเข้า–ออก ลิฟต์ บันได ประตู) และ B2 (ว่าง) · พิกัดเป็นเมตรจากมุมซ้ายบนของชั้น · อ่านผ่าน `getFloors()` (`countSlotsByType` / `countSlotsByStatus` นับจากช่อง) | seed อย่างเดียวก่อน · ยังไม่มี store (ผังที่กดบันทึก / สถานะที่ผู้ดูแลตั้งจะเพิ่มทีหลัง) | ยังไม่มีหน้าไหนอ่าน (วางแผนไว้: Parking Layout, Heat Map) |
 | `slot-types/slot-types.json` | ประเภทช่องจอด 6 แบบ: รถยนต์ทั่วไป · EV · ผู้พิการ · VIP (ค่าตั้งต้น) และ รถตู้ / รถใหญ่ · มอเตอร์ไซค์ — ไอคอน lucide, ชื่อ token สี, ขนาดตั้งต้น (ม.) · อ่านผ่าน `getSlotTypes()` · จำนวนช่องที่ใช้อยู่นับจาก floors ไม่เก็บในไฟล์นี้ | seed อย่างเดียวก่อน · ยังไม่มี store (ประเภทที่เพิ่ม / แก้ใน Settings จะเพิ่มทีหลัง) | ยังไม่มีหน้าไหนอ่าน (วางแผนไว้: Settings, Parking Layout) |
-| `sessions/sessions.json` | รถเข้า–ออก 48 คัน (Figma 14 / 14.14 / 14.15, Dashboard 12 / 12.35, Financial 13 / 13.4 / 13.13, Customer 17.8) · ฟิลด์ `id` (`sess_001`…) `plate` `province` `vehicleType` `floor` `slot` `entryAt` `exitAt` `entryGate` `entryImage` `fee` · วันที่รูปแบบ `YYYY-MM-DD HH:MM` · `vehicleType` เป็น `null` ได้ (กล้องยังไม่จัดประเภท / Figma ไม่แสดง) และ `slot` เป็น `null` ได้ (ไม่ทราบช่อง ใช้กับกข 1234 กรุงเทพฯ / นนทบุรี / 1กข 1234 ซึ่งยังจอดอยู่) · `exitAt` เป็น `null` = ยังจอดอยู่ และ `fee` เป็น `null` = ยังไม่ชำระ · ช่อง `slot` ที่ไม่ใช่ `null` ต้องมีอยู่ในชั้น `floor` · อ่านผ่าน `getSessions()` / `isParked()` · `sessions.ts` ตรวจด้วย `isSessionList` ตอนโหลด ถ้าไม่ผ่านจะ throw | seed อย่างเดียวก่อน · ยังไม่มี store (รถเข้า–ออกที่เพิ่มระหว่างใช้งานจะเพิ่มทีหลัง) | ยังไม่มีหน้าไหนอ่าน (วางแผนไว้: Activity Log, Dashboard, Customer, Kiosk) |
-| `payments/payments.json` | รายการชำระ 30 รายการตาม Financial 13 / 13.4 / 13.13 · ฟิลด์ `ref` (`PP…`) `sessionId` `amount` `method` (`"qr"` \| `"bank"`) `bank` `paidAt` · ทุกแถวเป็น PromptPay QR (`bank` เป็น `null`) · `amount` ต้องเท่ากับ `fee` ของ session และ `bank` ต้องเป็นรหัสใน `banks.json` เมื่อ `method` เป็น `"bank"` · อ่านผ่าน `getPayments()` / `paymentForSession()` · `payments.ts` ตรวจด้วย `isPaymentList` ตอนโหลด ถ้าไม่ผ่านจะ throw | seed อย่างเดียวก่อน · ยังไม่มี store | ยังไม่มีหน้าไหนอ่าน (วางแผนไว้: Financial, Dashboard, Customer) |
-| `banks/banks.json` | ธนาคารสำหรับ Mobile Banking 6 แห่งตามลำดับ 17.10: `KBANK` กสิกรไทย · `SCB` ไทยพาณิชย์ · `BBL` กรุงเทพ · `KTB` กรุงไทย · `BAY` กรุงศรี · `TTB` ทีทีบี (`id` + `name`) · อ่านผ่าน `getBanks()` | ไม่เก็บ (seed คงที่) | ยังไม่มีหน้าไหนอ่าน (วางแผนไว้: Customer) |
+| `sessions/sessions.json` | รถเข้า–ออก 48 คัน (Figma 14 / 14.14 / 14.15, Dashboard 12 / 12.35, Financial 13 / 13.4 / 13.13) · ฟิลด์ `id` (`sess_001`…) `plate` `province` `vehicleType` `floor` `slot` `entryAt` `exitAt` `entryGate` `entryImage` `fee` · วันที่รูปแบบ `YYYY-MM-DD HH:MM` · `vehicleType` เป็น `null` ได้ (กล้องยังไม่จัดประเภท / Figma ไม่แสดง) และ `slot` เป็น `null` ได้ (ไม่ทราบช่อง ใช้กับกข 1234 กรุงเทพฯ / นนทบุรี / 1กข 1234 ซึ่งยังจอดอยู่) · `exitAt` เป็น `null` = ยังจอดอยู่ และ `fee` เป็น `null` = ยังไม่ชำระ · ช่อง `slot` ที่ไม่ใช่ `null` ต้องมีอยู่ในชั้น `floor` · อ่านผ่าน `getSessions()` / `isParked()` · ตรวจ schema ด้วย `session-schema.ts` ถ้าข้อมูลไม่ผ่านจะ throw | seed อย่างเดียวก่อน · ยังไม่มี store (รถเข้า–ออกที่เพิ่มระหว่างใช้งานจะเพิ่มทีหลัง) | Activity Log, Dashboard, Financial Overview, Kiosk |
+| `customer/customer-sessions.json` | mock เฉพาะ Customer: 22 session ที่ยังจอด ครอบคลุมทะเบียนที่ไม่ซ้ำ 20 ทะเบียน และรายการทะเบียนซ้ำเพื่อทดสอบผลหลายคัน (ค้น กข 1234 พบ 4 รายการ รวมต่างจังหวัดและต่างหมวด) · ใช้ schema / validator กลางจาก `sessions/session-schema.ts` โดยไม่โหลด seed `sessions.json` · อ่านผ่าน `getCustomerSessions()` | seed คงที่ ไม่มี store | Customer Web |
+| `payments/payments.json` | รายการชำระ 30 รายการตาม Financial 13 / 13.4 / 13.13 · ฟิลด์ `ref` (`PP…`) `sessionId` `amount` `method` (`"qr"` \| `"bank"`) `bank` `paidAt` · ทุกแถวเป็น PromptPay QR (`bank` เป็น `null`) · `amount` ต้องเท่ากับ `fee` ของ session และ `bank` ต้องเป็นรหัสใน `banks.json` เมื่อ `method` เป็น `"bank"` · อ่านผ่าน `getPayments()` / `paymentForSession()` · `payments.ts` ตรวจด้วย `isPaymentList` ตอนโหลด ถ้าไม่ผ่านจะ throw · Customer Web จำลองสถานะชำระผ่าน query และ `openBankApp()` ไม่ได้อ่านรายการ seed นี้ | seed อย่างเดียวก่อน · ยังไม่มี store | Financial Overview, Dashboard |
+| `banks/banks.json` | ธนาคารสำหรับ Mobile Banking 6 แห่งตามลำดับ 17.10: `KBANK` กสิกรไทย · `SCB` ไทยพาณิชย์ · `BBL` กรุงเทพ · `KTB` กรุงไทย · `BAY` กรุงศรี · `TTB` ทีทีบี (`id` + `name`) · อ่านผ่าน `getBanks()` | ไม่เก็บ (seed คงที่) | Customer Web |
 | `audit/audit-logs.json` | ประวัติการใช้งาน 20 เคสตาม Figma 08 / 08.19 พร้อมข้อมูล drawer 08.2, 08.20–08.38 (`title`, `changes`, `extras`) · `audit.ts` ตรวจด้วย `isAuditLog` ตอนโหลด ถ้าไม่ผ่านจะ throw · ในไฟล์เป็นวันที่ตาม Figma (16–17 ต.ค. 2026 = `FIGMA_AUDIT_SEED`) แต่ `AUDIT_SEED` ที่แอปแสดงเลื่อนวันด้วย `shiftSeedDates()` ให้วันล่าสุดเป็นเมื่อวานของนาฬิกาจริง · ข้อความที่มีวันที่อยู่ในตัว (เช่น "11–17 ต.ค. 2026") ไม่เลื่อน | `audit` (ทุกครั้งที่เรียก `audit()`) · seed ไม่ถูกเขียนลง store แต่แสดงต่อท้ายรายการที่เก็บไว้ | Audit Logs |
 | `reports/*.json` (`dashboard` · `financial` · `activity` · `heat-map`) | ตัวเลขสรุปที่คำนวณไว้แล้วของ 4 หน้า (Dashboard 12, Financial 13, Activity Log 14, Parking Heat Map 15) ตามที่แต่ละเฟรมใน Figma แสดง **ไม่ปรับให้ตรงกันข้ามหน้า** (เช่น Heat Map 7 วัน 1,402 ครั้ง ส่วน Activity 1,395) · เก็บเฉพาะช่วงที่ Figma มีเฟรม `getXxx()` ใน `reports.ts` คืน `null` ถ้าไม่มีช่วงนั้น · ค่าที่อ่านจากเส้นกราฟมี `approx: true` · ค่าที่คำนวณได้ **ไม่เก็บ**: จำนวนช่อง / การแจ้งเตือน (จาก `floors`), อันดับช่องใช้มาก–น้อย, ค่าเฉลี่ยตามแถว, รายรับ 14 วัน (`getDailyRevenue` จากรายวันของ `financial`) | seed อย่างเดียว · ไม่มี store | ยังไม่มีหน้าไหนอ่าน (วางแผนไว้: Dashboard, Financial Overview, Activity Log, Parking Heat Map) |
-| `settings/settings.json` | ตาม Figma 10 / 10.3: ชื่อสาขา (`branchName` "สาขาสยาม"), ราคาต่อชั่วโมง (`pricePerHour` 20 บาท, > 0 ทศนิยมไม่เกิน 2 ตำแหน่ง), เวลาออกหลังชำระ (`exitGraceMinutes` 15 นาที), คิดค่าจอดใหม่เมื่อออกเกินเวลา (`recalcOvertime` เปิด) · `settings.ts` ตรวจ JSON ตอนโหลด ถ้าไม่ผ่านจะ throw | `settings` · ค่าที่เก็บไว้แบบเก่า (มีแค่ `branchName`) ไม่ผ่าน validator จึงกลับไปใช้ seed | Login (ชื่อสาขา), Sidebar · วางแผนไว้: Settings, Customer, Kiosk |
+| `settings/settings.json` | ตาม Figma 10 / 10.3: ชื่อสาขา (`branchName` "สาขาสยาม"), ราคาต่อชั่วโมง (`pricePerHour` 20 บาท, > 0 ทศนิยมไม่เกิน 2 ตำแหน่ง), เวลาออกหลังชำระ (`exitGraceMinutes` 15 นาที), คิดค่าจอดใหม่เมื่อออกเกินเวลา (`recalcOvertime` เปิด) · `settings.ts` ตรวจ JSON ตอนโหลด ถ้าไม่ผ่านจะ throw | `settings` · ค่าที่เก็บไว้แบบเก่า (มีแค่ `branchName`) ไม่ผ่าน validator จึงกลับไปใช้ seed | Login (ชื่อสาขา), Sidebar, Customer Web, Settings, Kiosk |
 
 กติกา:
 - ใช้ตัวเลขชุดเดียวกับใน Figma (เช่น ทะเบียน `ผบ 9370`, ช่อง `B-07`, รายรับ `฿10,080`) จะเทียบหน้าจอกับเฟรมได้ง่าย
@@ -584,7 +586,7 @@ PM (อ๊อด) เป็นผู้ตัดสิน ระหว่าง�
 | เกินเวลาออก | ประตูไม่เปิดจนกว่าจะจ่ายส่วนที่เกิน · **คิดค่าจอดใหม่นับจากเวลาที่จ่ายครั้งล่าสุด** (เปิด / ปิดได้ใน Settings) |
 | ทะเบียนซ้ำ / คล้ายกัน (ลูกค้า) | แสดงรายการพร้อมรูปตอนเข้า, จังหวัด และเวลาเข้าของทุกคันที่ตรง ให้ลูกค้าเลือกเอง (17.8) ไม่ต้องซ่อนหรือเบลอ |
 | วิธีชำระ (ลูกค้า) | **QR PromptPay** และ **Mobile Banking** · Kiosk ทางออกยังเป็น QR PromptPay อย่างเดียว |
-| โลโก้ธนาคาร | ใช้ไอคอนจริงของธนาคาร (6 พ.ย. 2026) · ไฟล์ต้องมาจากเว็บไซต์ทางการของธนาคารนั้นหรือจากผู้ให้บริการชำระเงินเท่านั้น ห้ามใช้เว็บรวมโลโก้ · ตอนนี้ได้ 4 แห่ง (ไทยพาณิชย์ · กรุงเทพ · กรุงไทย · ทีทีบี) · กสิกรไทยและกรุงศรียังเป็นวงสี + อักษรย่อจนกว่าจะได้ไฟล์ · การใช้งานจริงนอก demo อาจต้องขออนุญาตธนาคาร |
+| โลโก้ธนาคาร | ใช้ไอคอนทั้ง 6 แห่งจากไฟล์ที่ PM ส่งให้ (7 พ.ย. 2026) · การใช้งานจริงนอก demo อาจต้องขออนุญาตธนาคาร |
 | Mobile Banking | การเปิดแอปธนาคารจากเว็บต้องผ่านผู้ให้บริการชำระเงิน ทีมทำแค่ frontend จึง **ใช้ mock ไปก่อน** |
 | ระดับสิทธิ์ | **2 ระดับ: ไม่มีสิทธิ์ / แก้ไขได้** · เลิกใช้ "ดูได้" เมื่อ 6 พ.ย. 2026 · ใครเปิดหน้าได้ก็ใช้ทุกปุ่มในหน้านั้นได้ · ประวัติใน Audit Logs ที่เขียนว่า "ดูได้" คงไว้ตามเดิมเพราะเป็นเหตุการณ์ที่เกิดแล้ว |
 | ความยาวรหัสผ่าน | **อย่างน้อย 8 ตัวอักษร** (Figma ปรับตามแล้ว ดู DESIGN-STYLE.md v2.2) |
@@ -597,7 +599,7 @@ PM (อ๊อด) เป็นผู้ตัดสิน ระหว่าง�
 
 | เรื่อง | รอ |
 |---|---|
-| ผู้ให้บริการชำระเงิน (payment gateway) สำหรับ Mobile Banking และไฟล์โลโก้ของกสิกรไทยและกรุงศรี (ตอนนี้ใช้วงสี + อักษรย่อแทน) | ช่วงทำ backend |
+| ผู้ให้บริการชำระเงินจริง (payment gateway) สำหรับ Mobile Banking | ช่วงทำ backend |
 
 ---
 

@@ -14,8 +14,9 @@ import {
 import { Button } from "@/components/tailgrids/core/button";
 import { Input } from "@/components/tailgrids/core/input";
 import { siteConfig } from "@/config/site";
+import { getCustomerSessions } from "@/db/customer/customer";
 import { useSettings } from "@/db/settings/settings";
-import { getSessions, isParked, type Session } from "@/db/sessions/sessions";
+import { isParked, type Session } from "@/db/sessions/sessions";
 import { newSessionId } from "@/utils/id";
 import { cn } from "@/utils/cn";
 
@@ -144,7 +145,7 @@ export function PaySearch({ query }: { query: string }) {
   const results = useMemo(
     () =>
       normalizedQuery
-        ? getSessions()
+        ? getCustomerSessions()
             .filter(
               (session) =>
                 isParked(session) &&
@@ -154,16 +155,19 @@ export function PaySearch({ query }: { query: string }) {
         : [],
     [normalizedQuery],
   );
+  const isCurrentQuery = normalizePlate(plate) === normalizedQuery;
+  const visibleResults = isCurrentQuery ? results : [];
   const selectedSession =
     results.find((session) => session.id === selectedId) ?? results[0];
-  const notFound = normalizedQuery.length > 0 && results.length === 0;
+  const notFound =
+    isCurrentQuery && normalizedQuery.length > 0 && results.length === 0;
 
   function search(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextQuery = plate.trim();
     if (!nextQuery) return;
 
-    const matches = getSessions()
+    const matches = getCustomerSessions()
       .filter(
         (session) =>
           isParked(session) &&
@@ -253,11 +257,11 @@ export function PaySearch({ query }: { query: string }) {
       <main className="flex flex-1 flex-col gap-4 px-5 pb-6 pt-5">
         <section className="flex flex-col gap-4">
           <h2 className="text-h2 font-bold text-fg">
-            {results.length > 0 ? "เลือกรถของคุณ" : "ชำระค่าจอดรถ"}
+            {visibleResults.length > 0 ? "เลือกรถของคุณ" : "ชำระค่าจอดรถ"}
           </h2>
           <p className="text-lead text-fg-2">
-            {results.length > 0
-              ? `พบ ${results.length} คันที่ทะเบียนตรงกับที่ค้นหา ดูสีและรูปตอนเข้าลานแล้วเลือกคันของคุณ`
+            {visibleResults.length > 0
+              ? `พบ ${visibleResults.length} คันที่ทะเบียนตรงกับที่ค้นหา ดูสีและรูปตอนเข้าลานแล้วเลือกคันของคุณ`
               : "กรอกทะเบียนรถเพื่อค้นหาข้อมูลการจอดและชำระค่าจอด ไม่ต้องติดตั้งแอป"}
           </p>
         </section>
@@ -295,7 +299,7 @@ export function PaySearch({ query }: { query: string }) {
             </p>
           ) : (
             <p id="plate-hint" className="text-control text-fg-3">
-              {results.length > 0
+              {visibleResults.length > 0
                 ? "ทะเบียนเดียวกันอาจมีหลายจังหวัด · แก้คำค้นได้"
                 : "ไม่ต้องเว้นวรรคระหว่างตัวอักษรและตัวเลข เว้นวรรคหรือไม่ก็ได้"}
             </p>
@@ -312,13 +316,13 @@ export function PaySearch({ query }: { query: string }) {
           </Button>
         </form>
 
-        {results.length > 0 ? (
+        {visibleResults.length > 0 ? (
           <section aria-labelledby="results-heading" className="flex flex-col gap-2.5">
             <h3 id="results-heading" className="text-lead font-medium text-fg-2">
-              ผลการค้นหา · {results.length} คัน
+              ผลการค้นหา · {visibleResults.length} คัน
             </h3>
             <div role="radiogroup" aria-label="เลือกรถของคุณ" className="flex flex-col gap-2.5">
-              {results.map((session) => (
+              {visibleResults.map((session) => (
                 <PlateMatchCard
                   key={session.id}
                   session={session}

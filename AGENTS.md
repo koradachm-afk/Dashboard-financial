@@ -58,8 +58,8 @@ src/
 │  ├─ (admin)/   layout.tsx + _components/ + 403 · account · activity-log · audit-logs · dashboard ·
 │  │             financial-overview · heat-map · parking-layout · settings · users
 │  ├─ (auth)/    layout.tsx + _components/ + login · forgot-password · set-password
-│  ├─ (customer)/pay/   layout.tsx · page.tsx (ยังเป็นหน้าเปล่า)
-│  │                    ค้นหา + เลือกรถ (17–17.2, 17.8) · [sessionId]/ → รายละเอียด · method · qr · bank · success (ยังไม่ได้ทำ)
+│  ├─ (customer)/pay/   layout.tsx · page.tsx (ค้นทะเบียน) · _components/ (pay-search · pay-checkout)
+│  │                    [sessionId]/ → รายละเอียด · method · QR · Mobile Banking · success / failed / expired
 │  └─ kiosk/     layout.tsx · entry · exit (ยังเป็นหน้าเปล่า)
 ├─ components/
 │  ├─ tailgrids/core/   component ที่ใช้หลายหน้า (ดึงจาก TailGrids แล้วแปลงเป็น token ของเรา)
@@ -68,7 +68,7 @@ src/
 │  └─ error-card.tsx    การ์ดแจ้ง error (403 / 404)
 ├─ config/site.ts       ชื่อแบรนด์ (siteConfig.brandName)
 ├─ db/                  store.ts (ชั้นกลางของ localStorage) · 1 โดเมน = 1 โฟลเดอร์ (ฟังก์ชันกลาง + seed JSON)
-│                       settings/ · prefs/ · audit/ · user/ · auth/ · boot/ · floors/ · slot-types/ · sessions/ · payments/ · banks/ · reports/
+│                       settings/ · prefs/ · audit/ · user/ · auth/ · boot/ · floors/ · slot-types/ · sessions/ · customer/ · payments/ · banks/ · reports/
 │                       (ตอนนี้ store.ts ใช้โดย settings · prefs · audit เท่านั้น)
 └─ utils/               cn.ts · id.ts (newSessionId) · user-agent.ts · generate-password.ts · reload-to.ts
                         (ยังไม่มีตัว format วันที่ / เงิน / ระยะเวลา / ทะเบียน ให้เพิ่มเมื่อหน้าที่ต้องใช้ถูกสร้าง)

@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { PayCheckout } from "../_components/pay-checkout";
-import { isParked, getSessions } from "@/db/sessions/sessions";
+import { getCustomerSessions } from "@/db/customer/customer";
+import { isParked } from "@/db/sessions/sessions";
 
 const SESSION_ID_PATTERN =
   /^sess_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -25,7 +26,7 @@ async function CheckoutPageContent({
   const vehicleId = Array.isArray(query.vehicle)
     ? query.vehicle[0]
     : query.vehicle;
-  const session = getSessions().find(
+  const session = getCustomerSessions().find(
     (item) => item.id === vehicleId && isParked(item),
   );
 
@@ -36,7 +37,7 @@ async function CheckoutPageContent({
 
   return (
     <PayCheckout
-      key={`${sessionId}:${first(query.step)}:${first(query.method)}:${first(query.state)}:${first(query.ref)}`}
+      key={`${sessionId}:${first(query.step)}:${first(query.method)}:${first(query.state)}:${first(query.ref)}:${first(query.paidAt)}`}
       customerSessionId={sessionId}
       session={session}
       searchQuery={first(query.q) || session.plate}
@@ -45,6 +46,7 @@ async function CheckoutPageContent({
       bank={first(query.bank)}
       state={first(query.state)}
       reference={first(query.ref)}
+      paidAt={first(query.paidAt)}
     />
   );
 }
