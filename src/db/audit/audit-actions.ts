@@ -14,3 +14,10 @@ export async function exportAuditInfo(): Promise<AuditInfo | null> {
   if (!user || accessFor(user, "audit-logs") !== "edit") return null;
   return auditFor(user, user.username);
 }
+
+/** Same as `exportAuditInfo`, for a Financial Overview export (needs access "edit" on `financial-overview`). */
+export async function exportFinancialInfo(): Promise<AuditInfo | null> {
+  const user = await getCurrentUser();
+  if (!user || accessFor(user, "financial-overview") !== "edit") return null;
+  return auditFor(user, user.username);
+}
