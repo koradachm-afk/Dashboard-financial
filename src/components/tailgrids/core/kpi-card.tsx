@@ -26,15 +26,21 @@ export function KpiCard({
   label,
   value,
   unit,
+  valueClassName,
   sub,
+  children,
   className,
 }: {
   icon: LucideIcon;
   label: string;
   value: string;
   unit?: string;
+  /** Replaces the big-number style, e.g. for a value written as words ("ไม่มีข้อมูล"). */
+  valueClassName?: string;
   /** Under the value, fg-3. Wrap a colour-coded part in a span (see KpiDelta). */
   sub?: ReactNode;
+  /** Between the value and the sub line (a progress bar). */
+  children?: ReactNode;
   className?: string;
 }) {
   return (
@@ -44,9 +50,10 @@ export function KpiCard({
         {label}
       </p>
       <p className="flex items-baseline gap-1.5">
-        <span className="text-kpi font-bold text-fg tabular-nums">{value}</span>
+        <span className={cn("tabular-nums", valueClassName ?? "text-kpi font-bold text-fg")}>{value}</span>
         {unit && <span className="text-body text-fg-2">{unit}</span>}
       </p>
+      {children}
       {sub && <p className="text-label text-fg-3 tabular-nums">{sub}</p>}
     </div>
   );

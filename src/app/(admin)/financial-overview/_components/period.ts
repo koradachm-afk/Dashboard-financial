@@ -1,4 +1,5 @@
 import { FINANCIAL_PERIODS, type FinancialPeriod } from "@/db/reports/reports";
+import { THAI_MONTHS } from "@/utils/thai-date";
 
 export const VIEWS = ["day", "month", "year"] as const;
 export type View = (typeof VIEWS)[number];
@@ -35,7 +36,7 @@ export function parseView(v: string | undefined): View {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-export const THAI_MONTHS = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."] as const;
+export { THAI_MONTHS };
 
 /** Axis / tooltip label of one chart slice: 16:00 · 7 · ต.ค. */
 export function sliceLabel(view: View, x: number): string {
