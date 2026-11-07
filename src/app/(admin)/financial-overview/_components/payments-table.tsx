@@ -12,8 +12,8 @@ import { formatBaht } from "@/utils/format";
 import type { PaymentRow } from "./payment-rows";
 
 const PAGE_SIZE = 10;
-const TH = "h-12 px-4 text-left text-label font-semibold text-fg-2";
-const TD = "h-18 px-4 text-body text-fg";
+const TH = "h-11 px-4 text-left text-label font-semibold text-fg-2";
+const TD = "h-14 px-4 text-body text-fg";
 
 /**
  * `total` is the payment count Figma prints ("แสดง 1–10 จาก 161"); the pages come from the rows the seed has,
