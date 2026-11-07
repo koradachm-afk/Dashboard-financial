@@ -1,31 +1,40 @@
 import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { cn } from "@/utils/cn";
 
-export type KpiTrend = "up" | "down" | "flat";
+/**
+ * Comparison line "−23.3% เทียบวันก่อนหน้า": the leading percentage takes the trend colour (the sign is in the
+ * text, so colour never stands alone) and the rest stays fg-3. No `pct` (no previous period) = all fg-3.
+ */
+export function KpiDelta({ pct, text }: { pct?: number; text: string }) {
+  if (pct === undefined || pct === 0) return <>{text}</>;
+  const cut = text.indexOf(" ");
+  const head = cut === -1 ? text : text.slice(0, cut);
+  const rest = cut === -1 ? "" : text.slice(cut);
+  return (
+    <>
+      <span className={pct > 0 ? "text-success" : "text-danger"}>{head}</span>
+      {rest}
+    </>
+  );
+}
 
-const TREND_COLOR: Record<KpiTrend, string> = {
-  up: "text-success",
-  down: "text-danger",
-  flat: "text-fg-3",
-};
-
-/** KPI card (DESIGN-STYLE 8.3). The sub line carries its own sign, so colour never stands alone. */
+/** KPI card (DESIGN-STYLE 8.3). */
 export function KpiCard({
   icon: Icon,
   label,
   value,
   unit,
   sub,
-  trend = "flat",
   className,
 }: {
   icon: LucideIcon;
   label: string;
   value: string;
   unit?: string;
-  sub?: string;
-  trend?: KpiTrend;
+  /** Under the value, fg-3. Wrap a colour-coded part in a span (see KpiDelta). */
+  sub?: ReactNode;
   className?: string;
 }) {
   return (
@@ -38,7 +47,7 @@ export function KpiCard({
         <span className="text-kpi font-bold text-fg tabular-nums">{value}</span>
         {unit && <span className="text-body text-fg-2">{unit}</span>}
       </p>
-      {sub && <p className={cn("text-label tabular-nums", TREND_COLOR[trend])}>{sub}</p>}
+      {sub && <p className="text-label text-fg-3 tabular-nums">{sub}</p>}
     </div>
   );
 }

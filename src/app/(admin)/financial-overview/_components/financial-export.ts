@@ -14,7 +14,7 @@ export async function downloadFinancialXlsx(view: View, data: FinancialData, pay
   const summary = [
     { รายการ: "ช่วงเวลา", ค่า: data.label },
     { รายการ: "รายรับรวม (บาท)", ค่า: kpis.revenue },
-    { รายการ: "จำนวนรายการชำระ", ค่า: kpis.payments },
+    { รายการ: "รายการชำระ", ค่า: kpis.payments },
     { รายการ: "ค่าจอดเฉลี่ยต่อครั้ง (บาท)", ค่า: kpis.avgFee },
     { รายการ: "ช่วงรายรับสูงสุด", ค่า: `${kpis.peak.label} · ${kpis.peak.revenue} บาท · ${kpis.peak.sharePct}%` },
     ...Object.entries(data.bySlotType).map(([id, revenue]) => ({ รายการ: `รายรับตามประเภทช่องจอด · ${id} (บาท)`, ค่า: revenue })),
@@ -30,10 +30,13 @@ export async function downloadFinancialXlsx(view: View, data: FinancialData, pay
     เลขอ้างอิง: p.ref,
     ทะเบียน: p.plate,
     จังหวัด: p.province,
-    ประเภทรถ: p.vehicleType ?? "",
     ช่องจอด: p.slot ?? "",
-    วิธีชำระ: p.method,
-    "ยอดชำระ (บาท)": p.amount,
+    ประเภทช่องจอด: p.slotType ?? "",
+    เวลาเข้า: p.entryTime,
+    เวลาออก: p.exitTime,
+    ระยะเวลา: p.duration,
+    ช่องทางชำระ: p.method,
+    "ยอด (บาท)": p.amount,
   }));
   utils.book_append_sheet(book, utils.json_to_sheet(rows), "รายการชำระ");
 

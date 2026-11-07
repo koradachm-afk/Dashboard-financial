@@ -25,17 +25,17 @@ function ChartTooltip({ active, datum }: { active?: boolean; datum?: Datum }) {
 export function RevenueChart({ view, points, ariaLabel }: { view: View; points: readonly Point[]; ariaLabel: string }) {
   const data: Datum[] = points.map((p) => ({ label: sliceLabel(view, p.x), revenue: p.revenue }));
   return (
-    <div role="img" aria-label={ariaLabel} className="h-70 w-full">
+    <div role="img" aria-label={ariaLabel} className="h-80 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--pp-border)" />
-          <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "var(--pp-border-strong)" }} tick={AXIS_TICK} interval="preserveStartEnd" />
+          <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "var(--pp-border-strong)" }} tick={AXIS_TICK} interval={view === "day" ? 2 : "preserveStartEnd"} />
           <YAxis
-            width={64}
+            width={48}
             tickLine={false}
             axisLine={false}
             tick={AXIS_TICK}
-            tickFormatter={(v: number) => formatBaht(v)}
+            tickFormatter={(v: number) => (v >= 1000 ? `฿${v / 1000}k` : `฿${v}`)}
           />
           <Tooltip
             cursor={{ fill: "var(--pp-bg-subtle)" }}

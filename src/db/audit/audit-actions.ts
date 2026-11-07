@@ -15,7 +15,6 @@ export async function exportAuditInfo(): Promise<AuditInfo | null> {
   return auditFor(user, user.username);
 }
 
-
 /** Same as `exportAuditInfo`, for a Financial Overview export (needs access "edit" on `financial-overview`). */
 export async function exportFinancialInfo(): Promise<AuditInfo | null> {
   const user = await getCurrentUser();

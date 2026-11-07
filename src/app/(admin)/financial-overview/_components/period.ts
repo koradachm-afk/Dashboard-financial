@@ -49,3 +49,10 @@ export const CHART_TITLE: Record<View, string> = {
   month: "รายรับรายวัน",
   year: "รายรับรายเดือน",
 };
+
+/** "ถึง 17 ต.ค. 22:00" — a day that is not over yet (the chart stops before hour 24). Other views: none. */
+export function untilLabel(view: View, period: FinancialPeriod, points: readonly { x: number }[]): string | null {
+  if (view !== "day" || period.kind !== "day" || points.length === 0 || points.length >= 24) return null;
+  const [, month, day] = period.date.split("-").map(Number);
+  return `ถึง ${day} ${THAI_MONTHS[month - 1]} ${pad(points[points.length - 1].x + 1)}:00`;
+}
