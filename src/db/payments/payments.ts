@@ -1,5 +1,6 @@
 import { BANKS } from "@/db/banks/banks";
 import { getSessions } from "@/db/sessions/sessions";
+import type { Session } from "@/db/sessions/sessions";
 import data from "./payments.json";
 
 export type Payment = {
@@ -20,19 +21,27 @@ const rec = (v: unknown): v is Record<string, unknown> => typeof v === "object" 
 const isText = (v: unknown): v is string => typeof v === "string" && v !== "";
 const isTime = (v: unknown): v is string => typeof v === "string" && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(v);
 
-function isPayment(v: unknown): v is Payment {
+function isPayment(v: unknown, sessions: readonly Session[]): v is Payment {
   if (!rec(v) || !isText(v.ref) || !isText(v.sessionId) || !isTime(v.paidAt)) return false;
-  if (typeof v.amount !== "number" || !Number.isInteger(v.amount) || v.amount <= 0) return false;
-  const session = getSessions().find((s) => s.id === v.sessionId);
+  if (
+    typeof v.amount !== "number" ||
+    !Number.isFinite(v.amount) ||
+    v.amount <= 0 ||
+    Math.abs(Math.round(v.amount * 100) - v.amount * 100) >= 1e-9
+  ) return false;
+  const session = sessions.find((s) => s.id === v.sessionId);
   if (!session || session.fee !== v.amount) return false;
   if (v.method === "qr") return v.bank === null;
   return v.method === "bank" && BANKS.some((b) => b.id === v.bank);
 }
 
-export function isPaymentList(value: unknown): value is readonly Payment[] {
+export function isPaymentList(
+  value: unknown,
+  sessions: readonly Session[] = getSessions(),
+): value is readonly Payment[] {
   return (
     Array.isArray(value) &&
-    value.every(isPayment) &&
+    value.every((payment) => isPayment(payment, sessions)) &&
     new Set(value.map((p: Payment) => p.ref)).size === value.length
   );
 }

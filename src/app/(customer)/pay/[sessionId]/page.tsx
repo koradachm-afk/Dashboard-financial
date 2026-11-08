@@ -1,11 +1,12 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { PayCheckout } from "../_components/pay-checkout";
+import { PaySessionCheckoutView } from "../_components/pay-session-checkout-view";
 import { getCustomerSessions } from "@/db/customer/customer";
-import { isParked } from "@/db/sessions/sessions";
+import { getSessions, isParked } from "@/db/sessions/sessions";
 
 const SESSION_ID_PATTERN =
   /^sess_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const PARKING_SESSION_ID_PATTERN = SESSION_ID_PATTERN;
 
 export default function CheckoutPage(props: PageProps<"/pay/[sessionId]">) {
   return (
@@ -26,21 +27,28 @@ async function CheckoutPageContent({
   const vehicleId = Array.isArray(query.vehicle)
     ? query.vehicle[0]
     : query.vehicle;
-  const session = getCustomerSessions().find(
-    (item) => item.id === vehicleId && isParked(item),
+  const seededSession = [...getCustomerSessions(), ...getSessions()].find(
+    (session) => session.id === vehicleId,
   );
 
-  if (!SESSION_ID_PATTERN.test(sessionId) || !session) notFound();
+  if (!SESSION_ID_PATTERN.test(sessionId) || !vehicleId) notFound();
+  if (seededSession && !isParked(seededSession)) notFound();
+  if (
+    !seededSession &&
+    !PARKING_SESSION_ID_PATTERN.test(vehicleId)
+  ) {
+    notFound();
+  }
 
   const first = (value: string | string[] | undefined) =>
     Array.isArray(value) ? value[0] ?? "" : value ?? "";
 
   return (
-    <PayCheckout
+    <PaySessionCheckoutView
       key={`${sessionId}:${first(query.step)}:${first(query.method)}:${first(query.state)}:${first(query.ref)}:${first(query.paidAt)}`}
       customerSessionId={sessionId}
-      session={session}
-      searchQuery={first(query.q) || session.plate}
+      vehicleId={vehicleId}
+      searchQuery={first(query.q) || seededSession?.plate || ""}
       step={first(query.step)}
       method={first(query.method)}
       bank={first(query.bank)}

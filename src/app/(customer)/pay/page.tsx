@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { PaySearch } from "./_components/pay-search";
+import { PaySearchView } from "./_components/pay-search-view";
 
 export default function PayPage({
   searchParams,
@@ -17,5 +17,5 @@ async function SearchPage({
   const { q } = await searchParams;
   const query = Array.isArray(q) ? q[0] : q ?? "";
 
-  return <PaySearch key={query} query={query} />;
+  return <PaySearchView key={query} query={query} />;
 }
