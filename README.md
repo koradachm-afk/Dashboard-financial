@@ -491,20 +491,21 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 ทางเข้า: [18 รอรถ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-44453) · [18.1 อ่านป้าย](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-44618) · [18.2 บันทึกเวลาเข้า](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-44790) · [18.3 อ่านไม่สำเร็จ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-44978) · [18.4 ที่จอดเต็ม](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=239-45160)
 ทางออก: [16 รอรถ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43291) · [16.1 อ่านป้าย](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43413) · [16.2 ค่าจอด + QR](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43541) · [16.3 ชำระสำเร็จ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43684) · [16.4 ชำระทางเว็บแล้ว](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43817) · [16.5 อ่านไม่สำเร็จ](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=234-43950) · [Components · Kiosk](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=220-42845)
 
-- ☐ โครงจอ: Top Bar 80px · ซ้ายเป็นวิดีโอ CCTV + ผลการอ่านป้ายด้วย AI (ทะเบียน, ความมั่นใจ %, เวลาอ่าน) · ขวาเป็นข้อมูลรถ + การ์ดสถานะ
-- ☐ จังหวะ: อ่านป้าย ~1.5 วินาที → แสดงผล → กลับหน้ารอรถหลัง 5 วินาที · อ่านไม่สำเร็จ → ลองใหม่อัตโนมัติหลัง 3 วินาที
-- ☐ **รองรับ 3 ขนาดจอ** (เฟรมครบทุก state ใน section [Kiosk · Responsive](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=587-51177)):
+- ☑ โครงจอ: Top Bar 80px · ซ้ายเป็นภาพ CCTV จำลอง + ผลการอ่านป้ายด้วย AI (ทะเบียน, ความมั่นใจ %, เวลาอ่าน) · ขวาเป็นข้อมูลรถ + การ์ดสถานะ
+- ☑ จังหวะ: โหมดจำลองอ่านป้าย ~1.5 วินาที · สำเร็จกลับหน้ารอรถหลัง 5 วินาที · อ่านไม่สำเร็จ / ที่จอดเต็มกลับหน้ารอหลัง 3 วินาที · เปิด state ตรงได้ด้วย `?state=`
+- ☑ **รองรับ 3 ขนาดจอ** (เฟรมครบทุก state ใน section [Kiosk · Responsive](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=587-51177)):
   - แนวนอน 1920×1080 (เฟรม 16 / 18 เดิม): กล้องซ้าย 1080 · รายละเอียดขวา
   - แนวตั้ง 1080×1920: เรียงบนลงล่าง กล้อง → ผลอ่านป้าย → (ทางเข้า) ช่องว่าง → รายละเอียด
   - 5:4 1280×1024: ยังเป็นซ้าย–ขวา แต่กล้องกว้าง 640 · ข้อความที่ยาวเกินตัดบรรทัด · ทางเข้า: ป้ายประเภทช่องว่างขึ้นแถวใหม่ใต้ตัวเลข
-- ☐ ทางเข้า: แสดงอัตราค่าจอด + ช่องว่างแยกประเภท · เต็มแล้วไม้กั้นไม่เปิด · บันทึกแล้วแสดง QR ไปหน้าลูกค้า
-- ☐ ทางออก:
+- ☑ ทางเข้า: แสดงอัตราค่าจอด + ช่องว่างแยกประเภทจาก seed เซนเซอร์ · เต็มแล้วไม้กั้นไม่เปิด · บันทึกแล้วแสดง QR ไปหน้าลูกค้า
+- ☑ ทางออก:
   - แสดงเวลาเข้า–ออก, เวลาจอดทั้งหมด, ค่าจอด + PromptPay QR
   - จ่ายแล้ว → ไม้กั้นเปิด
   - จ่ายทางเว็บแล้ว → เปิดทันที
-- ☐ **ไม่มีปุ่มเรียกพนักงาน** · ไม่มี hover · ธีมสว่างเท่านั้น
-- ☐ ช่วงหน้าบ้านล้วน: รองรับ `?state=` เพื่อเปิดแต่ละ state ตรง ๆ ได้ (เช่น `/kiosk/exit?state=fee`)
-- seed: `sessions/sessions.json` · `floors/floors.json` · `settings/settings.json` · ยังไม่มีหน้า Kiosk (`/kiosk/entry` · `/kiosk/exit` เป็นหน้าเปล่า)
+- ☑ **ไม่มีปุ่มเรียกพนักงาน** · ไม่มี hover · ธีมสว่างเท่านั้น
+- ☑ ช่วงหน้าบ้านล้วน: รองรับ `?state=` เพื่อเปิดแต่ละ state ตรง ๆ (เช่น `/kiosk/exit?state=fee`) · `?demo=1` แสดงตัวควบคุมสำหรับทดสอบกล้อง / การชำระจำลอง
+- ☑ seed: `sessions/sessions.json` · `floors/floors.json` · `settings/settings.json` · การสร้าง session / payment ใหม่เก็บใน localStorage ผ่าน `src/db/store.ts` เท่านั้น
+- หมายเหตุ: กล้องและ QR เป็น mock สำหรับทดสอบ ไม่เชื่อม CCTV, payment gateway หรือรับชำระเงินจริง
 
 ---
 

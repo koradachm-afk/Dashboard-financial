@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/tailgrids/core/button";
 import { Input } from "@/components/tailgrids/core/input";
 import { siteConfig } from "@/config/site";
-import { getCustomerSessions } from "@/db/customer/customer";
+import { useCustomerSessions } from "@/db/customer/customer-store";
 import { useSettings } from "@/db/settings/settings";
 import { isParked, type Session } from "@/db/sessions/sessions";
 import { newSessionId } from "@/utils/id";
@@ -135,17 +135,18 @@ function PlateMatchCard({
   );
 }
 
-export function PaySearch({ query }: { query: string }) {
+export function PaySearchView({ query }: { query: string }) {
   const [plate, setPlate] = useState(query);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const router = useRouter();
   const settings = useSettings();
+  const customerSessions = useCustomerSessions();
   const normalizedQuery = normalizePlate(query);
 
   const results = useMemo(
     () =>
       normalizedQuery
-        ? getCustomerSessions()
+        ? customerSessions
             .filter(
               (session) =>
                 isParked(session) &&
@@ -153,7 +154,7 @@ export function PaySearch({ query }: { query: string }) {
             )
             .sort((a, b) => a.entryAt.localeCompare(b.entryAt))
         : [],
-    [normalizedQuery],
+    [customerSessions, normalizedQuery],
   );
   const isCurrentQuery = normalizePlate(plate) === normalizedQuery;
   const visibleResults = isCurrentQuery ? results : [];
@@ -167,7 +168,7 @@ export function PaySearch({ query }: { query: string }) {
     const nextQuery = plate.trim();
     if (!nextQuery) return;
 
-    const matches = getCustomerSessions()
+    const matches = customerSessions
       .filter(
         (session) =>
           isParked(session) &&
