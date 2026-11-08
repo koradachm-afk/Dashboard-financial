@@ -38,7 +38,10 @@ const isText = (value: unknown): value is string =>
 const isTime = (value: unknown): value is string =>
   typeof value === "string" && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(value);
 const isFee = (value: unknown): value is number =>
-  typeof value === "number" && Number.isInteger(value) && value > 0;
+  typeof value === "number" &&
+  Number.isFinite(value) &&
+  value > 0 &&
+  Math.abs(Math.round(value * 100) - value * 100) < 1e-9;
 
 function slotExists(floor: string, slot: string): boolean {
   return getFloors().some((building) =>

@@ -18,6 +18,7 @@ import { Button } from "@/components/tailgrids/core/button";
 import { siteConfig } from "@/config/site";
 import { getBanks } from "@/db/banks/banks";
 import { openBankApp } from "@/db/payments/payments";
+import { recordMockPayment } from "@/db/payments/payments-store";
 import { useSettings } from "@/db/settings/settings";
 import type { Session } from "@/db/sessions/sessions";
 import { newSessionId } from "@/utils/id";
@@ -442,7 +443,7 @@ function BankOptions({
   );
 }
 
-export function PayCheckout({
+export function PayCheckoutView({
   customerSessionId,
   session,
   searchQuery,
@@ -549,6 +550,35 @@ export function PayCheckout({
   const paid =
     state === "success" ||
     step === "success";
+  const recordedPaymentReference = useRef("");
+  useEffect(() => {
+    if (
+      !paid ||
+      checkoutAmount <= 0 ||
+      recordedPaymentReference.current === paymentReference
+    ) {
+      return;
+    }
+
+    recordedPaymentReference.current = paymentReference;
+    recordMockPayment({
+      sessionId: session.id,
+      amount: checkoutAmount,
+      method,
+      bank: method === "bank" ? bank.id : null,
+      reference: paymentReference,
+      paidAt: paidAt ?? parking.now,
+    });
+  }, [
+    bank.id,
+    checkoutAmount,
+    method,
+    paid,
+    paidAt,
+    parking.now,
+    paymentReference,
+    session.id,
+  ]);
   const paidDetail = state === "paid" && step === "detail";
   const qrFailed = method === "qr" && (state === "failed" || state === "expired");
   const bankFailed = method === "bank" && state === "failed";
