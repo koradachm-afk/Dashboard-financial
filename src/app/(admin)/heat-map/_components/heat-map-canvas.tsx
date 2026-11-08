@@ -5,6 +5,7 @@ import { useState, type KeyboardEvent } from "react";
 
 import type { Floor, LayoutObject } from "@/db/floors/floors";
 import type { HeatMapData, HeatMapPeriod, HeatMetric } from "@/db/reports/reports";
+import { useSlotTypes } from "@/db/slot-types/slot-types-store";
 import { cn } from "@/utils/cn";
 
 import { formatMetric, formatRate, formatStay, getSlotStats, heatLevel, slotValue } from "./heat-map-model";
@@ -88,6 +89,7 @@ export function HeatMapCanvas({
   selectedId: string | null;
   onSelect: (id: string) => void;
 }) {
+  const slotTypes = useSlotTypes();
   const [hover, setHover] = useState<Hover | null>(null);
   const range = data.legend[metric] ?? data.legend.count;
   const W = px(floor.width);
@@ -225,7 +227,7 @@ export function HeatMapCanvas({
         >
           <p className="text-body font-semibold text-fg">
             {hovered.id}
-            <span className="ml-2 font-normal text-fg-2">{slotTypeOf(hovered.type)?.name}</span>
+            <span className="ml-2 font-normal text-fg-2">{slotTypeOf(hovered.type, slotTypes)?.name}</span>
           </p>
           <dl className="flex flex-col gap-0.5 text-label tabular-nums">
             {stats.count !== null && <Row label="จำนวนครั้ง" value={`${stats.count.toLocaleString("th-TH")} ครั้ง`} />}

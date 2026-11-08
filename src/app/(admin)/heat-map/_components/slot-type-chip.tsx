@@ -1,6 +1,8 @@
-import { Accessibility, Bike, Car, Crown, Truck, Zap, type LucideIcon } from "lucide-react";
+import { Accessibility, Bike, Car, Crown, SquareParking, Truck, Zap, type LucideIcon } from "lucide-react";
 
 import { getSlotTypes } from "@/db/slot-types/slot-types";
+import { useSlotTypes } from "@/db/slot-types/slot-types-store";
+import type { SlotType } from "@/db/slot-types/slot-types";
 import { cn } from "@/utils/cn";
 
 // Class names are written out in full so Tailwind can see them (a template string would be purged).
@@ -11,6 +13,7 @@ const ICONS: Record<string, LucideIcon> = {
   crown: Crown,
   truck: Truck,
   bike: Bike,
+  parking: SquareParking,
 };
 
 const COLORS: Record<string, string> = {
@@ -20,15 +23,18 @@ const COLORS: Record<string, string> = {
   "type-vip": "text-type-vip",
   warning: "text-warning",
   success: "text-success",
+  danger: "text-danger",
+  primary: "text-primary",
 };
 
-export function slotTypeOf(id: string) {
-  return getSlotTypes().find((t) => t.id === id);
+export function slotTypeOf(id: string, slotTypes: readonly SlotType[] = getSlotTypes()) {
+  return slotTypes.find((t) => t.id === id);
 }
 
 /** Type chip: the type icon (in the type colour, icons only) + the type name. */
 export function SlotTypeChip({ typeId, className }: { typeId: string; className?: string }) {
-  const type = slotTypeOf(typeId);
+  const slotTypes = useSlotTypes();
+  const type = slotTypeOf(typeId, slotTypes);
   if (!type) return null;
   const Icon = ICONS[type.icon] ?? Car;
   return (

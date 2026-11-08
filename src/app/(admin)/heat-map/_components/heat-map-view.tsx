@@ -10,7 +10,7 @@ import { audit } from "@/db/audit/audit";
 import { exportHeatMapInfo } from "@/db/audit/audit-actions";
 import { countSlotsByType, getFloors } from "@/db/floors/floors";
 import { getHeatMap } from "@/db/reports/reports";
-import { getSlotTypes } from "@/db/slot-types/slot-types";
+import { useSlotTypes } from "@/db/slot-types/slot-types-store";
 import { cn } from "@/utils/cn";
 
 import { SWATCH, HeatMapCanvas } from "./heat-map-canvas";
@@ -40,6 +40,7 @@ function writeUrl(s: HeatState) {
 }
 
 export function HeatMapView({ initial }: { initial: HeatState }) {
+  const slotTypes = useSlotTypes();
   const [state, setState] = useState(initial);
   const [exporting, setExporting] = useState(false);
   const exportingRef = useRef(false);
@@ -62,7 +63,7 @@ export function HeatMapView({ initial }: { initial: HeatState }) {
   const onFloor = countSlotsByType(floor);
   const typeOptions = [
     { id: ALL_TYPES, label: "ทุกประเภทช่อง" },
-    ...getSlotTypes()
+    ...slotTypes
       .filter((t) => onFloor[t.id])
       .map((t) => ({ id: t.id, label: t.name })),
   ];
@@ -82,7 +83,7 @@ export function HeatMapView({ initial }: { initial: HeatState }) {
         setToast((t) => ({ ...t, open: false }));
         return;
       }
-      await downloadHeatMapXlsx(exportRows(floor, state.period, state.type), fileName);
+      await downloadHeatMapXlsx(exportRows(floor, state.period, state.type, slotTypes), fileName);
       audit({
         actor: info.actor,
         role: info.role,

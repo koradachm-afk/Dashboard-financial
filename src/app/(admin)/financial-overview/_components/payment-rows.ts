@@ -3,7 +3,7 @@ import { getFloors } from "@/db/floors/floors";
 import { getPayments } from "@/db/payments/payments";
 import type { FinancialPeriod } from "@/db/reports/reports";
 import { getSessions } from "@/db/sessions/sessions";
-import { getSlotTypes } from "@/db/slot-types/slot-types";
+import type { SlotType } from "@/db/slot-types/slot-types";
 
 import { periodKey } from "./period";
 
@@ -35,11 +35,14 @@ export function formatDuration(entryAt: string, exitAt: string): string {
 }
 
 /** The payments inside a period (paidAt is "YYYY-MM-DD HH:MM", so the period key is a prefix), newest first. */
-export function paymentRows(period: FinancialPeriod): PaymentRow[] {
+export function paymentRows(
+  period: FinancialPeriod,
+  slotTypeList: readonly SlotType[],
+): PaymentRow[] {
   const key = periodKey(period);
   const sessions = new Map(getSessions().map((s) => [s.id, s]));
   const banks = new Map(getBanks().map((b) => [b.id, b.name]));
-  const typeNames = new Map(getSlotTypes().map((t) => [t.id, t.name]));
+  const typeNames = new Map(slotTypeList.map((t) => [t.id, t.name]));
   const slotTypes = new Map(
     getFloors().flatMap((b) => b.floors.flatMap((f) => f.slots.map((s) => [`${f.id}/${s.id}`, typeNames.get(s.type) ?? null] as const))),
   );
