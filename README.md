@@ -15,6 +15,8 @@
 
 **อัปเดตรอบนี้ (6 พ.ย.)**
 - **สิทธิ์เหลือ 2 ระดับ:** ไม่มีสิทธิ์ / แก้ไขได้ (เลิกใช้ "ดูได้" · ลบเฟรม 08.3 และ 10.25)
+- **System Settings:** เพิ่มหน้า Settings ครบ 3 แท็บ · กำหนดชั่วโมงจอดฟรีต่อการเข้าจอดหนึ่งครั้ง (ค่าเริ่มต้น 0 ชั่วโมง) และใช้คำนวณยอด Customer โดยชั่วโมงฟรีไม่เริ่มใหม่หลังชำระ
+- **ค่าจอด:** ตั้งราคาต่อชั่วโมงแยกตามประเภทช่องได้ · ถ้าเว้นว่างจะใช้ราคาตั้งต้นส่วนกลาง (เริ่มต้น 20 บาท/ชม. ทุกประเภท)
 - **รหัสผ่าน:** อย่างน้อย 8 ตัวอักษร (Figma แก้ตามแล้ว) · ทุกช่องรหัสผ่านมีปุ่มแสดง / ซ่อน (`PasswordInput`)
 - **Audit Logs:** ปฏิทินกำหนดช่วงเอง · drawer รายละเอียด · Export Excel · seed แสดงใน 7 วันล่าสุดเสมอ
 - **Mobile Banking (Figma):** เพิ่ม 17.12 ไม่สำเร็จ / ยกเลิก และ 17.13 หมดเวลา · ใช้ไอคอนธนาคารครบทั้ง 6 แห่งจากไฟล์ที่ PM ส่งให้
@@ -428,26 +430,26 @@ Figma: [AUTO PARKING / ParkPlan](https://www.figma.com/design/AoPiNS1OO38plLtnHv
 
 เฟรม: [10 ข้อมูลสาขา](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13184) · [10.1 ประเภทช่องจอด](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-13582) · [10.2 แก้ไขประเภท](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=59-14098) · [10.3 ค่าจอด](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=66-14208) · [10.4–10.6 โลโก้](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=172-29898) · [10.7–10.22 จัดการประเภท](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=172-30204) · [10.23–10.24 บันทึก / error](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=172-34799)
 
-- ☐ **สิทธิ์รายแท็บ** ([10.26](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-50004) แก้ไขได้ ตัวอย่างผู้ใช้ ops.mint · เฟรม 10.25 "ดูได้" ลบออกแล้ว):
+- ☑ **สิทธิ์รายแท็บ** ([10.26](https://www.figma.com/design/AoPiNS1OO38plLtnHvInSz/ParkPlan?node-id=396-50004) แก้ไขได้ ตัวอย่างผู้ใช้ ops.mint · เฟรม 10.25 "ดูได้" ลบออกแล้ว):
   - แท็บที่ไม่มีสิทธิ์ให้ซ่อน เปิดหน้ามาให้อยู่แท็บแรกที่มีสิทธิ์
   - แท็บที่มีสิทธิ์ใช้งานได้ครบ ไม่มีโหมดดูอย่างเดียว
   - Sidebar แสดงเฉพาะหน้าที่มีสิทธิ์
-- ☐ คำอธิบายใต้ชื่อหน้า: "Admin เห็นเฉพาะแท็บที่ได้รับสิทธิ์ · การเปลี่ยนแปลงทั้งหมดถูกบันทึกลง Audit Logs"
-- ☐ แท็บข้อมูลสาขา: ชื่อสาขา + โลโก้ (PNG / SVG สี่เหลี่ยมจัตุรัส ≥ 256 px ≤ 1 MB) + ตัวอย่างการแสดงผล
-- ☐ แท็บประเภทช่องจอด:
+- ☑ คำอธิบายใต้ชื่อหน้า: "Admin เห็นเฉพาะแท็บที่ได้รับสิทธิ์ · การเปลี่ยนแปลงทั้งหมดถูกบันทึกลง Audit Logs"
+- ☑ แท็บข้อมูลสาขา: ชื่อสาขา + โลโก้ (PNG / SVG สี่เหลี่ยมจัตุรัส ≥ 256 px ≤ 1 MB) + ตัวอย่างการแสดงผล
+- ☑ แท็บประเภทช่องจอด:
   - เพิ่ม / แก้ไขชื่อ, ไอคอน, สี, ขนาดตั้งต้น
-  - ประเภทตั้งต้นลบไม่ได้
-  - ลบได้เฉพาะประเภทที่ไม่มีช่องใช้อยู่ (hover ปุ่มลบแล้วแสดงเหตุผล)
-- ☐ แท็บค่าจอด:
-  - ราคาต่อชั่วโมง (> 0, ทศนิยมได้ 2 ตำแหน่ง)
+  - ตั้งค่าแยกต่อประเภทได้ว่าจะล็อกไม่ให้ลบหรือไม่ · ประเภทที่มีช่องจอดใช้อยู่ลบไม่ได้เสมอ
+  - ลบได้เฉพาะประเภทที่ไม่มีช่องใช้อยู่ (แสดงเหตุผลเมื่อปุ่มลบถูกปิดใช้งาน)
+- ☑ แท็บค่าจอด:
+  - ราคาต่อชั่วโมงตั้งต้น (> 0, ทศนิยมได้ 2 ตำแหน่ง) และตั้งราคาแยกตามประเภทช่องได้ · ช่องที่เว้นว่างใช้ราคาตั้งต้น
+  - **จำนวนชั่วโมงที่จอดฟรี:** ฟรีชั่วโมงแรกของแต่ละ session, ค่าเริ่มต้น 0, ไม่นับใหม่หลังชำระ · ลูกค้าเห็นยอด 0 บาทและไม่ต้องเลือกวิธีชำระเมื่ออยู่ในช่วงฟรี
   - เวลาออกหลังชำระ (นาที, > 0)
   - **สวิตช์คิดค่าจอดใหม่เมื่อออกเกินเวลา** (10.3, 10.23, 10.24) เปิด = คิดค่าจอดใหม่นับจากเวลาที่ชำระครั้งล่าสุดถึงเวลาออกจริง ตามราคาต่อชั่วโมง แล้วสร้าง QR ให้จ่ายส่วนที่เกิน · ปิด = เกินเวลาแล้วออกได้โดยไม่คิดเงินเพิ่ม
-  - กล่องตัวอย่าง: 14:00 จ่าย → ≤ 14:15 ออกได้ → 14:16 เกินเวลา ต้องชำระเพิ่ม คิดใหม่นับจาก 14:00
-  - ตัวอย่างการคำนวณ
+  - ตัวอย่างการคำนวณค่าจอดและช่วงเวลาออก
   - error เมื่อกรอกค่าผิด
-- ☐ ทุกการบันทึกลง Audit Logs
-- ☐ ตกลง schema ประเภทช่องจอดกับริวก่อนเริ่ม (Settings เป็นที่สร้าง ผังเป็นที่นำไปใช้)
-- seed: `settings/settings.json` (Login แสดงชื่อสาขา และ Sidebar ใช้อยู่แล้ว) · `slot-types/slot-types.json` · ยังไม่มีหน้า Settings
+- ☑ ทุกการบันทึกลง Audit Logs
+- ☑ ใช้ schema ประเภทช่องจอดร่วมกันระหว่าง Settings และ Parking Layout
+- seed/store: `settings/settings.json` · `slot-types/slot-types.json` และ store `slot-types` · หน้า Settings อยู่ใน `src/app/(admin)/settings/`
 
 ### 6.12 Customer Web — ต้น
 
@@ -479,6 +481,7 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 - ☑ **ชำระผ่านแอปไม่สำเร็จ / ยกเลิก (17.12):** แสดง error · เปิดแอปซ้ำและเปลี่ยนวิธีชำระ · จำลองด้วย `?state=failed`
 - ☑ **หมดเวลารอยืนยัน (17.13):** แสดง `00:00` · ปุ่มเริ่มชำระใหม่สร้างเลขอ้างอิงใหม่ · เปลี่ยนวิธีชำระ · จำลองด้วย `?state=expired`
 - ☑ รายละเอียด: ทะเบียน, ประเภทรถ, เวลาเข้า, เวลาจอด, ยอดพร้อมวิธีคิด · `?state=paid` แสดง "ไม่มียอดค้างชำระ"
+- ☑ ยอดคำนวณจาก `settings.freeParkingHours` โดยคิดฟรีจากชั่วโมงแรกของ session เดิม · ชั่วโมงที่เกินปัดขึ้นตามชั่วโมงเริ่มต้น · ยอด 0 บาทแสดงสถานะไม่มียอดค้างชำระและไม่เปิดขั้นตอนชำระ
 - ☑ หน้า QR: QR จำลอง PromptPay, นับถอยหลัง, ปุ่มบันทึกรูป และสร้าง QR ใหม่เมื่อหมดอายุหรือไม่สำเร็จ
 - ☑ สำเร็จ: เลขที่ธุรกรรม + เวลาที่ต้องออก
 - ☑ จ่ายแล้วแต่ออกไม่ทันเวลา (15 นาที) → ถ้าเปิดสวิตช์คิดค่าจอดใหม่ แสดงยอดเพิ่ม (ปัดขึ้นเป็นชั่วโมงจากเวลาจ่ายล่าสุด) และปุ่มสร้าง QR · ทดสอบด้วย `?vehicle=sess_customer_003&step=detail&state=paid&paidAt=2026-10-17T20:30` (คำนวณ ณ 21:00) · ปิดสวิตช์แล้วไม่คิดเพิ่ม · ข้อความในหน้าสำเร็จ (17.7): "หากเกิน 15 นาที ต้องชำระค่าจอดเพิ่ม โดยคิดใหม่นับจากเวลาที่ชำระครั้งนี้"
@@ -537,14 +540,14 @@ Flow: 17 → 17.1 → (เจอหลายคัน 17.8) → 17.3 → 17.9 �
 | `user/user.json` | ผู้ใช้ demo 2 บัญชี `superadmin` · `admin` (อีเมล `@autoparking.co`), Role, สิทธิ์ราย page (System Settings แยก 3 แท็บ), ธีมตั้งต้น · **ไม่มีรหัสผ่าน** (ไฟล์นี้ import ได้เฉพาะ `user-store.ts` ฝั่ง server แต่ type ใน `users.ts` ที่ client import ได้ จึงห้ามเก็บรหัสผ่านใน JSON เด็ดขาด) | ไม่เก็บใน localStorage · การเพิ่ม / แก้ / ลบผู้ใช้เก็บในหน่วยความจำของ server (restart แล้วกลับเป็น seed) · ธีมที่เลือกเก็บที่ `prefs` (key = user id) | Login, Users, Account, Sidebar |
 | `user/credentials.json` | รหัสผ่าน demo (`pass`) ราย user id | ไม่เก็บ · **import ได้เฉพาะ `src/db/auth/auth-actions.ts`** (ฝั่ง server) · รหัสผ่านที่ตั้งใหม่เก็บในหน่วยความจำของ server (`password-store.ts`) | Login, Set password, Account |
 | `floors/floors.json` | อาคาร A → ชั้น B1 (48 × 32 ม., 63 ช่อง A–D พร้อมสถานะ / ประเภท / `note`, วัตถุบนผัง: เลน ลูกศร เสา ทางเข้า–ออก ลิฟต์ บันได ประตู) และ B2 (ว่าง) · พิกัดเป็นเมตรจากมุมซ้ายบนของชั้น · อ่านผ่าน `getFloors()` (`countSlotsByType` / `countSlotsByStatus` นับจากช่อง) | seed อย่างเดียวก่อน · ยังไม่มี store (ผังที่กดบันทึก / สถานะที่ผู้ดูแลตั้งจะเพิ่มทีหลัง) | ยังไม่มีหน้าไหนอ่าน (วางแผนไว้: Parking Layout, Heat Map) |
-| `slot-types/slot-types.json` | ประเภทช่องจอด 6 แบบ: รถยนต์ทั่วไป · EV · ผู้พิการ · VIP (ค่าตั้งต้น) และ รถตู้ / รถใหญ่ · มอเตอร์ไซค์ — ไอคอน lucide, ชื่อ token สี, ขนาดตั้งต้น (ม.) · อ่านผ่าน `getSlotTypes()` · จำนวนช่องที่ใช้อยู่นับจาก floors ไม่เก็บในไฟล์นี้ | seed อย่างเดียวก่อน · ยังไม่มี store (ประเภทที่เพิ่ม / แก้ใน Settings จะเพิ่มทีหลัง) | ยังไม่มีหน้าไหนอ่าน (วางแผนไว้: Settings, Parking Layout) |
+| `slot-types/slot-types.json` | ประเภทช่องจอด 6 แบบ: รถยนต์ทั่วไป · EV · ผู้พิการ · VIP (ค่าตั้งต้น) และ รถตู้ / รถใหญ่ · มอเตอร์ไซค์ — ไอคอน lucide, ชื่อ token สี, ขนาดตั้งต้น (ม.) · อ่านผ่าน `getSlotTypes()` · จำนวนช่องที่ใช้อยู่นับจาก floors ไม่เก็บในไฟล์นี้ | seed คงที่และการเปลี่ยนแปลงใน Settings เก็บใน store `autoparking:v1:slot-types` | Settings, Parking Layout |
 | `sessions/sessions.json` | รถเข้า–ออก 48 คัน (Figma 14 / 14.14 / 14.15, Dashboard 12 / 12.35, Financial 13 / 13.4 / 13.13) · ฟิลด์ `id` (`sess_001`…) `plate` `province` `vehicleType` `floor` `slot` `entryAt` `exitAt` `entryGate` `entryImage` `fee` · วันที่รูปแบบ `YYYY-MM-DD HH:MM` · `vehicleType` เป็น `null` ได้ (กล้องยังไม่จัดประเภท / Figma ไม่แสดง) และ `slot` เป็น `null` ได้ (ไม่ทราบช่อง ใช้กับกข 1234 กรุงเทพฯ / นนทบุรี / 1กข 1234 ซึ่งยังจอดอยู่) · `exitAt` เป็น `null` = ยังจอดอยู่ และ `fee` เป็น `null` = ยังไม่ชำระ · ช่อง `slot` ที่ไม่ใช่ `null` ต้องมีอยู่ในชั้น `floor` · อ่านผ่าน `getSessions()` / `isParked()` · ตรวจ schema ด้วย `session-schema.ts` ถ้าข้อมูลไม่ผ่านจะ throw | seed อย่างเดียวก่อน · ยังไม่มี store (รถเข้า–ออกที่เพิ่มระหว่างใช้งานจะเพิ่มทีหลัง) | Activity Log, Dashboard, Financial Overview, Kiosk |
 | `customer/customer-sessions.json` | mock เฉพาะ Customer: 22 session ที่ยังจอด ครอบคลุมทะเบียนที่ไม่ซ้ำ 20 ทะเบียน และรายการทะเบียนซ้ำเพื่อทดสอบผลหลายคัน (ค้น กข 1234 พบ 4 รายการ รวมต่างจังหวัดและต่างหมวด) · ใช้ schema / validator กลางจาก `sessions/session-schema.ts` โดยไม่โหลด seed `sessions.json` · อ่านผ่าน `getCustomerSessions()` | seed คงที่ ไม่มี store | Customer Web |
 | `payments/payments.json` | รายการชำระ 30 รายการตาม Financial 13 / 13.4 / 13.13 · ฟิลด์ `ref` (`PP…`) `sessionId` `amount` `method` (`"qr"` \| `"bank"`) `bank` `paidAt` · ทุกแถวเป็น PromptPay QR (`bank` เป็น `null`) · `amount` ต้องเท่ากับ `fee` ของ session และ `bank` ต้องเป็นรหัสใน `banks.json` เมื่อ `method` เป็น `"bank"` · อ่านผ่าน `getPayments()` / `paymentForSession()` · `payments.ts` ตรวจด้วย `isPaymentList` ตอนโหลด ถ้าไม่ผ่านจะ throw · Customer Web จำลองสถานะชำระผ่าน query และ `openBankApp()` ไม่ได้อ่านรายการ seed นี้ | seed อย่างเดียวก่อน · ยังไม่มี store | Financial Overview, Dashboard |
 | `banks/banks.json` | ธนาคารสำหรับ Mobile Banking 6 แห่งตามลำดับ 17.10: `KBANK` กสิกรไทย · `SCB` ไทยพาณิชย์ · `BBL` กรุงเทพ · `KTB` กรุงไทย · `BAY` กรุงศรี · `TTB` ทีทีบี (`id` + `name`) · อ่านผ่าน `getBanks()` | ไม่เก็บ (seed คงที่) | Customer Web |
 | `audit/audit-logs.json` | ประวัติการใช้งาน 20 เคสตาม Figma 08 / 08.19 พร้อมข้อมูล drawer 08.2, 08.20–08.38 (`title`, `changes`, `extras`) · `audit.ts` ตรวจด้วย `isAuditLog` ตอนโหลด ถ้าไม่ผ่านจะ throw · ในไฟล์เป็นวันที่ตาม Figma (16–17 ต.ค. 2026 = `FIGMA_AUDIT_SEED`) แต่ `AUDIT_SEED` ที่แอปแสดงเลื่อนวันด้วย `shiftSeedDates()` ให้วันล่าสุดเป็นเมื่อวานของนาฬิกาจริง · ข้อความที่มีวันที่อยู่ในตัว (เช่น "11–17 ต.ค. 2026") ไม่เลื่อน | `audit` (ทุกครั้งที่เรียก `audit()`) · seed ไม่ถูกเขียนลง store แต่แสดงต่อท้ายรายการที่เก็บไว้ | Audit Logs |
 | `reports/*.json` (`dashboard` · `financial` · `activity` · `heat-map`) | ตัวเลขสรุปที่คำนวณไว้แล้วของ 4 หน้า (Dashboard 12, Financial 13, Activity Log 14, Parking Heat Map 15) ตามที่แต่ละเฟรมใน Figma แสดง **ไม่ปรับให้ตรงกันข้ามหน้า** (เช่น Heat Map 7 วัน 1,402 ครั้ง ส่วน Activity 1,395) · เก็บเฉพาะช่วงที่ Figma มีเฟรม `getXxx()` ใน `reports.ts` คืน `null` ถ้าไม่มีช่วงนั้น · ค่าที่อ่านจากเส้นกราฟมี `approx: true` · ค่าที่คำนวณได้ **ไม่เก็บ**: จำนวนช่อง / การแจ้งเตือน (จาก `floors`), อันดับช่องใช้มาก–น้อย, ค่าเฉลี่ยตามแถว, รายรับ 14 วัน (`getDailyRevenue` จากรายวันของ `financial`) | seed อย่างเดียว · ไม่มี store | ยังไม่มีหน้าไหนอ่าน (วางแผนไว้: Dashboard, Financial Overview, Activity Log, Parking Heat Map) |
-| `settings/settings.json` | ตาม Figma 10 / 10.3: ชื่อสาขา (`branchName` "สาขาสยาม"), ราคาต่อชั่วโมง (`pricePerHour` 20 บาท, > 0 ทศนิยมไม่เกิน 2 ตำแหน่ง), เวลาออกหลังชำระ (`exitGraceMinutes` 15 นาที), คิดค่าจอดใหม่เมื่อออกเกินเวลา (`recalcOvertime` เปิด) · `settings.ts` ตรวจ JSON ตอนโหลด ถ้าไม่ผ่านจะ throw | `settings` · ค่าที่เก็บไว้แบบเก่า (มีแค่ `branchName`) ไม่ผ่าน validator จึงกลับไปใช้ seed | Login (ชื่อสาขา), Sidebar, Customer Web, Settings, Kiosk |
+| `settings/settings.json` | ตาม Figma 10 / 10.3: ชื่อสาขา (`branchName` "สาขาสยาม"), โลโก้สาขา (`branchLogo`), ราคาตั้งต้นต่อชั่วโมง (`pricePerHour` 20 บาท), ราคาแยกตามประเภทช่อง (`pricePerHourBySlotType`, ค่าว่างใช้ราคาตั้งต้น), ชั่วโมงจอดฟรี (`freeParkingHours` ค่าเริ่มต้น 0), เวลาออกหลังชำระ (`exitGraceMinutes` 15 นาที), คิดค่าจอดใหม่เมื่อออกเกินเวลา (`recalcOvertime` เปิด) · `settings.ts` ตรวจ JSON ตอนโหลด ถ้าไม่ผ่านจะ throw · ค่าที่บันทึกก่อนเพิ่มฟิลด์ใหม่จะใช้ค่าเริ่มต้นเดิม | `settings` · เก็บค่าที่ผู้ดูแลแก้ไขใน `autoparking:v1:settings` | Login (ชื่อสาขา), Sidebar, Customer Web, Settings |
 
 กติกา:
 - ใช้ตัวเลขชุดเดียวกับใน Figma (เช่น ทะเบียน `ผบ 9370`, ช่อง `B-07`, รายรับ `฿10,080`) จะเทียบหน้าจอกับเฟรมได้ง่าย

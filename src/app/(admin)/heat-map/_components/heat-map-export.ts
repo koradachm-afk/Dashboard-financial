@@ -1,5 +1,6 @@
 import type { Floor } from "@/db/floors/floors";
 import type { HeatMapPeriod } from "@/db/reports/reports";
+import type { SlotType } from "@/db/slot-types/slot-types";
 
 import { getSlotStats } from "./heat-map-model";
 import { slotTypeOf } from "./slot-type-chip";
@@ -17,14 +18,19 @@ export const EXPORT_HEADERS = [
 export type ExportRow = Record<(typeof EXPORT_HEADERS)[number], string | number>;
 
 /** One row per slot of the floor that matches the type filter. A figure the period does not carry stays empty. */
-export function exportRows(floor: Floor, period: HeatMapPeriod, type: string | null): ExportRow[] {
+export function exportRows(
+  floor: Floor,
+  period: HeatMapPeriod,
+  type: string | null,
+  slotTypes: readonly SlotType[],
+): ExportRow[] {
   return floor.slots
     .filter((s) => type === null || s.type === type)
     .map((s) => {
       const stats = getSlotStats(period, s.id);
       return {
         ช่องจอด: s.id,
-        ประเภทช่อง: slotTypeOf(s.type)?.name ?? s.type,
+        ประเภทช่อง: slotTypeOf(s.type, slotTypes)?.name ?? s.type,
         จำนวนครั้ง: stats.count ?? "",
         ชั่วโมงจอดรวม: stats.hours ?? "",
         "อัตราการใช้ (%)": stats.rate?.pct ?? "",

@@ -18,7 +18,12 @@ import { Button } from "@/components/tailgrids/core/button";
 import { siteConfig } from "@/config/site";
 import { getBanks } from "@/db/banks/banks";
 import { openBankApp } from "@/db/payments/payments";
-import { useSettings } from "@/db/settings/settings";
+import {
+  calculateParkingCharge,
+  getPricePerHourForSlotType,
+  useSettings,
+} from "@/db/settings/settings";
+import { getFloors } from "@/db/floors/floors";
 import type { Session } from "@/db/sessions/sessions";
 import { newSessionId } from "@/utils/id";
 import { cn } from "@/utils/cn";
@@ -65,7 +70,7 @@ function formatDateTime(value: string): string {
   return `${date} ${MONTHS[month]} ${year} · ${value.slice(11, 16)}`;
 }
 
-function getParkingTime(session: Session) {
+function getParkingTime(session: Session, freeParkingHours: number) {
   const [year, month, day] = session.entryAt.slice(0, 10).split("-").map(Number);
   const [hour, minute] = session.entryAt.slice(11, 16).split(":").map(Number);
   const enteredAt = new Date(year, month - 1, day, hour, minute);
@@ -75,15 +80,26 @@ function getParkingTime(session: Session) {
     1,
     Math.floor((now.getTime() - enteredAt.getTime()) / 60_000),
   );
-  const billedHours = Math.max(1, Math.ceil(durationMinutes / 60));
+  const charge = calculateParkingCharge(durationMinutes, 1, freeParkingHours);
   return {
     now,
     enteredAt,
     nowLabel: `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
     durationMinutes,
-    billedHours,
+    billedHours: charge.billedHours,
+    amount: charge.amount,
     dateLabel: formatDateTime(session.entryAt),
   };
+}
+
+function getSessionSlotTypeId(session: Session): string | null {
+  if (!session.slot) return null;
+  for (const building of getFloors()) {
+    const floor = building.floors.find((item) => item.id === session.floor);
+    const slot = floor?.slots.find((item) => item.id === session.slot);
+    if (slot) return slot.type;
+  }
+  return null;
 }
 
 function parsePaidAt(value: string): Date | null {
@@ -469,25 +485,31 @@ export function PayCheckout({
       : "pending"
   ) as PaymentState;
   const paymentReference = reference || `PK-26-10-${customerSessionId.slice(-4).toUpperCase()}`;
-  const parking = useMemo(() => getParkingTime(session), [session]);
-  const amount = parking.billedHours * settings.pricePerHour;
+  const parking = useMemo(
+    () => getParkingTime(session, settings.freeParkingHours),
+    [session, settings.freeParkingHours],
+  );
+  const pricePerHour = getPricePerHourForSlotType(
+    settings,
+    getSessionSlotTypeId(session),
+  );
+  const amount = parking.billedHours * pricePerHour;
   const paidAt = parsePaidAt(rawPaidAt);
   const overtime = getOvertimeCharge(
     paidAt,
     parking.now,
     settings.exitGraceMinutes,
-    settings.pricePerHour,
+    pricePerHour,
     settings.recalcOvertime,
   );
   const checkoutAmount = paidAt ? overtime.amount : amount;
   const lastPaidAt = paidAt ?? parking.now;
   const paidAmount = paidAt
-    ? Math.max(
-        1,
-        Math.ceil(
-          (paidAt.getTime() - parking.enteredAt.getTime()) / 3_600_000,
-        ),
-      ) * settings.pricePerHour
+    ? calculateParkingCharge(
+        (paidAt.getTime() - parking.enteredAt.getTime()) / 60_000,
+        pricePerHour,
+        settings.freeParkingHours,
+      ).amount
     : amount;
   const exitDeadline = getExitDeadline(
     lastPaidAt,
@@ -549,6 +571,7 @@ export function PayCheckout({
   const paid =
     state === "success" ||
     step === "success";
+  const freeParking = amount === 0 && !paidAt;
   const paidDetail = state === "paid" && step === "detail";
   const qrFailed = method === "qr" && (state === "failed" || state === "expired");
   const bankFailed = method === "bank" && state === "failed";
@@ -590,7 +613,7 @@ export function PayCheckout({
   return (
     <div className="mx-auto flex min-h-full w-full max-w-[480px] flex-1 flex-col bg-page">
       <header className="flex h-24 shrink-0 items-center gap-3 border-b border-line bg-surface px-5">
-        {step === "detail" || paid ? (
+        {step === "detail" || paid || freeParking ? (
           <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-on-primary">
             <span className="text-h3 font-bold">P</span>
           </div>
@@ -614,7 +637,35 @@ export function PayCheckout({
         </div>
       </header>
 
-      {paid ? (
+      {freeParking ? (
+        <main className="flex flex-1 flex-col gap-5 px-5 pb-6 pt-8">
+          <section className="flex flex-col items-center gap-3 text-center">
+            <span className="grid size-22 place-items-center rounded-full bg-success-soft text-success">
+              <CheckCircle2 size={54} aria-hidden />
+            </span>
+            <h2 className="text-h1 font-bold text-success">ไม่มียอดค้างชำระ</h2>
+            <p className="text-h3 font-semibold text-fg">
+              จอดฟรี {settings.freeParkingHours} ชั่วโมงแรก
+            </p>
+          </section>
+          <dl className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-4.5">
+            <DetailRow label="ทะเบียน" value={session.plate} />
+            <DetailRow label="เวลาจอด" value={formatDuration(parking.durationMinutes)} tabular />
+            <DetailRow label="ยอดที่ต้องชำระ" value="฿0" tabular />
+          </dl>
+          <p className="text-center text-lead text-fg-2">
+            ขับไปยังทางออกได้เลย ระบบจะเปิดไม้กั้นให้อัตโนมัติ
+          </p>
+          <Button
+            size="lg"
+            variant="secondary"
+            className="mt-auto w-full"
+            onClick={() => router.push("/pay")}
+          >
+            กลับหน้าแรก
+          </Button>
+        </main>
+      ) : paid ? (
         <main className="flex flex-1 flex-col gap-5 px-5 pb-6 pt-8">
           <section className="flex flex-col items-center gap-3 text-center">
             <span className="grid size-22 place-items-center rounded-full bg-success-soft text-success">
@@ -684,9 +735,11 @@ export function PayCheckout({
                   ฿{formatMoney(amount)}
                 </p>
                 <p className="text-lead text-fg-2">
-                  คิด {parking.billedHours} ชม. × {formatMoney(settings.pricePerHour)} บาท
-                  · คำนวณ ณ เวลา {parking.nowLabel} ·
-                  อัตราค่าจอดกำหนดโดยผู้ดูแลระบบ
+                  {settings.freeParkingHours > 0
+                    ? `หักเวลาจอดฟรี ${settings.freeParkingHours} ชม.แรก · `
+                    : ""}
+                  คิด {parking.billedHours} ชม. × {formatMoney(pricePerHour)} บาท
+                  · คำนวณ ณ เวลา {parking.nowLabel} · อัตราค่าจอดกำหนดโดยผู้ดูแลระบบ
                 </p>
               </section>
               <div className="mt-auto flex flex-col gap-2">
@@ -753,7 +806,7 @@ export function PayCheckout({
                     </p>
                     <p className="text-lead text-fg-2">
                       คิด {overtime.billableHours} ชม. ×{" "}
-                      {formatMoney(settings.pricePerHour)} บาท
+                      {formatMoney(pricePerHour)} บาท
                     </p>
                   </section>
                   <Button

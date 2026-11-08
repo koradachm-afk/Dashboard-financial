@@ -394,11 +394,9 @@ export function PaySearch({ query }: { query: string }) {
       <footer className="flex items-center justify-center gap-2 px-5 pb-5 pt-2 text-center text-lead text-fg-3">
         <Coins size={16} className="shrink-0" aria-hidden />
         <span>
-          อัตราค่าจอด{" "}
-          <span className="tabular-nums">
-            {new Intl.NumberFormat("th-TH").format(settings.pricePerHour)}
-          </span>{" "}
-          บาท/ชม. · ปัดเศษขึ้นเป็นชั่วโมง
+          {settings.freeParkingHours > 0
+            ? `ค่าจอดตามประเภทช่อง · จอดฟรี ${settings.freeParkingHours} ชั่วโมงแรก · ปัดเศษขึ้นเป็นชั่วโมง`
+            : "ค่าจอดตามประเภทช่อง · ปัดเศษขึ้นเป็นชั่วโมง"}
         </span>
       </footer>
     </div>

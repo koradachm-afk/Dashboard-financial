@@ -41,7 +41,7 @@ import {
   type FinancialPeriod,
   type FinancialSlotType,
 } from "@/db/reports/reports";
-import { getSlotTypes } from "@/db/slot-types/slot-types";
+import { useSlotTypes } from "@/db/slot-types/slot-types-store";
 import { cn } from "@/utils/cn";
 import { formatBaht, formatInt } from "@/utils/format";
 
@@ -77,13 +77,14 @@ const PICKER_LABEL = (key: string) => key;
 const ICON_BUTTON = "size-8 px-0";
 
 export function FinancialOverviewView({ initialView, initialKey }: { initialView: View; initialKey?: string }) {
+  const slotTypes = useSlotTypes();
   const [state, setState] = useState<{ view: View; period: FinancialPeriod }>(() => ({
     view: initialView,
     period: resolvePeriod(initialView, initialKey),
   }));
   const { view, period } = state;
   const data = getFinancial(period);
-  const payments = paymentRows(period);
+  const payments = paymentRows(period, slotTypes);
 
   const [exportToast, setExportToast] = useState({ open: false, done: false, description: "" });
   const [exporting, setExporting] = useState(false);
@@ -105,7 +106,7 @@ export function FinancialOverviewView({ initialView, initialKey }: { initialView
   if (!data) return null;
   const { kpis } = data;
 
-  const slotNames = new Map(getSlotTypes().map((t) => [t.id, t.name]));
+  const slotNames = new Map(slotTypes.map((t) => [t.id, t.name]));
   const slotRows: BreakdownRow[] = FINANCIAL_SLOT_TYPES.map((id) => ({
     id,
     label: slotNames.get(id) ?? id,

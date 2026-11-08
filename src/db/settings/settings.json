@@ -1,6 +1,9 @@
 {
   "branchName": "สาขาสยาม",
+  "branchLogo": null,
   "pricePerHour": 20,
+  "pricePerHourBySlotType": {},
+  "freeParkingHours": 0,
   "exitGraceMinutes": 15,
   "recalcOvertime": true
 }
