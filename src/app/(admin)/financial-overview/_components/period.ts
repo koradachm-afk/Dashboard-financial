@@ -6,7 +6,7 @@ export type View = (typeof VIEWS)[number];
 
 export const VIEW_LABEL: Record<View, string> = { day: "รายวัน", month: "รายเดือน", year: "รายปี" };
 
-/** Key of a period as it appears in the URL (`?period=`): 2026-10-17 · 2026-10 · 2026. */
+/** Key of a period as it appears in the URL (`?period=`): 2026-11-16 · 2026-11 · 2026. */
 export function periodKey(p: FinancialPeriod): string {
   return p.kind === "day" ? p.date : p.kind === "month" ? p.month : String(p.year);
 }
@@ -20,7 +20,7 @@ export const isView = (v: unknown): v is View => (VIEWS as readonly unknown[]).i
 
 /**
  * The period to show for a view and a URL key. An unknown key falls back to the period of that view that
- * contains the key (day 2026-10-17 → month 2026-10 → year 2026), then to the newest one.
+ * contains the key (day 2026-11-16 → month 2026-11 → year 2026), then to the newest one.
  */
 export function resolvePeriod(view: View, key: string | undefined): FinancialPeriod {
   const list = periodsOf(view);
@@ -51,7 +51,7 @@ export const CHART_TITLE: Record<View, string> = {
   year: "รายรับรายเดือน",
 };
 
-/** "ถึง 17 ต.ค. 22:00" — a day that is not over yet (the chart stops before hour 24). Other views: none. */
+/** A day that is not over yet (the chart stops before hour 24). Other views: none. */
 export function untilLabel(view: View, period: FinancialPeriod, points: readonly { x: number }[]): string | null {
   if (view !== "day" || period.kind !== "day" || points.length === 0 || points.length >= 24) return null;
   const [, month, day] = period.date.split("-").map(Number);

@@ -20,7 +20,7 @@ import { cn } from "@/utils/cn";
 import { formatBaht, formatInt, formatMinutes, signed } from "@/utils/format";
 import { shortDate } from "@/utils/thai-date";
 
-import { AXIS_LINE, AXIS_TICK, GRID, niceTicks } from "./chart-utils";
+import { AXIS_LINE, AXIS_TICK, GRID, bahtAxis, niceTicks } from "./chart-utils";
 import { TYPE_COLOR, typeRevenue } from "./dashboard-data";
 
 type Metric = "entries" | "stay" | "revenue";
@@ -33,8 +33,8 @@ const CHART_TITLE: Record<Metric, string> = { entries: "รถเข้า (ค�
 const MIN_TYPES = 2;
 const MAX_TYPES = 4;
 /** The range the seed has; the picker is capped at the latest day of the data. */
-const DATA_END = new CalendarDate(2026, 10, 17);
-const DEFAULT_RANGE: DateRange = { start: new CalendarDate(2026, 10, 11), end: DATA_END };
+const DATA_END = new CalendarDate(2026, 11, 16);
+const DEFAULT_RANGE: DateRange = { start: new CalendarDate(2026, 11, 10), end: DATA_END };
 
 type Row = {
   id: ActivityVehicleType;
@@ -66,7 +66,7 @@ function EndLabel({ x, y, index, last, name, offset = 0 }: { x?: number | string
 
 type Datum = { label: string } & Partial<Record<ActivityVehicleType, number>>;
 
-function CompareTooltip({ active, datum, rows }: { active?: boolean; datum?: Datum; rows: readonly Row[] }) {
+function CompareTooltip({ active, datum, rows, metric }: { active?: boolean; datum?: Datum; rows: readonly Row[]; metric: Metric }) {
   if (!active || !datum) return null;
   return (
     <div className="flex flex-col gap-1 rounded-pop border border-line bg-surface px-3 py-2 shadow-tooltip">
@@ -75,7 +75,13 @@ function CompareTooltip({ active, datum, rows }: { active?: boolean; datum?: Dat
         <span key={r.id} className="flex items-center gap-2 text-label text-fg tabular-nums">
           <span aria-hidden className={cn("size-2 rounded-sm", TYPE_COLOR[r.id].fill)} />
           {r.label}
-          <span className="ml-auto pl-3 font-semibold">{formatInt(datum[r.id] ?? 0)} คัน</span>
+          <span className="ml-auto pl-3 font-semibold">
+            {metric === "entries"
+              ? `${formatInt(datum[r.id] ?? 0)} คัน`
+              : metric === "stay"
+                ? formatMinutes(datum[r.id] ?? 0)
+                : formatBaht(datum[r.id] ?? 0)}
+          </span>
         </span>
       ))}
     </div>
@@ -107,10 +113,31 @@ export function CompareCard() {
   const typeLabel = (id: ActivityVehicleType) => getActivity()?.types.find((t) => t.id === id)?.label ?? id;
 
   const daily: Datum[] = (activity?.dailyByType ?? []).map((d) => ({ label: shortDate(d.date), ...d }));
-  const max = Math.max(0, ...daily.flatMap((d) => types.map((id) => d[id] ?? 0)));
+  let totalRate = 0;
+  let rateCount = 0;
+  for (const rate of Object.values(revenue)) {
+    if (rate) {
+      totalRate += rate.perVehicle;
+      rateCount += 1;
+    }
+  }
+  const averageRate = rateCount > 0 ? totalRate / rateCount : 0;
+  const chartData: Datum[] = daily.map((day) => {
+    const point: Datum = { label: day.label };
+    for (const id of types) {
+      const row = rows.find((item) => item.id === id);
+      const entries = day[id] ?? 0;
+      if (metric === "entries") point[id] = entries;
+      if (metric === "stay") point[id] = row?.stay ?? 0;
+      if (metric === "revenue") point[id] = Math.round(entries * (revenue[id]?.perVehicle ?? averageRate));
+    }
+    return point;
+  });
+  const max = Math.max(0, ...chartData.flatMap((d) => types.map((id) => d[id] ?? 0)));
   const ticks = niceTicks(max);
+  const lastPoint = chartData[chartData.length - 1];
   const endValues = types
-    .map((id) => ({ id, value: daily[daily.length - 1]?.[id] ?? 0 }))
+    .map((id) => ({ id, value: lastPoint?.[id] ?? 0 }))
     .sort((a, b) => b.value - a.value);
   const closeValueGap = (ticks[ticks.length - 1] * 18) / 256;
   const labelOffsets = new Map<ActivityVehicleType, number>();
@@ -241,55 +268,67 @@ export function CompareCard() {
           <div className="flex flex-col gap-3 px-5 py-4">
             <div className="flex items-center">
               <h3 className="text-body font-semibold text-fg">{CHART_TITLE[metric]}</h3>
-              <span className="ml-auto text-label text-fg-3 tabular-nums">{rangeText} · รายวัน</span>
+              <span className="ml-auto text-label text-fg-3 tabular-nums">
+                {rangeText} · รายวัน{metric === "entries" ? "" : " · ค่าประมาณ"}
+              </span>
             </div>
-            {metric === "entries" ? (
-              <div role="img" aria-label={`${CHART_TITLE.entries} ${rangeText}`} className="h-72 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={daily} margin={{ top: 8, right: 64, bottom: 0, left: 0 }}>
-                    <CartesianGrid vertical={false} stroke={GRID} />
-                    <XAxis dataKey="label" tickLine={false} axisLine={AXIS_LINE} tick={AXIS_TICK} />
-                    <YAxis width={36} tickLine={false} axisLine={false} tick={AXIS_TICK} ticks={ticks} domain={[0, ticks[ticks.length - 1]]} allowDecimals={false} />
-                    <Tooltip
-                      cursor={{ stroke: "var(--pp-border-strong)" }}
-                      content={(props) => (
-                        <CompareTooltip active={props.active} datum={props.payload?.[0]?.payload as Datum | undefined} rows={rows} />
-                      )}
-                    />
-                    {types.map((id) => (
-                      <Line
-                        key={id}
+            <div role="img" aria-label={`${CHART_TITLE[metric]} ${rangeText}`} className="h-72 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 8, right: 64, bottom: 0, left: 0 }}>
+                  <CartesianGrid vertical={false} stroke={GRID} />
+                  <XAxis dataKey="label" tickLine={false} axisLine={AXIS_LINE} tick={AXIS_TICK} />
+                  <YAxis
+                    width={metric === "revenue" ? 56 : 44}
+                    tickLine={false}
+                    axisLine={false}
+                    tick={AXIS_TICK}
+                    tickFormatter={(value: number) =>
+                      metric === "revenue" ? bahtAxis(value) : metric === "stay" ? `${formatInt(value)} น.` : formatInt(value)
+                    }
+                    ticks={ticks}
+                    domain={[0, ticks[ticks.length - 1]]}
+                    allowDecimals={false}
+                  />
+                  <Tooltip
+                    cursor={{ stroke: "var(--pp-border-strong)" }}
+                    content={(props) => (
+                      <CompareTooltip
+                        active={props.active}
+                        datum={props.payload?.[0]?.payload as Datum | undefined}
+                        rows={rows}
+                        metric={metric}
+                      />
+                    )}
+                  />
+                  {types.map((id) => (
+                    <Line
+                      key={id}
+                      dataKey={id}
+                      type="linear"
+                      stroke={TYPE_COLOR[id].stroke}
+                      strokeWidth={2}
+                      dot={{ r: 3, fill: TYPE_COLOR[id].stroke, stroke: TYPE_COLOR[id].stroke }}
+                      activeDot={{ r: 5 }}
+                      isAnimationActive={false}
+                    >
+                      <LabelList
                         dataKey={id}
-                        type="linear"
-                        stroke={TYPE_COLOR[id].stroke}
-                        strokeWidth={2}
-                        dot={{ r: 3, fill: TYPE_COLOR[id].stroke, stroke: TYPE_COLOR[id].stroke }}
-                        activeDot={{ r: 5 }}
-                        isAnimationActive={false}
-                      >
-                        <LabelList
-                          dataKey={id}
-                          content={(props) => (
-                            <EndLabel
-                              x={props.x}
-                              y={props.y}
-                              index={props.index}
-                              last={daily.length - 1}
-                              name={typeLabel(id)}
-                              offset={labelOffsets.get(id) ?? 0}
-                            />
-                          )}
-                        />
-                      </Line>
-                    ))}
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="flex h-72 items-center justify-center text-center">
-                <p className="text-body text-fg-2">ตัวอย่างนี้ยังไม่มีข้อมูลรายวันของ{CHART_TITLE[metric]}</p>
-              </div>
-            )}
+                        content={(props) => (
+                          <EndLabel
+                            x={props.x}
+                            y={props.y}
+                            index={props.index}
+                            last={daily.length - 1}
+                            name={typeLabel(id)}
+                            offset={labelOffsets.get(id) ?? 0}
+                          />
+                        )}
+                      />
+                    </Line>
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
           <table className="w-full table-fixed border-collapse">

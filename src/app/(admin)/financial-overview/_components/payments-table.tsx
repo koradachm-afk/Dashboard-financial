@@ -30,8 +30,7 @@ export function PaymentsTable({ rows, total, note }: { rows: readonly PaymentRow
   return (
     <Card>
       <CardHeader title="รายการชำระเงิน" action={<span className="text-label text-fg-3 tabular-nums">{note}</span>} />
-      {/* Column widths follow Figma 13 (150 / 100 / 110 / 160 / 120 / 110 / 130 / rest); the plate and time
-          columns are 128 because cells here add 16px padding each side. Keep the sum below the card width at 1440. */}
+      {/* The parking-space column is omitted. The plate and time columns are 128 because cells add 16px padding each side. */}
       <table className="w-full table-fixed border-collapse">
         <thead>
           <tr className="border-b border-line">
@@ -43,7 +42,6 @@ export function PaymentsTable({ rows, total, note }: { rows: readonly PaymentRow
             </th>
             <th scope="col" className={cn(TH, "w-25")}>เลขอ้างอิง</th>
             <th scope="col" className={cn(TH, "w-32")}>ทะเบียน</th>
-            <th scope="col" className={cn(TH, "w-40")}>ช่องจอด</th>
             <th scope="col" className={cn(TH, "w-32")}>เวลาเข้า – ออก</th>
             <th scope="col" className={cn(TH, "w-27.5")}>ระยะเวลา</th>
             <th scope="col" className={cn(TH, "w-32.5")}>ช่องทางชำระ</th>
@@ -57,16 +55,6 @@ export function PaymentsTable({ rows, total, note }: { rows: readonly PaymentRow
               <td className={cn(TD, "text-fg-2 tabular-nums")}>{r.ref}</td>
               <td className={TD}>
                 <Plate plate={r.plate} province={r.province} />
-              </td>
-              <td className={cn(TD, "whitespace-nowrap")}>
-                {r.slot === null ? (
-                  <span className="text-fg-3">ไม่ทราบช่อง</span>
-                ) : (
-                  <>
-                    <span className="font-medium tabular-nums">{r.slot}</span>
-                    {r.slotType && <span className="ml-2 text-label text-fg-3">{r.slotType}</span>}
-                  </>
-                )}
               </td>
               <td className={cn(TD, "whitespace-nowrap tabular-nums")}>
                 {r.entryTime} – {r.exitTime}
@@ -83,7 +71,7 @@ export function PaymentsTable({ rows, total, note }: { rows: readonly PaymentRow
           ))}
           {rows.length === 0 && (
             <tr>
-              <td colSpan={8}>
+              <td colSpan={7}>
                 <div className="flex flex-col items-center gap-2.5 py-18">
                   <span className="grid size-14 place-items-center rounded-full bg-page text-fg-3">
                     <Receipt size={24} aria-hidden />

@@ -36,31 +36,55 @@ export function slotAlerts(): SlotAlert[] {
 
 export type ActivityRow = {
   id: string;
+  event: "entry" | "exit";
   entryTime: string;
   /** null = still parked. */
   exitTime: string | null;
   plate: string;
   province: string;
   vehicleType: string | null;
-  slot: string | null;
   /** null = not paid yet. */
   fee: number | null;
 };
 
-/** One row per parking session, the most recent movement (exit, else entry) first. */
+/** One row per movement; exited sessions have both an entry and an exit event. */
 export function recentActivity(): ActivityRow[] {
-  return [...getSessions()]
-    .sort((a, b) => (b.exitAt ?? b.entryAt).localeCompare(a.exitAt ?? a.entryAt))
-    .map((s) => ({
-      id: s.id,
-      entryTime: s.entryAt.slice(11, 16),
-      exitTime: s.exitAt ? s.exitAt.slice(11, 16) : null,
-      plate: s.plate,
-      province: s.province,
-      vehicleType: s.vehicleType,
-      slot: s.slot,
-      fee: s.fee,
-    }));
+  const rows: ActivityRow[] = [];
+
+  for (const session of getSessions()) {
+    const entryTime = session.entryAt.slice(11, 16);
+    const exitTime = session.exitAt ? session.exitAt.slice(11, 16) : null;
+
+    rows.push({
+      id: `${session.id}:entry`,
+      event: "entry",
+      entryTime,
+      exitTime,
+      plate: session.plate,
+      province: session.province,
+      vehicleType: session.vehicleType,
+      fee: session.fee,
+    });
+
+    if (exitTime) {
+      rows.push({
+        id: `${session.id}:exit`,
+        event: "exit",
+        entryTime,
+        exitTime,
+        plate: session.plate,
+        province: session.province,
+        vehicleType: session.vehicleType,
+        fee: session.fee,
+      });
+    }
+  }
+
+  return rows.sort((a, b) => {
+    const timeA = a.event === "entry" ? a.entryTime : a.exitTime ?? "";
+    const timeB = b.event === "entry" ? b.entryTime : b.exitTime ?? "";
+    return timeB.localeCompare(timeA);
+  });
 }
 
 /** Revenue per type exists for Sedan and SUV only (the Figma comparison card). */

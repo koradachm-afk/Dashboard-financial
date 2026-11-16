@@ -309,11 +309,11 @@ export type FinancialPeriod =
   | { kind: "year"; year: number };
 
 export const FINANCIAL_PERIODS: readonly FinancialPeriod[] = [
-  { kind: "day", date: "2026-10-17" },
-  { kind: "day", date: "2026-10-16" },
-  { kind: "day", date: "2026-10-15" },
+  { kind: "day", date: "2026-11-16" },
+  { kind: "day", date: "2026-11-15" },
+  { kind: "day", date: "2026-11-14" },
+  { kind: "month", month: "2026-11" },
   { kind: "month", month: "2026-10" },
-  { kind: "month", month: "2026-09" },
   { kind: "year", year: 2026 },
   { kind: "year", year: 2025 },
 ];
@@ -333,7 +333,7 @@ export type FinancialDurationId = (typeof FINANCIAL_DURATIONS)[number];
 
 export type FinancialData = {
   period: FinancialPeriod;
-  /** The period label printed in the header, e.g. "ส. 17 ต.ค. 2026". */
+  /** The period label printed in the header, e.g. "จ. 16 พ.ย. 2026". */
   label: string;
   kpis: {
     /** Baht. */

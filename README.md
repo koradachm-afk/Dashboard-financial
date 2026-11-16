@@ -617,3 +617,4 @@ PM (อ๊อด) เป็นผู้ตัดสิน ระหว่าง�
 | Page | 5 – 12 พ.ย. | ทุกหน้าตามข้อ 6 · **12 พ.ย. ทุกหน้าเปิด PR แล้ว** |
 | Testing | 12 – 14 พ.ย. | Unit, Integration, UAT (เทียบ Figma, ทดสอบสิทธิ์, ธีมมืด, มือถือ) |
 | Deployment | 13 – 15 พ.ย. | merge, build, deploy demo, อัปเดตเอกสาร · **ส่งงาน 15 พ.ย. 2026** |
+# Dashboard-financial

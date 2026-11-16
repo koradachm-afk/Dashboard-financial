@@ -25,8 +25,8 @@ import { SlotStatusCard } from "./slot-status-card";
 
 export type RangeId = DashboardRangeId | "custom";
 
-/** The data of this branch ends here (Figma 12: "ข้อมูลล่าสุด 17 ต.ค. 2026 22:00"). */
-const TODAY = new CalendarDate(2026, 10, 17);
+/** Current end date for this dashboard snapshot. */
+const TODAY = new CalendarDate(2026, 11, 16);
 const TODAY_ISO = TODAY.toString();
 
 const RANGE_OPTIONS = [
@@ -106,7 +106,7 @@ export function DashboardView({ initialRange, initialCustom }: { initialRange: R
       <div className="flex items-center gap-3">
         <div className="flex flex-col gap-1">
           <h1 className="text-h1 font-bold text-fg">Dashboard</h1>
-          <p className="text-body text-fg-2">ภาพรวมสาขาสยาม · ข้อมูลล่าสุด 17 ต.ค. 2026 22:00</p>
+          <p className="text-body text-fg-2">ภาพรวมสาขาสยาม · ข้อมูลล่าสุด 16 พ.ย. 2026 22:00</p>
         </div>
         <div
           ref={segmentsRef}
@@ -213,7 +213,7 @@ export function DashboardView({ initialRange, initialCustom }: { initialRange: R
 
       <CompareCard />
 
-      <RecentActivityCard rows={rows} total={getRecentActivityCount()} description="วันนี้ · 17 ต.ค. 2026 · 190 รายการ" />
+      <RecentActivityCard rows={rows} total={getRecentActivityCount()} description="วันนี้ · 16 พ.ย. 2026 · 190 รายการ" />
     </div>
   );
 }

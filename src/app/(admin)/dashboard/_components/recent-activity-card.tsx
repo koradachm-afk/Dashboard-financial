@@ -16,7 +16,8 @@ const PAGE_SIZE = 10;
 const TH = "h-11 px-4 text-left text-label font-semibold text-fg-2";
 const TD = "h-14 px-4 text-body text-fg";
 
-function EventBadge({ out }: { out: boolean }) {
+function EventBadge({ event }: { event: ActivityRow["event"] }) {
+  const out = event === "exit";
   const Icon = out ? LogOut : LogIn;
   return (
     <span
@@ -26,7 +27,7 @@ function EventBadge({ out }: { out: boolean }) {
       )}
     >
       <Icon size={14} aria-hidden />
-      {out ? "ออก" : "เข้า"}
+      {out ? "รถออก" : "รถเข้า"}
     </span>
   );
 }
@@ -60,7 +61,6 @@ export function RecentActivityCard({ rows, total, description }: { rows: readonl
             <th scope="col" className={cn(TH, "w-30")}>เหตุการณ์</th>
             <th scope="col" className={cn(TH, "w-35")}>ทะเบียน</th>
             <th scope="col" className={cn(TH, "w-42.5")}>ประเภทรถ</th>
-            <th scope="col" className={cn(TH, "w-27.5")}>ช่องจอด</th>
             <th scope="col" className={cn(TH, "text-right")}>ค่าจอด</th>
           </tr>
         </thead>
@@ -70,13 +70,12 @@ export function RecentActivityCard({ rows, total, description }: { rows: readonl
               <td className={cn(TD, "tabular-nums")}>{r.entryTime}</td>
               <td className={cn(TD, "tabular-nums", r.exitTime === null && "text-fg-3")}>{r.exitTime ?? "ยังไม่ออก"}</td>
               <td className={TD}>
-                <EventBadge out={r.exitTime !== null} />
+                <EventBadge event={r.event} />
               </td>
               <td className={TD}>
                 <Plate plate={r.plate} province={r.province} />
               </td>
               <td className={cn(TD, "truncate", r.vehicleType === null && "text-fg-3")}>{r.vehicleType ?? "ไม่ระบุ"}</td>
-              <td className={cn(TD, "tabular-nums", r.slot === null && "text-fg-3")}>{r.slot ?? "ไม่ทราบช่อง"}</td>
               <td className={cn(TD, "text-right tabular-nums", r.fee === null ? "text-label text-fg-3" : "font-semibold")}>
                 {r.fee === null ? "ยังไม่ชำระ" : formatBaht(r.fee)}
               </td>

@@ -3,9 +3,9 @@
     {
       "period": {
         "kind": "day",
-        "date": "2026-10-17"
+        "date": "2026-11-16"
       },
-      "label": "ส. 17 ต.ค. 2026",
+      "label": "จ. 16 พ.ย. 2026",
       "kpis": {
         "revenue": 10080,
         "payments": 161,
@@ -159,9 +159,9 @@
     {
       "period": {
         "kind": "day",
-        "date": "2026-10-16"
+        "date": "2026-11-15"
       },
-      "label": "ศ. 16 ต.ค. 2026",
+      "label": "อา. 15 พ.ย. 2026",
       "kpis": {
         "revenue": 14460,
         "payments": 232,
@@ -323,9 +323,9 @@
     {
       "period": {
         "kind": "day",
-        "date": "2026-10-15"
+        "date": "2026-11-14"
       },
-      "label": "พฤ. 15 ต.ค. 2026",
+      "label": "ส. 14 พ.ย. 2026",
       "kpis": {
         "revenue": 14040,
         "payments": 212,
@@ -487,9 +487,9 @@
     {
       "period": {
         "kind": "month",
-        "month": "2026-10"
+        "month": "2026-11"
       },
-      "label": "ต.ค. 2026",
+      "label": "พ.ย. 2026",
       "kpis": {
         "revenue": 212880,
         "payments": 3352,
@@ -623,9 +623,9 @@
     {
       "period": {
         "kind": "month",
-        "month": "2026-09"
+        "month": "2026-10"
       },
-      "label": "ก.ย. 2026",
+      "label": "ต.ค. 2026",
       "kpis": {
         "revenue": 361060,
         "payments": 5629,
