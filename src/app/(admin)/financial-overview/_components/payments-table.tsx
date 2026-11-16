@@ -30,7 +30,7 @@ export function PaymentsTable({ rows, total, note }: { rows: readonly PaymentRow
   return (
     <Card>
       <CardHeader title="รายการชำระเงิน" action={<span className="text-label text-fg-3 tabular-nums">{note}</span>} />
-      {/* The parking-space column is omitted. The plate and time columns are 128 because cells add 16px padding each side. */}
+      {/* The parking-space column is omitted; entry and exit times are shown separately. */}
       <table className="w-full table-fixed border-collapse">
         <thead>
           <tr className="border-b border-line">
@@ -42,7 +42,8 @@ export function PaymentsTable({ rows, total, note }: { rows: readonly PaymentRow
             </th>
             <th scope="col" className={cn(TH, "w-25")}>เลขอ้างอิง</th>
             <th scope="col" className={cn(TH, "w-32")}>ทะเบียน</th>
-            <th scope="col" className={cn(TH, "w-32")}>เวลาเข้า – ออก</th>
+            <th scope="col" className={cn(TH, "w-22.5")}>เวลาเข้า</th>
+            <th scope="col" className={cn(TH, "w-22.5")}>เวลาออก</th>
             <th scope="col" className={cn(TH, "w-27.5")}>ระยะเวลา</th>
             <th scope="col" className={cn(TH, "w-32.5")}>ช่องทางชำระ</th>
             <th scope="col" className={cn(TH, "text-right")}>ยอด</th>
@@ -56,9 +57,8 @@ export function PaymentsTable({ rows, total, note }: { rows: readonly PaymentRow
               <td className={TD}>
                 <Plate plate={r.plate} province={r.province} />
               </td>
-              <td className={cn(TD, "whitespace-nowrap tabular-nums")}>
-                {r.entryTime} – {r.exitTime}
-              </td>
+              <td className={cn(TD, "whitespace-nowrap tabular-nums")}>{r.entryTime}</td>
+              <td className={cn(TD, "whitespace-nowrap tabular-nums")}>{r.exitTime}</td>
               <td className={cn(TD, "whitespace-nowrap tabular-nums")}>{r.duration}</td>
               <td className={TD}>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-success-soft py-0.75 pr-2.5 pl-2 text-label font-semibold whitespace-nowrap text-success">
@@ -71,7 +71,7 @@ export function PaymentsTable({ rows, total, note }: { rows: readonly PaymentRow
           ))}
           {rows.length === 0 && (
             <tr>
-              <td colSpan={7}>
+              <td colSpan={8}>
                 <div className="flex flex-col items-center gap-2.5 py-18">
                   <span className="grid size-14 place-items-center rounded-full bg-page text-fg-3">
                     <Receipt size={24} aria-hidden />
